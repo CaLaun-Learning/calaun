@@ -1,6 +1,7 @@
+"""Step-by-step differentiation with HTML output."""
 import sympy
-import collections
 import functools
+from collections import namedtuple
 
 from logic import stepprinter
 from logic.stepprinter import functionnames, replace_u_var
@@ -10,8 +11,9 @@ from sympy.functions.elementary.trigonometric import TrigonometricFunction
 from sympy.strategies.core import switch
 
 
+# Rule types for differentiation steps
 def Rule(name, props=""):
-    return collections.namedtuple(name, props + " context symbol")
+    return namedtuple(name, props + " context symbol")
 
 ConstantRule = Rule("ConstantRule", "number")
 ConstantTimesRule = Rule("ConstantTimesRule", "constant other substep")
@@ -28,185 +30,67 @@ AlternativeRule = Rule("AlternativeRule", "alternatives")
 DontKnowRule = Rule("DontKnowRule")
 RewriteRule = Rule("RewriteRule", "rewritten substep")
 
-DerivativeInfo = collections.namedtuple('DerivativeInfo', 'expr symbol')
+DerivativeInfo = namedtuple('DerivativeInfo', 'expr symbol')
 
-evaluators = {}
-
+# Evaluators for computing derivatives from rules
+_evaluators = {}
 
 def evaluates(rule):
-    def _evaluates(func):
-        func.rule = rule
-        evaluators[rule] = func
+    """Decorator to register an evaluator for a rule type."""
+    def decorator(func):
+        _evaluators[rule] = func
         return func
-    return _evaluates
+    return decorator
 
 
-def power_rule(derivative):
-    expr, symbol = derivative.expr, derivative.symbol
-    base, exp = expr.as_base_exp()
-
-    if not base.has(symbol):
-        if isinstance(exp, sympy.Symbol):
-            return ExpRule(expr, base, expr, symbol)
-        else:
-            u = sympy.Dummy()
-            f = base ** u
-            return ChainRule(
-                ExpRule(f, base, f, u),
-                exp, u,
-                diff_steps(exp, symbol),
-                expr, symbol
-            )
-    elif not exp.has(symbol):
-        if isinstance(base, sympy.Symbol):
-            return PowerRule(base, exp, expr, symbol)
-        else:
-            u = sympy.Dummy()
-            f = u ** exp
-            return ChainRule(
-                PowerRule(u, exp, f, u),
-                base, u,
-                diff_steps(base, symbol),
-                expr, symbol
-            )
-    else:
-        return DontKnowRule(expr, symbol)
+def diff(rule):
+    """Evaluate a differentiation rule to get the result."""
+    evaluator = _evaluators.get(rule.__class__)
+    if not evaluator:
+        raise ValueError("Cannot evaluate derivative")
+    return evaluator(*rule)
 
 
-def add_rule(derivative):
-    expr, symbol = derivative.expr, derivative.symbol
-    return AddRule([diff_steps(arg, symbol) for arg in expr.args],
-                   expr, symbol)
-
-
-def constant_rule(derivative):
-    expr, symbol = derivative.expr, derivative.symbol
-    return ConstantRule(expr, expr, symbol)
-
-
-def mul_rule(derivative):
-    expr, symbol = derivative
-    terms = expr.args
-
-    coeff, f = expr.as_independent(symbol)
-
-    if coeff != 1:
-        return ConstantTimesRule(coeff, f, diff_steps(f, symbol), expr, symbol)
-
-    numerator, denominator = expr.as_numer_denom()
-    if denominator != 1:
-        return DivRule(numerator, denominator,
-                       diff_steps(numerator, symbol),
-                       diff_steps(denominator, symbol), expr, symbol)
-
-    return MulRule(terms, [diff_steps(g, symbol) for g in terms], expr, symbol)
-
-
-def trig_rule(derivative):
-    expr, symbol = derivative
-    arg = expr.args[0]
-
-    default = TrigRule(expr, expr, symbol)
-    if not isinstance(arg, sympy.Symbol):
-        u = sympy.Dummy()
-        default = ChainRule(
-            TrigRule(expr.func(u), expr.func(u), u),
-            arg, u, diff_steps(arg, symbol),
-            expr, symbol)
-
-    if isinstance(expr, (sympy.sin, sympy.cos)):
-        return default
-    elif isinstance(expr, sympy.tan):
-        f_r = sympy.sin(arg) / sympy.cos(arg)
-
-        return AlternativeRule([
-            default,
-            RewriteRule(f_r, diff_steps(f_r, symbol), expr, symbol)
-        ], expr, symbol)
-    elif isinstance(expr, sympy.csc):
-        f_r = 1 / sympy.sin(arg)
-
-        return AlternativeRule([
-            default,
-            RewriteRule(f_r, diff_steps(f_r, symbol), expr, symbol)
-        ], expr, symbol)
-    elif isinstance(expr, sympy.sec):
-        f_r = 1 / sympy.cos(arg)
-
-        return AlternativeRule([
-            default,
-            RewriteRule(f_r, diff_steps(f_r, symbol), expr, symbol)
-        ], expr, symbol)
-    elif isinstance(expr, sympy.cot):
-        f_r_1 = 1 / sympy.tan(arg)
-        f_r_2 = sympy.cos(arg) / sympy.sin(arg)
-        return AlternativeRule([
-            default,
-            RewriteRule(f_r_1, diff_steps(f_r_1, symbol), expr, symbol),
-            RewriteRule(f_r_2, diff_steps(f_r_2, symbol), expr, symbol)
-        ], expr, symbol)
-    else:
-        return DontKnowRule(expr, symbol)
-
-
-def exp_rule(derivative):
-    expr, symbol = derivative
-    exp = expr.args[0]
-    if isinstance(exp, sympy.Symbol):
-        return ExpRule(expr, sympy.E, expr, symbol)
-    else:
-        u = sympy.Dummy()
-        f = sympy.exp(u)
-        return ChainRule(ExpRule(f, sympy.E, f, u),
-                         exp, u, diff_steps(exp, symbol), expr, symbol)
-
-
-def log_rule(derivative):
-    expr, symbol = derivative
-    arg = expr.args[0]
-    if len(expr.args) == 2:
-        base = expr.args[1]
-    else:
-        base = sympy.E
-        if isinstance(arg, sympy.Symbol):
-            return LogRule(arg, base, expr, symbol)
-        else:
-            u = sympy.Dummy()
-            return ChainRule(LogRule(u, base, sympy.log(u, base), u),
-                             arg, u, diff_steps(arg, symbol), expr, symbol)
-
-
-def function_rule(derivative):
-    return FunctionRule(derivative.expr, derivative.symbol)
-
-
+# Rule evaluators
 @evaluates(ConstantRule)
 def eval_constant(*args):
     return 0
-
 
 @evaluates(ConstantTimesRule)
 def eval_constanttimes(constant, other, substep, expr, symbol):
     return constant * diff(substep)
 
-
 @evaluates(AddRule)
 def eval_add(substeps, expr, symbol):
-    results = [diff(step) for step in substeps]
-    return sum(results)
-
+    return sum(diff(step) for step in substeps)
 
 @evaluates(DivRule)
 def eval_div(numer, denom, numerstep, denomstep, expr, symbol):
-    d_numer = diff(numerstep)
-    d_denom = diff(denomstep)
+    d_numer, d_denom = diff(numerstep), diff(denomstep)
     return (denom * d_numer - numer * d_denom) / (denom ** 2)
-
 
 @evaluates(ChainRule)
 def eval_chain(substep, inner, u_var, innerstep, expr, symbol):
     return diff(substep).subs(u_var, inner) * diff(innerstep)
 
+@evaluates(MulRule)
+def eval_mul(terms, substeps, expr, symbol):
+    diffs = [diff(s) for s in substeps]
+    return sum(diffs[i] * functools.reduce(lambda a, b: a * b, 
+               [t for j, t in enumerate(terms) if j != i], 1) 
+               for i in range(len(terms)))
+
+@evaluates(TrigRule)
+def eval_trig(*args):
+    return sympy.trigsimp(eval_default(*args))
+
+@evaluates(RewriteRule)
+def eval_rewrite(rewritten, substep, expr, symbol):
+    return diff(substep)
+
+@evaluates(AlternativeRule)
+def eval_alternative(alternatives, expr, symbol):
+    return diff(alternatives[1])
 
 @evaluates(PowerRule)
 @evaluates(ExpRule)
@@ -215,14 +99,10 @@ def eval_chain(substep, inner, u_var, innerstep, expr, symbol):
 @evaluates(FunctionRule)
 def eval_default(*args):
     func, symbol = args[-2], args[-1]
-
     if isinstance(func, sympy.Symbol):
         func = sympy.Pow(func, 1, evaluate=False)
-
-    # Automatically derive and apply the rule (don't use diff() directly as
-    # chain rule is a separate step)
-    substitutions = []
-    mapping = {}
+    
+    substitutions, mapping = [], {}
     constant_symbol = sympy.Dummy()
     for arg in func.args:
         if symbol in arg.free_symbols:
@@ -231,53 +111,25 @@ def eval_default(*args):
         else:
             mapping[constant_symbol] = arg
             substitutions.append(constant_symbol)
-
+    
     rule = func.func(*substitutions).diff(symbol)
     return rule.subs(mapping)
 
 
-@evaluates(MulRule)
-def eval_mul(terms, substeps, expr, symbol):
-    diffs = list(map(diff, substeps))
-
-    result = sympy.S.Zero
-    for i in range(len(terms)):
-        subresult = diffs[i]
-        for index, term in enumerate(terms):
-            if index != i:
-                subresult *= term
-        result += subresult
-    return result
-
-
-@evaluates(TrigRule)
-def eval_default_trig(*args):
-    return sympy.trigsimp(eval_default(*args))
-
-
-@evaluates(RewriteRule)
-def eval_rewrite(rewritten, substep, expr, symbol):
-    return diff(substep)
-
-
-@evaluates(AlternativeRule)
-def eval_alternative(alternatives, expr, symbol):
-    return diff(alternatives[1])
-
-
+# Rule generators
 def diff_steps(expr, symbol):
+    """Generate differentiation steps for an expression."""
     deriv = DerivativeInfo(expr, symbol)
 
-    def key(deriv):
-        expr = deriv.expr
-        if isinstance(expr, TrigonometricFunction):
+    def key(d):
+        e = d.expr
+        if isinstance(e, TrigonometricFunction):
             return TrigonometricFunction
-        elif isinstance(expr, AppliedUndef):
+        if isinstance(e, AppliedUndef):
             return AppliedUndef
-        elif not expr.has(symbol):
+        if not e.has(symbol):
             return 'constant'
-        else:
-            return expr.func
+        return e.func
 
     return switch(key, {
         sympy.Pow: power_rule,
@@ -293,250 +145,226 @@ def diff_steps(expr, symbol):
     })(deriv)
 
 
-def diff(rule):
-    try:
-        return evaluators[rule.__class__](*rule)
-    except KeyError:
-        raise ValueError("Cannot evaluate derivative")
+def power_rule(derivative):
+    expr, symbol = derivative.expr, derivative.symbol
+    base, exp = expr.as_base_exp()
+
+    if not base.has(symbol):
+        if isinstance(exp, sympy.Symbol):
+            return ExpRule(expr, base, expr, symbol)
+        u = sympy.Dummy()
+        f = base ** u
+        return ChainRule(ExpRule(f, base, f, u), exp, u, diff_steps(exp, symbol), expr, symbol)
+    elif not exp.has(symbol):
+        if isinstance(base, sympy.Symbol):
+            return PowerRule(base, exp, expr, symbol)
+        u = sympy.Dummy()
+        f = u ** exp
+        return ChainRule(PowerRule(u, exp, f, u), base, u, diff_steps(base, symbol), expr, symbol)
+    return DontKnowRule(expr, symbol)
 
 
+def add_rule(derivative):
+    expr, symbol = derivative.expr, derivative.symbol
+    return AddRule([diff_steps(arg, symbol) for arg in expr.args], expr, symbol)
+
+
+def constant_rule(derivative):
+    return ConstantRule(derivative.expr, derivative.expr, derivative.symbol)
+
+
+def mul_rule(derivative):
+    expr, symbol = derivative.expr, derivative.symbol
+    coeff, f = expr.as_independent(symbol)
+    
+    if coeff != 1:
+        return ConstantTimesRule(coeff, f, diff_steps(f, symbol), expr, symbol)
+    
+    numer, denom = expr.as_numer_denom()
+    if denom != 1:
+        return DivRule(numer, denom, diff_steps(numer, symbol), diff_steps(denom, symbol), expr, symbol)
+    
+    return MulRule(expr.args, [diff_steps(g, symbol) for g in expr.args], expr, symbol)
+
+
+def trig_rule(derivative):
+    expr, symbol = derivative.expr, derivative.symbol
+    arg = expr.args[0]
+    
+    default = TrigRule(expr, expr, symbol)
+    if not isinstance(arg, sympy.Symbol):
+        u = sympy.Dummy()
+        default = ChainRule(TrigRule(expr.func(u), expr.func(u), u), arg, u, diff_steps(arg, symbol), expr, symbol)
+
+    if isinstance(expr, (sympy.sin, sympy.cos)):
+        return default
+    
+    # Rewrite rules for other trig functions
+    rewrites = {
+        sympy.tan: [sympy.sin(arg) / sympy.cos(arg)],
+        sympy.csc: [1 / sympy.sin(arg)],
+        sympy.sec: [1 / sympy.cos(arg)],
+        sympy.cot: [1 / sympy.tan(arg), sympy.cos(arg) / sympy.sin(arg)],
+    }
+    
+    if expr.func in rewrites:
+        alts = [default] + [RewriteRule(r, diff_steps(r, symbol), expr, symbol) for r in rewrites[expr.func]]
+        return AlternativeRule(alts, expr, symbol)
+    
+    return DontKnowRule(expr, symbol)
+
+
+def exp_rule(derivative):
+    expr, symbol = derivative.expr, derivative.symbol
+    exp_arg = expr.args[0]
+    
+    if isinstance(exp_arg, sympy.Symbol):
+        return ExpRule(expr, sympy.E, expr, symbol)
+    
+    u = sympy.Dummy()
+    f = sympy.exp(u)
+    return ChainRule(ExpRule(f, sympy.E, f, u), exp_arg, u, diff_steps(exp_arg, symbol), expr, symbol)
+
+
+def log_rule(derivative):
+    expr, symbol = derivative.expr, derivative.symbol
+    arg = expr.args[0]
+    base = expr.args[1] if len(expr.args) == 2 else sympy.E
+    
+    if isinstance(arg, sympy.Symbol):
+        return LogRule(arg, base, expr, symbol)
+    
+    u = sympy.Dummy()
+    return ChainRule(LogRule(u, base, sympy.log(u, base), u), arg, u, diff_steps(arg, symbol), expr, symbol)
+
+
+def function_rule(derivative):
+    return FunctionRule(derivative.expr, derivative.symbol)
+
+
+# Printer class for HTML output
 class DiffPrinter(stepprinter.HTMLPrinter):
+    """Generates HTML step-by-step differentiation output."""
+    
     def __init__(self, rule):
         super().__init__()
         self.rule = rule
+        self.alternative_functions_printed = set()
         self.print_rule(rule)
 
     def print_rule(self, rule):
-        if isinstance(rule, PowerRule):
-            self.print_Power(rule)
-        elif isinstance(rule, ChainRule):
-            self.print_Chain(rule)
-        elif isinstance(rule, ConstantRule):
-            self.print_Number(rule)
-        elif isinstance(rule, ConstantTimesRule):
-            self.print_ConstantTimes(rule)
-        elif isinstance(rule, AddRule):
-            self.print_Add(rule)
-        elif isinstance(rule, MulRule):
-            self.print_Mul(rule)
-        elif isinstance(rule, DivRule):
-            self.print_Div(rule)
-        elif isinstance(rule, TrigRule):
-            self.print_Trig(rule)
-        elif isinstance(rule, ExpRule):
-            self.print_Exp(rule)
-        elif isinstance(rule, LogRule):
-            self.print_Log(rule)
-        elif isinstance(rule, DontKnowRule):
-            self.print_DontKnow(rule)
-        elif isinstance(rule, AlternativeRule):
-            self.print_Alternative(rule)
-        elif isinstance(rule, RewriteRule):
-            self.print_Rewrite(rule)
-        elif isinstance(rule, FunctionRule):
-            self.print_Function(rule)
+        """Dispatch to appropriate print method."""
+        method = getattr(self, f'print_{rule.__class__.__name__}', None)
+        if method:
+            method(rule)
         else:
             self.append(repr(rule))
 
-    def print_Power(self, rule):
+    def print_ConstantRule(self, rule):
         with self.new_step():
-            self.append("Apply the power rule: {0} goes to {1}".format(
-                self.format_math(rule.context),
-                self.format_math(diff(rule))))
+            self.append(f"The derivative of the constant {self.format_math(rule.number)} is zero.")
 
-    def print_Number(self, rule):
+    def print_PowerRule(self, rule):
         with self.new_step():
-            self.append("The derivative of the constant {} is zero.".format(
-                self.format_math(rule.number)))
+            self.append(f"Apply the power rule: {self.format_math(rule.context)} goes to {self.format_math(diff(rule))}")
 
-    def print_ConstantTimes(self, rule):
+    def print_ConstantTimesRule(self, rule):
         with self.new_step():
-            self.append("The derivative of <strong>a</strong> constant (fixed variable or a number) times a function "
-                        "is <strong>the</strong> constant times the derivative of the function.")
+            self.append("The derivative of a constant times a function is the constant times the derivative of the function.")
             with self.new_level():
                 self.print_rule(rule.substep)
-            self.append(
-                '<div class="collapsible"><h2>open answer</h2><ol class="content">So, the result is: ')
+            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">So, the result is: ')
             self.append(self.format_math(diff(rule)) + '</ol></div>')
 
-    def print_Add(self, rule):
+    def print_AddRule(self, rule):
         with self.new_step():
-            self.append("Differentiate {} term by term:".format(
-                self.format_math(rule.context)))
+            self.append(f"Differentiate {self.format_math(rule.context)} term by term:")
             with self.new_level():
                 for substep in rule.substeps:
                     self.print_rule(substep)
-            self.append(
-                '<div class="collapsible"><h2>open answer</h2><ol class="content">The result is: ')
+            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">The result is: ')
             self.append(self.format_math(diff(rule)) + '</ol></div>')
 
-    def print_Mul(self, rule):
+    def print_MulRule(self, rule):
         with self.new_step():
             self.append("Apply the product rule:")
-
-            fnames = list(map(lambda n: sympy.Function(n)(rule.symbol),
-                              functionnames(len(rule.terms))))
-            derivatives = list(
-                map(lambda f: sympy.Derivative(f, rule.symbol), fnames))
+            fnames = [sympy.Function(n)(rule.symbol) for n in functionnames(len(rule.terms))]
+            derivatives = [sympy.Derivative(f, rule.symbol) for f in fnames]
+            
             ruleform = []
-            for index in range(len(rule.terms)):
-                buf = []
-                for i in range(len(rule.terms)):
-                    if i == index:
-                        buf.append(derivatives[i])
-                    else:
-                        buf.append(fnames[i])
-                # https://docs.python.org/3/library/functools.html#functools.reduce
-                # https://stackoverflow.com/questions/6800481/python-map-object-is-not-subscriptable
-                ruleform.append(functools.reduce(lambda a, b: a*b, buf))
-            self.append(self.format_math_display(
-                sympy.Eq(sympy.Derivative(functools.reduce(lambda a, b: a*b, fnames),
-                                          rule.symbol),
-                         sum(ruleform))))
+            for i in range(len(rule.terms)):
+                parts = [derivatives[i] if j == i else fnames[j] for j in range(len(rule.terms))]
+                ruleform.append(functools.reduce(lambda a, b: a * b, parts))
+            
+            self.append(self.format_math_display(sympy.Eq(
+                sympy.Derivative(functools.reduce(lambda a, b: a * b, fnames), rule.symbol),
+                sum(ruleform))))
 
-            for fname, deriv, term, substep in zip(fnames, derivatives,
-                                                   rule.terms, rule.substeps):
-                self.append("{}; Now find {}:".format(
-                    self.format_math(sympy.Eq(fname, term)),
-                    self.format_math(deriv)
-                ))
+            for fname, deriv, term, substep in zip(fnames, derivatives, rule.terms, rule.substeps):
+                self.append(f"{self.format_math(sympy.Eq(fname, term))}; Now find {self.format_math(deriv)}:")
                 with self.new_level():
                     self.print_rule(substep)
-
-            self.append(
-                '<div class="collapsible"><h2>open answer</h2><ol class="content">The result is:')
+            
+            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">The result is:')
             self.append(self.format_math(diff(rule)) + '</ol></div>')
 
-    def print_Div(self, rule):
+    def print_DivRule(self, rule):
         with self.new_step():
-            f, g = rule.numerator, rule.denominator
             x = rule.symbol
-            ff = sympy.Function("f")(x)
-            gg = sympy.Function("g")(x)
-            qrule_left = sympy.Derivative(ff / gg, rule.symbol)
-            qrule_right = sympy.ratsimp(sympy.diff(sympy.Function("f")(x) /
-                                                   sympy.Function("g")(x)))
-            qrule = sympy.Eq(qrule_left, qrule_right)
-            self.append("Apply the quotient rule, which is:")
+            ff, gg = sympy.Function("f")(x), sympy.Function("g")(x)
+            qrule = sympy.Eq(sympy.Derivative(ff / gg, x), sympy.ratsimp(sympy.diff(ff / gg)))
+            
+            self.append("Apply the quotient rule:")
             self.append(self.format_math_display(qrule))
-            self.append("{} and {}.".format(self.format_math(sympy.Eq(ff, f)),
-                                            self.format_math(sympy.Eq(gg, g))))
-            self.append("Find {}:".format(
-                self.format_math(ff.diff(rule.symbol))))
+            self.append(f"{self.format_math(sympy.Eq(ff, rule.numerator))} and {self.format_math(sympy.Eq(gg, rule.denominator))}.")
+            self.append(f"Find {self.format_math(ff.diff(x))}:")
             with self.new_level():
                 self.print_rule(rule.numerstep)
-            self.append("Find {}:".format(
-                self.format_math(gg.diff(rule.symbol))))
+            self.append(f"Find {self.format_math(gg.diff(x))}:")
             with self.new_level():
                 self.print_rule(rule.denomstep)
-            self.append(
-                '<div class="collapsible"><h2>open answer</h2><ol class="content">Now plug in to the quotient rule to get:')
+            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">Now plug in to get:')
             self.append(self.format_math(diff(rule)) + '</ol></div>')
 
-    def print_Chain(self, rule):
+    def print_ChainRule(self, rule):
         with self.new_step(), self.new_u_vars() as (u, _):
-            self.append("Let {}.".format(
-                self.format_math(sympy.Eq(u, rule.inner))))
+            self.append(f"Let {self.format_math(sympy.Eq(u, rule.inner))}.")
             self.print_rule(replace_u_var(rule.substep, rule.u_var, u))
         with self.new_step():
             if isinstance(rule.innerstep, FunctionRule):
-                self.append(
-                    "Now, before we apply the chain rule.<br><br> First find {}:".format(
-                        self.format_math(
-                            sympy.Derivative(rule.inner, rule.symbol))))
+                self.append(f"Now, before we apply the chain rule.<br><br> First find {self.format_math(sympy.Derivative(rule.inner, rule.symbol))}:")
                 self.append(self.format_math_display(diff(rule)))
             else:
-                self.append(
-                    "Now, before we apply the chain rule. <br><br> First find {}:".format(
-                        self.format_math(
-                            sympy.Derivative(rule.inner, rule.symbol))))
+                self.append(f"Now, before we apply the chain rule. <br><br> First find {self.format_math(sympy.Derivative(rule.inner, rule.symbol))}:")
                 with self.new_level():
                     self.print_rule(rule.innerstep)
-                self.append(
-                    '<div class="collapsible"><h2>open answer</h2><ol class="content">The result of the chain rule is:')
+                self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">The result of the chain rule is:')
                 self.append(self.format_math(diff(rule)) + '</ol></div>')
 
-    def print_Trig(self, rule):
+    def print_TrigRule(self, rule):
         with self.new_step():
-            if isinstance(rule.f, sympy.sin):
-                self.append("The derivative of sine is cosine:")
-            elif isinstance(rule.f, sympy.cos):
-                self.append("The derivative of cosine is negative sine:")
-            elif isinstance(rule.f, sympy.sec):
-                self.append(
-                    "The derivative of secant is secant times tangent:")
-            elif isinstance(rule.f, sympy.csc):
-                self.append(
-                    "The derivative of cosecant is negative cosecant times cotangent:")
-            self.append("{}".format(
-                self.format_math_display(sympy.Eq(
-                    sympy.Derivative(rule.f, rule.symbol),
-                    diff(rule)))))
+            messages = {
+                sympy.sin: "The derivative of sine is cosine:",
+                sympy.cos: "The derivative of cosine is negative sine:",
+                sympy.sec: "The derivative of secant is secant times tangent:",
+                sympy.csc: "The derivative of cosecant is negative cosecant times cotangent:",
+            }
+            if type(rule.f) in messages:
+                self.append(messages[type(rule.f)])
+            self.append(self.format_math_display(sympy.Eq(sympy.Derivative(rule.f, rule.symbol), diff(rule))))
 
-    def print_Exp(self, rule):
+    def print_ExpRule(self, rule):
         with self.new_step():
             if rule.base == sympy.E:
-                self.append("The derivative of {} is itself.".format(
-                    self.format_math(sympy.exp(rule.symbol))))
+                self.append(f"The derivative of {self.format_math(sympy.exp(rule.symbol))} is itself.")
             else:
-                self.append(
-                    self.format_math(sympy.Eq(sympy.Derivative(rule.f, rule.symbol),
-                                              diff(rule))))
+                self.append(self.format_math(sympy.Eq(sympy.Derivative(rule.f, rule.symbol), diff(rule))))
 
-    def print_Log(self, rule):
+    def print_LogRule(self, rule):
         with self.new_step():
-            if rule.base == sympy.E:
-                self.append("The derivative of {} is {}.".format(
-                    self.format_math(rule.context),
-                    self.format_math(diff(rule))
-                ))
-            else:
-                # This case shouldn't come up often, seeing as SymPy
-                # automatically applies the change-of-base identity
-                self.append("The derivative of {} is {}.".format(
-                    self.format_math(sympy.log(rule.symbol, rule.base,
-                                               evaluate=False)),
-                    self.format_math(1/(rule.arg * sympy.ln(rule.base)))))
-                self.append("So {}".format(
-                    self.format_math(sympy.Eq(
-                        sympy.Derivative(rule.context, rule.symbol),
-                        diff(rule)))))
+            self.append(f"The derivative of {self.format_math(rule.context)} is {self.format_math(diff(rule))}.")
 
-    def print_Alternative(self, rule):
-        with self.new_step():
-            self.append("There are multiple ways to do this derivative.")
-            self.append("One way:")
-            with self.new_level():
-                self.print_rule(rule.alternatives[0])
-
-    def print_Rewrite(self, rule):
-        with self.new_step():
-            self.append("Rewrite the function to be differentiated:")
-            self.append(self.format_math_display(
-                sympy.Eq(rule.context, rule.rewritten)))
-            self.print_rule(rule.substep)
-
-    def print_Function(self, rule):
-        with self.new_step():
-            self.append("Trivial:")
-            self.append(self.format_math_display(
-                sympy.Eq(sympy.Derivative(rule.context, rule.symbol),
-                         diff(rule))))
-
-    def print_DontKnow(self, rule):
-        with self.new_step():
-            self.append("Don't know the steps in finding this derivative.")
-            self.append("But the derivative is")
-            self.append(self.format_math_display(diff(rule)))
-
-
-class HTMLPrinter(DiffPrinter, stepprinter.HTMLPrinter):
-    def __init__(self, rule):
-        self.alternative_functions_printed = set()
-        stepprinter.HTMLPrinter.__init__(self)
-        DiffPrinter.__init__(self, rule)
-
-    def print_Alternative(self, rule):
+    def print_AlternativeRule(self, rule):
         if rule.context.func in self.alternative_functions_printed:
             self.print_rule(rule.alternatives[0])
         elif len(rule.alternatives) == 2:
@@ -546,27 +374,41 @@ class HTMLPrinter(DiffPrinter, stepprinter.HTMLPrinter):
             self.alternative_functions_printed.add(rule.context.func)
             with self.new_step():
                 self.append("There are multiple ways to do this derivative.")
-                for index, r in enumerate(rule.alternatives[1:]):
+                for i, r in enumerate(rule.alternatives[1:]):
                     with self.new_collapsible():
-                        self.append_header("Method {}".format(index + 1))
+                        self.append_header(f"Method {i + 1}")
                         with self.new_level():
                             self.print_rule(r)
+
+    def print_RewriteRule(self, rule):
+        with self.new_step():
+            self.append("Rewrite the function to be differentiated:")
+            self.append(self.format_math_display(sympy.Eq(rule.context, rule.rewritten)))
+            self.print_rule(rule.substep)
+
+    def print_FunctionRule(self, rule):
+        with self.new_step():
+            self.append("Trivial:")
+            self.append(self.format_math_display(sympy.Eq(sympy.Derivative(rule.context, rule.symbol), diff(rule))))
+
+    def print_DontKnowRule(self, rule):
+        with self.new_step():
+            self.append("Don't know the steps in finding this derivative.")
+            self.append("But the derivative is")
+            self.append(self.format_math_display(diff(rule)))
 
     def finalize(self):
         answer = diff(self.rule)
         if answer:
             simp = sympy.simplify(answer)
             if simp != answer:
-                answer = simp
                 with self.new_step():
-                    self.append(
-                        '<div class="collapsible"><h2>open answer</h2><ol class="content">Now simplify to get:')
+                    self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">Now simplify to get:')
                     self.append(self.format_math_display(simp) + '</ol></div>')
         self.lines.append('</ol>')
-        self.level = 0
         return '\n'.join(self.lines)
 
 
 def print_html_steps(function, symbol):
-    a = HTMLPrinter(diff_steps(function, symbol))
-    return a.finalize()
+    """Generate HTML steps for differentiating a function."""
+    return DiffPrinter(diff_steps(function, symbol)).finalize()

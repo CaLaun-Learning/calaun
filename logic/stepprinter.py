@@ -1,19 +1,18 @@
+"""Step-by-step printing utilities for calculus operations."""
 import sympy
-import collections
 from contextlib import contextmanager
-
 from sympy import latex
 
 
 def functionnames(numterms):
-    if numterms == 2:
-        return ["f", "g"]
-    elif numterms == 3:
-        return ["f", "g", "h"]
-    else:
-        return ["f_{}".format(i) for i in range(numterms)]
+    """Generate function names (f, g, h, ...) for multi-term expressions."""
+    if numterms <= 3:
+        return ["f", "g", "h"][:numterms]
+    return [f"f_{i}" for i in range(numterms)]
+
 
 def replace_u_var(rule, old_u, new_u):
+    """Replace a variable in a rule with a new variable."""
     d = rule._asdict()
     for field, val in d.items():
         if isinstance(val, sympy.Basic):
@@ -21,16 +20,14 @@ def replace_u_var(rule, old_u, new_u):
         elif isinstance(val, tuple):
             d[field] = replace_u_var(val, old_u, new_u)
         elif isinstance(val, list):
-            result = []
-            for item in val:
-                if isinstance(item, tuple):
-                    result.append(replace_u_var(item, old_u, new_u))
-                else:
-                    result.append(item)
-            d[field] = result
+            d[field] = [replace_u_var(item, old_u, new_u) if isinstance(item, tuple) 
+                        else item for item in val]
     return rule.__class__(**d)
 
-class Printer(object):
+
+class Printer:
+    """Base class for step-by-step output printers."""
+    
     def __init__(self):
         self.lines = []
         self.level = 0
@@ -58,44 +55,51 @@ class Printer(object):
         yield self.level
         self.lines.append('\n')
 
+
 class LaTeXPrinter(Printer):
+    """Printer that formats math as LaTeX."""
+    
     def format_math(self, math):
         return latex(math)
 
+
 class HTMLPrinter(LaTeXPrinter):
+    """Printer that outputs HTML with embedded LaTeX for MathJax."""
+    
     def __init__(self):
-        super(HTMLPrinter, self).__init__()
+        super().__init__()
         self.lines = ['<ol id="changedisplaytonone">']
+        self.u = self.du = None
 
     def format_math(self, math):
-        return '<script type="math/tex; mode=inline">{}</script>'.format(
-            latex(math))
+        return f'<script type="math/tex; mode=inline">{latex(math)}</script>'
 
     def format_math_display(self, math):
-        if not isinstance(math, str):
-            math = latex(math)
-        return '<script type="math/tex; mode=display">{}</script>'.format(
-            math)
+        math_latex = math if isinstance(math, str) else latex(math)
+        return f'<script type="math/tex; mode=display">{math_latex}</script>'
 
     @contextmanager
     def new_level(self):
+        indent = ' ' * 4 * self.level
         self.level += 1
-        self.lines.append(' ' * 4 * self.level + '<div class="collapsible"><h2>open</h2><ol class="content">')
+        self.lines.append(f'{indent}<div class="collapsible"><h2>open</h2><ol class="content">')
         yield
-        self.lines.append(' ' * 4 * self.level + '</ol></div>')
+        self.lines.append(f'{indent}</ol></div>')
         self.level -= 1
 
     @contextmanager
     def new_step(self):
-        self.lines.append(' ' * 4 * self.level + '<li>')
+        indent = ' ' * 4 * self.level
+        self.lines.append(f'{indent}<li>')
         yield self.level
-        self.lines.append(' ' * 4 * self.level + '</li>')
+        self.lines.append(f'{indent}</li>')
 
     @contextmanager
     def new_collapsible(self):
-        self.lines.append(' ' * 4 * self.level + '<div target="_blank" id="change_to_invisible">')
+        indent = ' ' * 4 * self.level
+        self.lines.append(f'{indent}<div target="_blank" id="change_to_invisible">')
         yield self.level
-        self.lines.append(' ' * 4 * self.level + '</div>')
+        self.lines.append(f'{indent}</div>')
 
     @contextmanager
     def new_u_vars(self):
@@ -103,7 +107,9 @@ class HTMLPrinter(LaTeXPrinter):
         yield self.u, self.du
 
     def append(self, text):
-        self.lines.append(' ' * 4 * (self.level + 1) + '<p>{}</p>'.format(text))
+        indent = ' ' * 4 * (self.level + 1)
+        self.lines.append(f'{indent}<p>{text}</p>')
 
     def append_header(self, text):
-        self.lines.append(' ' * 4 * (self.level + 1) + '<h2>{}</h2>'.format(text))
+        indent = ' ' * 4 * (self.level + 1)
+        self.lines.append(f'{indent}<h2>{text}</h2>')
