@@ -21,7 +21,7 @@ class MathChatbot:
     
     def __init__(self, intents_path=None):
         if intents_path is None:
-            intents_path = DIR_NAME / 'data' / 'math_intents.json'
+            intents_path = DIR_NAME / 'data' / 'intents.json'
         
         with open(intents_path, 'r') as f:
             data = json.load(f)
