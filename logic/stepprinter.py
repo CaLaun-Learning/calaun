@@ -68,7 +68,7 @@ class HTMLPrinter(LaTeXPrinter):
     
     def __init__(self):
         super().__init__()
-        self.lines = ['<ol id="changedisplaytonone">']
+        self.lines = ['<div class="collapsible"><h2>Show steps</h2><ol class="content">']
         self.u = self.du = None
 
     def format_math(self, math):

@@ -405,7 +405,7 @@ class DiffPrinter(stepprinter.HTMLPrinter):
                 with self.new_step():
                     self.append('<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>Now simplify to get: ')
                     self.append(self.format_math_display(simp) + '</li></ol></div>')
-        self.lines.append('</ol>')
+        self.lines.append('</ol></div>')
         return '\n'.join(self.lines)
 
 

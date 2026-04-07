@@ -242,7 +242,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             with self.new_step():
                 self.append('<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>Add the constant of integration: ')
                 self.append(self.format_math_constant(answer) + '</li></ol></div>')
-        self.lines.append('</ol>')
+        self.lines.append('</ol></div>')
         return '\n'.join(self.lines)
 
 
