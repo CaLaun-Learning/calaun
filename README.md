@@ -4,7 +4,7 @@ A Django-based calculus tutor application with an integrated ML-powered chatbot.
 
 ## Requirements
 
-- Python 3.9+
+- Python 3.9–3.11
 - pip
 
 ## Setup
