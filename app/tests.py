@@ -134,36 +134,58 @@ class ApiTestCase(TestCase):
 
 
 class TestEval(TestCase):
-    def test_eval1(self, object):
+    def test_eval_simple_arithmetic(self):
         e = Eval()
-        assert e.eval("1+1") == "2"
-        assert e.eval("1+1\n") == "2"
-        assert e.eval("a=1+1") == ""
-        assert e.eval("a=1+1\n") == ""
-        assert e.eval("a=1+1\na") == "2"
-        assert e.eval("a=1+1\na\n") == "2"
-        assert e.eval("a=1+1\na=3") == ""
-        assert e.eval("a=1+1\na=3\n") == ""
+        self.assertEqual(e.eval("1+1"), "2")
+        self.assertEqual(e.eval("1+1\n"), "2")
 
-    def test_eval2(self, object):
+    def test_eval_assignment(self):
         e = Eval()
-        assert e.eval("\ndef f(x):\n\treturn x**2\nf(3)") == "9"
-        assert e.eval("\ndef f(x):\n\treturn x**2\nf(3)\na = 5") == ""
-        assert e.eval(
-            "\ndef f(x):\n\treturn x**2\nif f(3) == 9:\n\ta = 1\nelse:\n\ta = 0\na") == "1"
-        assert e.eval(
-            "\ndef f(x):\n\treturn x**2 + 1\nif f(3) == 9:\n\ta = 1\nelse:\n\ta = 0\na") == "0"
+        self.assertEqual(e.eval("a=1+1"), "")
+        self.assertEqual(e.eval("a=1+1\n"), "")
 
-    def test_eval3(self, object):
+    def test_eval_assignment_and_use(self):
         e = Eval()
-        assert e.eval("xxxx").startswith("Traceback")
-        assert e.eval("""\
-    def f(x):
-        return x**2 + 1 + y
-    if f(3) == 9:
-        a = 1
-    else:
-        a = 0
-    a
-    """
-                      ).startswith("Traceback")
+        self.assertEqual(e.eval("a=1+1\na"), "2")
+        self.assertEqual(e.eval("a=1+1\na\n"), "2")
+
+    def test_eval_multiple_assignments(self):
+        e = Eval()
+        self.assertEqual(e.eval("a=1+1\na=3"), "")
+        self.assertEqual(e.eval("a=1+1\na=3\n"), "")
+
+    def test_eval_function_definition(self):
+        e = Eval()
+        self.assertEqual(e.eval("\ndef f(x):\n\treturn x**2\nf(3)"), "9")
+
+    def test_eval_function_no_return(self):
+        e = Eval()
+        self.assertEqual(e.eval("\ndef f(x):\n\treturn x**2\nf(3)\na = 5"), "")
+
+    def test_eval_conditional_true(self):
+        e = Eval()
+        self.assertEqual(
+            e.eval("\ndef f(x):\n\treturn x**2\nif f(3) == 9:\n\ta = 1\nelse:\n\ta = 0\na"), "1")
+
+    def test_eval_conditional_false(self):
+        e = Eval()
+        self.assertEqual(
+            e.eval("\ndef f(x):\n\treturn x**2 + 1\nif f(3) == 9:\n\ta = 1\nelse:\n\ta = 0\na"), "0")
+
+    def test_eval_undefined_variable(self):
+        e = Eval()
+        result = e.eval("xxxx")
+        self.assertTrue(result.startswith("Traceback"))
+
+    def test_eval_undefined_in_function(self):
+        e = Eval()
+        result = e.eval("""\
+def f(x):
+    return x**2 + 1 + y
+if f(3) == 9:
+    a = 1
+else:
+    a = 0
+a
+""")
+        self.assertTrue(result.startswith("Traceback"))
