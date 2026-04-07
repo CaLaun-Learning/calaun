@@ -72,8 +72,3 @@ python manage.py test
 ├── templates/           # HTML templates
 └── mathtutor/           # Django settings
 ```
-
-## Demo
-
-https://user-images.githubusercontent.com/59368349/159202148-65619603-7f24-47d9-bf71-4aedc3883eb4.mov
-
