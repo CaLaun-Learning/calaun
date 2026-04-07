@@ -4,7 +4,8 @@
       "tag": "greeting",
       "patterns": [
         "Hi there", "How are you", "Is anyone there?", "Hey", "Hola", "Hello", "Good day",
-        "hi", "hello", "hey", "good morning", "good afternoon", "howdy", "what's up", "yo"
+        "hi", "hello", "hey", "good morning", "good afternoon", "howdy", "what's up", "yo",
+        "greetings", "sup", "hey there", "hi there", "what's going on"
       ],
       "responses": [
         "Hey! I'm here to help with calculus questions. What would you like to know?",
@@ -18,7 +19,8 @@
       "tag": "goodbye",
       "patterns": [
         "Bye", "See you later", "Goodbye", "Nice chatting with you, bye", "Till next time",
-        "bye", "goodbye", "see you", "later", "thanks bye", "gotta go", "talk later"
+        "bye", "goodbye", "see you", "later", "thanks bye", "gotta go", "talk later",
+        "see ya", "peace", "I'm leaving", "catch you later", "take care"
       ],
       "responses": [
         "Good luck with your calculus!",
@@ -32,7 +34,8 @@
       "tag": "thanks",
       "patterns": [
         "Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me",
-        "Thank you for the response", "that helps", "helpful", "appreciate it", "great thanks"
+        "Thank you for the response", "that helps", "helpful", "appreciate it", "great thanks",
+        "thanks a lot", "thank you so much", "perfect thanks", "you're the best", "much appreciated"
       ],
       "responses": [
         "You're welcome!",
@@ -49,13 +52,14 @@
         "help with steps", "How could you help me?", "How can you help me?",
         "What can you do for me?", "What help do you provide?", "How can you be helpful?",
         "What support is offered", "help", "what can you do", "how can you help",
-        "what do you know", "assist me", "i need help", "stuck"
+        "what do you know", "assist me", "i need help", "stuck", "I don't understand",
+        "I'm confused", "can you explain", "what topics do you cover"
       ],
       "responses": [
         "I can answer questions about calculus rules and concepts. Try asking about the power rule, chain rule, integration by parts, or limits!",
         "Ask me about derivative rules, integration techniques, or limit concepts. I'm here to help!",
-        "I know about derivatives, integrals, and limits. What's giving you trouble?",
-        "Here to help! Ask me anything about derivative or integral rules."
+        "I know about derivatives, integrals, limits, series, and calculus theorems. What's giving you trouble?",
+        "Here to help! Ask me anything about derivative rules, integration techniques, limits, or calculus applications."
       ],
       "context": [""]
     },
@@ -63,7 +67,10 @@
       "tag": "power_rule",
       "patterns": [
         "power rule", "what is power rule", "explain power rule", "how does power rule work",
-        "derivative of x^n", "x to the n", "power always true?", "power true for n equal -1?"
+        "derivative of x^n", "x to the n", "power always true?", "power true for n equal -1?",
+        "bring down the exponent", "derivative of x squared", "derivative of x cubed",
+        "derivative of x^2", "derivative of x^3", "derivative of x^4", "derivative of x^5",
+        "how to use power rule", "when to use power rule", "power rule example"
       ],
       "responses": [
         "The power rule says: d/dx[x^n] = n·x^(n-1). Just bring down the exponent and subtract one from it.",
@@ -79,7 +86,9 @@
         "chain rule", "what is chain rule", "explain chain rule", "how does chain rule work",
         "composite function derivative", "nested function", "what chain rule", "Tell chain rule?",
         "chain rule work?", "remember chain rule", "can't remember chain rule",
-        "any tips remember chain rule?", "recall the chain rule?"
+        "any tips remember chain rule?", "recall the chain rule?", "derivative of f of g",
+        "function inside function", "chain rule example", "when to use chain rule",
+        "how to apply chain rule", "chain rule step by step"
       ],
       "responses": [
         "The chain rule is for composite functions: d/dx[f(g(x))] = f'(g(x)) · g'(x). Differentiate the outer function, keep the inner, then multiply by the derivative of the inner.",
@@ -93,12 +102,15 @@
       "tag": "product_rule",
       "patterns": [
         "product rule", "what is product rule", "explain product rule",
-        "derivative of product", "multiply two functions"
+        "derivative of product", "multiply two functions", "derivative of f times g",
+        "when two functions are multiplied", "product rule formula", "product rule example",
+        "how to use product rule", "when to use product rule", "derivative of uv"
       ],
       "responses": [
         "Product rule: d/dx[f·g] = f'·g + f·g'. Differentiate the first times the second, plus the first times the derivative of the second.",
         "For f(x)·g(x), the derivative is f'(x)·g(x) + f(x)·g'(x). Both terms get a turn being differentiated.",
-        "Product rule tip: (first)' × (second) + (first) × (second)'"
+        "Product rule tip: (first)' × (second) + (first) × (second)'",
+        "Remember: 'first d-second plus second d-first' or simply f'g + fg'"
       ],
       "context": [""]
     },
@@ -106,12 +118,15 @@
       "tag": "quotient_rule",
       "patterns": [
         "quotient rule", "what is quotient rule", "explain quotient rule",
-        "derivative of fraction", "divide two functions"
+        "derivative of fraction", "divide two functions", "derivative of f over g",
+        "when to use quotient rule", "quotient rule formula", "quotient rule example",
+        "lo d hi minus hi d lo", "derivative of division"
       ],
       "responses": [
         "Quotient rule: d/dx[f/g] = (f'·g - f·g') / g². Low d-high minus high d-low, over the square of what's below.",
         "For f(x)/g(x): (g·f' - f·g') / g². Remember: lo d-hi minus hi d-lo, over lo-lo.",
-        "Quotient rule: differentiate top times bottom, minus top times differentiate bottom, all over bottom squared."
+        "Quotient rule: differentiate top times bottom, minus top times differentiate bottom, all over bottom squared.",
+        "Tip: you can sometimes avoid the quotient rule by rewriting f/g as f·g^(-1) and using product rule with chain rule."
       ],
       "context": [""]
     },
@@ -120,13 +135,15 @@
       "patterns": [
         "integration by parts", "by parts", "how to integrate by parts", "uv integral",
         "when to use by parts", "how do I know when to use the integration by parts rule?",
-        "when can I use the integration by parts rule?", "When is it important to use the integration by parts rule?"
+        "when can I use the integration by parts rule?", "When is it important to use the integration by parts rule?",
+        "LIATE", "what is LIATE", "by parts formula", "integral of u dv",
+        "tabular integration", "repeated integration by parts"
       ],
       "responses": [
         "Integration by parts: ∫u dv = uv - ∫v du. Pick u as something that simplifies when differentiated (LIATE: Logs, Inverse trig, Algebraic, Trig, Exponential).",
         "By parts formula: ∫u dv = uv - ∫v du. Choose u using LIATE order for best results.",
         "Use by parts when you have a product of functions. Let u be the one easier to differentiate, dv be the rest.",
-        "Practice, practice, practice, since there's no set rule. Remember: if you can't differentiate and replace, don't evaluate."
+        "LIATE helps you choose u: Logarithmic, Inverse trig, Algebraic, Trigonometric, Exponential. Pick u from earlier in the list."
       ],
       "context": [""]
     },
@@ -137,7 +154,8 @@
         "change of variables", "what is u", "what is the symbol u in the steps",
         "I don't understand the letter u", "Can you explain the letter u?", "tell u",
         "how do I know when to use the substitution rule?", "when can I use the substitution rule?",
-        "When is it important to use the substitution?"
+        "When is it important to use the substitution?", "reverse chain rule",
+        "u-sub example", "how to do u sub", "substitution integration"
       ],
       "responses": [
         "U-substitution: let u = inner function, find du, substitute, integrate, then put the original variable back.",
@@ -151,12 +169,14 @@
       "tag": "limit_definition",
       "patterns": [
         "what is a limit", "explain limits", "limit definition", "what does limit mean",
-        "how do limits work"
+        "how do limits work", "limit concept", "intuition for limits", "limit basics",
+        "epsilon delta", "formal definition of limit", "limit meaning"
       ],
       "responses": [
         "A limit describes what value a function approaches as x gets closer to some number. It's about the trend, not the actual value at that point.",
         "Limits tell you where a function is heading. lim(x→a) f(x) = L means f(x) gets arbitrarily close to L as x approaches a.",
-        "Limits capture the behavior of a function near a point, even if the function isn't defined there."
+        "Limits capture the behavior of a function near a point, even if the function isn't defined there.",
+        "Think of limits as asking: 'What value is f(x) getting closer to as x approaches some number?'"
       ],
       "context": [""]
     },
@@ -167,13 +187,13 @@
         "0/0", "infinity over infinity", "How do I know when to use L'hopital rule",
         "when is it a good time to use L'hopital's rule", "when could I use L'hopital's rule",
         "what is an example of indeterminate form?", "List some indeterminante forms",
-        "what indeternminate mean?"
+        "what indeternminate mean?", "l'hospital", "lhospital", "hospital rule"
       ],
       "responses": [
         "L'Hôpital's rule: if you get 0/0 or ∞/∞, take the derivative of top and bottom separately, then try the limit again.",
         "For indeterminate forms like 0/0 or ∞/∞, L'Hôpital says: lim f/g = lim f'/g'. Differentiate top and bottom.",
         "Got 0/0? Use L'Hôpital: differentiate numerator and denominator, then re-evaluate the limit.",
-        "Indeterminate forms include 0/0, ±∞/±∞, or ±∞ × 0. When you see these, try L'Hôpital's rule."
+        "Indeterminate forms include 0/0, ±∞/±∞, 0·∞, ∞-∞, 0^0, 1^∞, ∞^0. Many can use L'Hôpital after rewriting."
       ],
       "context": [""]
     },
@@ -181,12 +201,30 @@
       "tag": "trig_derivatives",
       "patterns": [
         "trig derivative", "derivative of sin", "derivative of cos", "derivative of tan",
-        "trigonometric derivatives"
+        "trigonometric derivatives", "derivative of sec", "derivative of csc", "derivative of cot",
+        "d/dx sin x", "d/dx cos x", "d/dx tan x", "trig differentiation",
+        "derivative of sine", "derivative of cosine", "derivative of tangent"
       ],
       "responses": [
         "Trig derivatives: d/dx[sin x] = cos x, d/dx[cos x] = -sin x, d/dx[tan x] = sec²x",
         "Key trig derivatives: sin→cos, cos→-sin, tan→sec². The negative on cosine trips people up!",
-        "d/dx[sin x] = cos x, d/dx[cos x] = -sin x. For tan x, it's sec²x."
+        "d/dx[sin x] = cos x, d/dx[cos x] = -sin x, d/dx[tan x] = sec²x, d/dx[cot x] = -csc²x",
+        "More trig: d/dx[sec x] = sec x tan x, d/dx[csc x] = -csc x cot x"
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "inverse_trig_derivatives",
+      "patterns": [
+        "inverse trig derivative", "derivative of arcsin", "derivative of arccos",
+        "derivative of arctan", "derivative of sin inverse", "derivative of cos inverse",
+        "derivative of tan inverse", "d/dx arcsin", "d/dx arctan", "inverse trigonometric derivatives"
+      ],
+      "responses": [
+        "d/dx[arcsin x] = 1/√(1-x²), d/dx[arccos x] = -1/√(1-x²), d/dx[arctan x] = 1/(1+x²)",
+        "Inverse trig derivatives involve square roots: arcsin and arccos have √(1-x²) in denominator, arctan has (1+x²).",
+        "Key ones: d/dx[arctan x] = 1/(1+x²) and d/dx[arcsin x] = 1/√(1-x²). These show up a lot!",
+        "For inverse trig, remember arctan gives 1/(1+x²) and arcsin gives 1/√(1-x²)."
       ],
       "context": [""]
     },
@@ -194,12 +232,14 @@
       "tag": "exponential_derivative",
       "patterns": [
         "derivative of e^x", "exponential derivative", "derivative of e",
-        "d/dx e^x", "natural exponential"
+        "d/dx e^x", "natural exponential", "derivative of exp", "e to the x derivative",
+        "derivative of a^x", "exponential function derivative"
       ],
       "responses": [
         "The derivative of e^x is just e^x. It's the only function that equals its own derivative!",
         "d/dx[e^x] = e^x. For e^(something), use chain rule: d/dx[e^u] = e^u · u'",
-        "e^x differentiates to itself. That's what makes e so special in calculus."
+        "e^x differentiates to itself. That's what makes e so special in calculus.",
+        "For a^x where a≠e: d/dx[a^x] = a^x · ln(a)"
       ],
       "context": [""]
     },
@@ -207,12 +247,14 @@
       "tag": "log_derivative",
       "patterns": [
         "derivative of ln", "derivative of log", "natural log derivative",
-        "d/dx ln x", "logarithm derivative"
+        "d/dx ln x", "logarithm derivative", "derivative of logarithm",
+        "derivative of log base a", "log differentiation", "natural logarithm derivative"
       ],
       "responses": [
         "d/dx[ln x] = 1/x. For ln(something), use chain rule: d/dx[ln u] = u'/u",
         "The derivative of ln x is 1/x. This is why ln shows up in so many integrals.",
-        "Natural log derivative: d/dx[ln x] = 1/x. For other bases, d/dx[log_a x] = 1/(x·ln a)"
+        "Natural log derivative: d/dx[ln x] = 1/x. For other bases, d/dx[log_a x] = 1/(x·ln a)",
+        "Logarithmic differentiation tip: take ln of both sides, then differentiate. Useful for complicated products/quotients."
       ],
       "context": [""]
     },
@@ -223,25 +265,29 @@
         "what is definite integral", "indefinite integral",
         "what is the difference between definite and indefinite Integral?",
         "how do I distinguish between integral and definite integral",
-        "how do the definite and indefinite integral differ?"
+        "how do the definite and indefinite integral differ?",
+        "bounds on integral", "integral with limits"
       ],
       "responses": [
         "Indefinite integral gives a function (plus C). Definite integral gives a number - the area under the curve.",
         "∫f(x)dx = F(x) + C (indefinite, a function). ∫[a to b]f(x)dx = F(b) - F(a) (definite, a number).",
         "Indefinite: antiderivative with +C. Definite: evaluate at bounds and subtract.",
-        "The definite integral is a number, whereas an indefinite integral is a function or family of functions."
+        "The definite integral is a number representing area, whereas an indefinite integral is a family of functions."
       ],
       "context": [""]
     },
     {
       "tag": "constant_c",
       "patterns": [
-        "what is +c", "why add c", "constant of integration", "plus c", "why constant"
+        "what is +c", "why add c", "constant of integration", "plus c", "why constant",
+        "why do we add c", "what does c represent", "arbitrary constant",
+        "forget the plus c", "constant term in integration"
       ],
       "responses": [
         "The +C accounts for all possible antiderivatives. Since d/dx[C] = 0, any constant could have been there.",
         "When you integrate, you lose information about constants. +C represents all possibilities.",
-        "The constant C is there because derivatives of constants vanish. Many functions have the same derivative."
+        "The constant C is there because derivatives of constants vanish. Many functions have the same derivative.",
+        "Don't forget +C for indefinite integrals! It represents the family of all antiderivatives."
       ],
       "context": [""]
     },
@@ -251,7 +297,8 @@
         "implicit differentiation", "implicit derivative", "dy/dx implicit",
         "differentiate implicitly", "Why use implicit", "point of implicit",
         "how to we use implicit differentiation?", "implicit good for?",
-        "how to we use implicit?", "steps for implicit"
+        "how to we use implicit?", "steps for implicit", "implicit function",
+        "can't solve for y", "related rates implicit"
       ],
       "responses": [
         "For implicit differentiation: treat y as a function of x, differentiate both sides, and solve for dy/dx.",
@@ -266,13 +313,14 @@
       "patterns": [
         "partial derivative", "partial differentiation", "multivariable derivative",
         "derivative with respect to x", "how do I find the partial derivative?",
-        "how can I compute parital derivatives?"
+        "how can I compute parital derivatives?", "partial symbol", "del f del x",
+        "hold variable constant", "multivariable calculus"
       ],
       "responses": [
         "For partial derivatives, treat all other variables as constants and differentiate with respect to one variable.",
         "∂f/∂x means differentiate f treating y (and other variables) as constants.",
         "Partial derivatives: just like regular derivatives, but hold other variables fixed.",
-        "If taking the derivative with respect to x, treat other variables as constants."
+        "If taking the derivative with respect to x, treat y as a constant number."
       ],
       "context": [""]
     },
@@ -282,12 +330,777 @@
         "what antiderivative", "misunderstand antiderivative", "main point antiderivative",
         "main idea antiderivative", "explain antiderivative", "tell antiderivative",
         "what integral", "misunderstand integral", "main point integral",
-        "main idea integral", "explain integral", "tell integral"
+        "main idea integral", "explain integral", "tell integral",
+        "reverse derivative", "undo derivative"
       ],
       "responses": [
         "It is the reverse of finding a derivative. The derivative of the antiderivative is the original function!",
         "Think of the antiderivative as moving back from the derivative. If you differentiate then integrate, you get back to the original.",
-        "Think of the indefinite integral as the reverse of differentiation, plus a constant C."
+        "Think of the indefinite integral as the reverse of differentiation, plus a constant C.",
+        "An antiderivative F(x) of f(x) is any function where F'(x) = f(x)."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "fundamental_theorem",
+      "patterns": [
+        "fundamental theorem of calculus", "FTC", "first fundamental theorem",
+        "second fundamental theorem", "ftc1", "ftc2", "connection between derivative and integral",
+        "why derivative and integral are related", "fundamental theorem explanation"
+      ],
+      "responses": [
+        "The Fundamental Theorem of Calculus connects derivatives and integrals: ∫[a to b]f(x)dx = F(b) - F(a) where F' = f.",
+        "FTC Part 1: d/dx[∫[a to x]f(t)dt] = f(x). The derivative of an integral gives back the original function.",
+        "FTC Part 2: ∫[a to b]f(x)dx = F(b) - F(a). To evaluate a definite integral, find antiderivative and plug in bounds.",
+        "The FTC is why integration and differentiation are inverses. It's the most important theorem in calculus!"
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "mean_value_theorem",
+      "patterns": [
+        "mean value theorem", "MVT", "what is mean value theorem", "explain MVT",
+        "rolle's theorem", "average rate of change", "instantaneous equals average",
+        "when does mean value theorem apply"
+      ],
+      "responses": [
+        "Mean Value Theorem: If f is continuous on [a,b] and differentiable on (a,b), there exists c where f'(c) = (f(b)-f(a))/(b-a).",
+        "MVT says somewhere on the interval, the instantaneous rate of change equals the average rate of change.",
+        "Rolle's Theorem is a special case of MVT: if f(a) = f(b), then f'(c) = 0 for some c in (a,b).",
+        "MVT requires continuity on the closed interval and differentiability on the open interval."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "continuity",
+      "patterns": [
+        "what is continuity", "continuous function", "definition of continuous",
+        "when is a function continuous", "discontinuity", "types of discontinuity",
+        "removable discontinuity", "jump discontinuity", "continuous at a point"
+      ],
+      "responses": [
+        "A function is continuous at x=a if: 1) f(a) exists, 2) lim(x→a) f(x) exists, 3) lim(x→a) f(x) = f(a).",
+        "Continuous means no breaks, jumps, or holes. You can draw it without lifting your pen.",
+        "Types of discontinuity: removable (hole), jump (sudden change), infinite (vertical asymptote).",
+        "All polynomials, sin, cos, e^x are continuous everywhere. Watch out for division by zero or domain restrictions."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "differentiability",
+      "patterns": [
+        "what is differentiability", "differentiable function", "when is a function differentiable",
+        "differentiable vs continuous", "not differentiable", "corner point",
+        "cusp", "vertical tangent", "differentiable at a point"
+      ],
+      "responses": [
+        "A function is differentiable at a point if the derivative exists there - meaning the limit defining f'(a) exists.",
+        "If a function is differentiable, it must be continuous. But continuous doesn't guarantee differentiable!",
+        "Functions aren't differentiable at: corners (like |x|), cusps, vertical tangents, or discontinuities.",
+        "Differentiable means smooth - no sharp corners or breaks. The tangent line exists and is unique."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "optimization",
+      "patterns": [
+        "optimization", "maximum", "minimum", "find max", "find min",
+        "optimization problem", "maximize", "minimize", "critical points for optimization",
+        "word problem max min", "applied optimization", "optimize function"
+      ],
+      "responses": [
+        "For optimization: 1) Write function to optimize, 2) Find critical points (f'=0 or undefined), 3) Test with first or second derivative test.",
+        "Critical points occur where f'(x) = 0 or f'(x) is undefined. These are candidates for max/min.",
+        "Second derivative test: f''(c) > 0 means local min, f''(c) < 0 means local max at critical point c.",
+        "Don't forget to check endpoints for closed intervals! The max/min could be at the boundary."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "critical_points",
+      "patterns": [
+        "critical point", "critical number", "find critical points", "where is f' equal to 0",
+        "derivative equals zero", "horizontal tangent", "stationary point",
+        "how to find critical points", "critical values"
+      ],
+      "responses": [
+        "Critical points are where f'(x) = 0 or f'(x) doesn't exist. These are where max/min might occur.",
+        "To find critical points: take the derivative, set it equal to zero, and solve for x.",
+        "A horizontal tangent line means f'(x) = 0 at that point - a critical point.",
+        "Critical points are candidates for local extrema. Use first or second derivative test to classify them."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "first_derivative_test",
+      "patterns": [
+        "first derivative test", "sign change", "increasing decreasing",
+        "when is function increasing", "when is function decreasing",
+        "f' positive", "f' negative", "first derivative tells us"
+      ],
+      "responses": [
+        "First derivative test: f' > 0 means increasing, f' < 0 means decreasing.",
+        "At a critical point: if f' changes from + to -, it's a local max. From - to +, it's a local min.",
+        "Make a sign chart for f' to see where the function increases and decreases.",
+        "No sign change at a critical point? Then it's neither a max nor a min (like x³ at x=0)."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "second_derivative_test",
+      "patterns": [
+        "second derivative test", "concavity", "concave up", "concave down",
+        "inflection point", "f'' positive", "f'' negative", "second derivative tells us",
+        "when to use second derivative test"
+      ],
+      "responses": [
+        "Second derivative test: At critical point c, f''(c) > 0 means local min, f''(c) < 0 means local max.",
+        "f'' > 0 means concave up (smile), f'' < 0 means concave down (frown).",
+        "Inflection points are where concavity changes - where f'' = 0 and changes sign.",
+        "If f''(c) = 0, the second derivative test is inconclusive - use first derivative test instead."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "related_rates",
+      "patterns": [
+        "related rates", "rate of change problem", "how fast is", "changing rate",
+        "ladder problem", "balloon problem", "cone filling", "shadow problem",
+        "related rates steps", "implicit differentiation with time"
+      ],
+      "responses": [
+        "Related rates: when quantities change together over time. Set up equation, then differentiate with respect to t.",
+        "Steps: 1) Draw diagram, 2) Write equation relating quantities, 3) Differentiate with respect to t, 4) Plug in known values.",
+        "Use implicit differentiation with t as the variable. Every changing quantity gets a rate (dx/dt, dy/dt, etc.).",
+        "Identify what rate you want and what rates you know. Set up an equation linking the quantities."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "linear_approximation",
+      "patterns": [
+        "linear approximation", "tangent line approximation", "linearization",
+        "estimate using derivative", "approximate value", "differential",
+        "dy and dx", "local linear approximation"
+      ],
+      "responses": [
+        "Linear approximation: f(x) ≈ f(a) + f'(a)(x-a) near x = a. Uses the tangent line to estimate.",
+        "The tangent line at x=a is the best linear approximation to f(x) near that point.",
+        "Differential: dy = f'(x)dx. This approximates how much y changes when x changes by dx.",
+        "For small changes: Δy ≈ f'(x)Δx. The derivative tells you the rate of change."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "area_under_curve",
+      "patterns": [
+        "area under curve", "area between curves", "definite integral area",
+        "find area using integral", "area bounded by", "region between",
+        "top minus bottom", "right minus left"
+      ],
+      "responses": [
+        "Area under curve from a to b: ∫[a to b] f(x) dx (when f(x) ≥ 0).",
+        "Area between curves: ∫[a to b] (top - bottom) dx. Find intersection points for bounds.",
+        "If the function goes negative, split into regions or take absolute value for true area.",
+        "For area: integrate (upper curve - lower curve) between intersection points."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "volume_revolution",
+      "patterns": [
+        "volume of revolution", "disk method", "washer method", "shell method",
+        "rotate around axis", "solid of revolution", "volume integral",
+        "revolve around x axis", "revolve around y axis"
+      ],
+      "responses": [
+        "Disk method: V = π∫[a to b] [r(x)]² dx. Use when rotating around an axis with no hole.",
+        "Washer method: V = π∫[a to b] ([R(x)]² - [r(x)]²) dx. Outer radius minus inner radius squared.",
+        "Shell method: V = 2π∫[a to b] (radius)(height) dx. Good when disk/washer would be complicated.",
+        "Choose your method based on which makes the integral easier. Sometimes one is much simpler than the other."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "trig_integrals",
+      "patterns": [
+        "trig integral", "integral of sin", "integral of cos", "integral of tan",
+        "integral of sec", "integrate sin^n", "integrate cos^n", "trig substitution",
+        "sin squared integral", "cos squared integral"
+      ],
+      "responses": [
+        "Basic: ∫sin x dx = -cos x + C, ∫cos x dx = sin x + C, ∫tan x dx = -ln|cos x| + C",
+        "For sin²x or cos²x, use half-angle formulas: sin²x = (1-cos2x)/2, cos²x = (1+cos2x)/2",
+        "For odd powers of sin or cos, save one and convert the rest using sin² + cos² = 1.",
+        "∫sec x dx = ln|sec x + tan x| + C. ∫sec²x dx = tan x + C."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "trig_substitution",
+      "patterns": [
+        "trig substitution", "trigonometric substitution", "sqrt(a^2 - x^2)",
+        "sqrt(x^2 + a^2)", "sqrt(x^2 - a^2)", "when to use trig sub",
+        "trig sub table", "inverse trig in integral"
+      ],
+      "responses": [
+        "For √(a²-x²): let x = a sin θ. For √(x²+a²): let x = a tan θ. For √(x²-a²): let x = a sec θ.",
+        "Trig sub converts square roots into trig expressions you can integrate.",
+        "After integrating, draw a triangle to convert back to x. Use SOH CAH TOA.",
+        "Trig sub is useful when you see expressions like √(9-x²), √(x²+4), or √(x²-25)."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "partial_fractions",
+      "patterns": [
+        "partial fractions", "partial fraction decomposition", "split fraction",
+        "rational function integral", "integrate rational function", "heaviside",
+        "repeated factor", "irreducible quadratic"
+      ],
+      "responses": [
+        "Partial fractions: split a complicated fraction into simpler ones you can integrate.",
+        "For distinct linear factors: 1/((x-a)(x-b)) = A/(x-a) + B/(x-b). Solve for A and B.",
+        "Repeated factors need extra terms: 1/(x-a)² requires A/(x-a) + B/(x-a)².",
+        "Irreducible quadratics (like x²+1) get (Ax+B) on top: (Ax+B)/(x²+1)."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "improper_integrals",
+      "patterns": [
+        "improper integral", "integral to infinity", "infinite limit", "integral diverge",
+        "integral converge", "unbounded integral", "infinite integral",
+        "does integral converge", "evaluate improper"
+      ],
+      "responses": [
+        "Improper integrals have infinite bounds or discontinuities. Replace infinity with a limit: lim[b→∞] ∫[a to b] f(x) dx.",
+        "If the limit exists and is finite, the improper integral converges. Otherwise, it diverges.",
+        "∫[1 to ∞] 1/x^p dx converges if p > 1, diverges if p ≤ 1. (p-test)",
+        "For discontinuities in [a,b]: split at the problem point and take limits from both sides."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "sequences",
+      "patterns": [
+        "sequence", "what is a sequence", "sequence converge", "sequence diverge",
+        "limit of sequence", "does sequence converge", "find limit of sequence",
+        "sequence definition", "nth term"
+      ],
+      "responses": [
+        "A sequence is an ordered list of numbers: a₁, a₂, a₃, ... The limit is what aₙ approaches as n→∞.",
+        "A sequence converges if lim(n→∞) aₙ = L for some finite L. Otherwise it diverges.",
+        "To find the limit, treat n like a continuous variable and use limit techniques.",
+        "Common limits: (1+1/n)^n → e, n^(1/n) → 1, x^n → 0 if |x| < 1."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "series",
+      "patterns": [
+        "series", "infinite series", "sum to infinity", "series converge",
+        "series diverge", "does series converge", "sigma notation",
+        "summation", "infinite sum"
+      ],
+      "responses": [
+        "A series is the sum of a sequence: Σaₙ. It converges if the partial sums approach a finite limit.",
+        "Geometric series Σar^n converges if |r| < 1, sum = a/(1-r).",
+        "If lim(n→∞) aₙ ≠ 0, the series diverges (nth term test).",
+        "Convergence tests: comparison, ratio, root, integral, alternating series tests."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "geometric_series",
+      "patterns": [
+        "geometric series", "sum of geometric", "ar^n", "common ratio",
+        "when does geometric converge", "geometric series formula",
+        "infinite geometric sum"
+      ],
+      "responses": [
+        "Geometric series: Σar^n = a + ar + ar² + ... Converges if |r| < 1, sum = a/(1-r).",
+        "The common ratio r determines convergence. |r| < 1 converges, |r| ≥ 1 diverges.",
+        "Finite geometric sum: a(1-r^n)/(1-r) for n terms.",
+        "Example: 1 + 1/2 + 1/4 + 1/8 + ... = 1/(1-1/2) = 2."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "ratio_test",
+      "patterns": [
+        "ratio test", "when to use ratio test", "limit of ratio", "an+1 over an",
+        "ratio test for series", "how to apply ratio test"
+      ],
+      "responses": [
+        "Ratio test: compute L = lim |a(n+1)/aₙ|. If L < 1, converges. If L > 1, diverges. If L = 1, inconclusive.",
+        "Ratio test works great for series with factorials or exponentials.",
+        "Take the limit of the ratio of consecutive terms. Compare to 1.",
+        "Example: For Σn!/n^n, ratio test is perfect because factorials are involved."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "comparison_test",
+      "patterns": [
+        "comparison test", "compare series", "direct comparison", "limit comparison",
+        "compare to p-series", "compare to geometric"
+      ],
+      "responses": [
+        "Direct comparison: If 0 ≤ aₙ ≤ bₙ and Σbₙ converges, then Σaₙ converges.",
+        "Limit comparison: If lim(aₙ/bₙ) = c > 0, then Σaₙ and Σbₙ both converge or both diverge.",
+        "Compare to known series: p-series Σ1/n^p or geometric series Σr^n.",
+        "Use comparison when terms look similar to a known convergent/divergent series."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "power_series",
+      "patterns": [
+        "power series", "radius of convergence", "interval of convergence",
+        "Taylor series", "Maclaurin series", "series expansion",
+        "represent function as series", "power series center"
+      ],
+      "responses": [
+        "Power series: Σcₙ(x-a)^n. Find radius of convergence R using ratio or root test.",
+        "Interval of convergence is (a-R, a+R), but check endpoints separately.",
+        "Maclaurin series is Taylor series centered at 0: e^x = Σx^n/n!, sin x = Σ(-1)^n x^(2n+1)/(2n+1)!",
+        "Taylor series: f(x) = Σ f^(n)(a)/n! · (x-a)^n. Represents f as an infinite polynomial."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "taylor_maclaurin",
+      "patterns": [
+        "taylor polynomial", "maclaurin polynomial", "taylor expansion",
+        "expand function as series", "approximate with polynomial",
+        "taylor series of sin", "taylor series of cos", "taylor series of e^x"
+      ],
+      "responses": [
+        "Common Maclaurin series: e^x = 1 + x + x²/2! + x³/3! + ...",
+        "sin x = x - x³/3! + x⁵/5! - ... (odd powers only)",
+        "cos x = 1 - x²/2! + x⁴/4! - ... (even powers only)",
+        "1/(1-x) = 1 + x + x² + x³ + ... for |x| < 1"
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "p_series",
+      "patterns": [
+        "p series", "p-series", "sum of 1/n^p", "when does 1/n^p converge",
+        "harmonic series", "1/n diverges", "1/n^2 converges"
+      ],
+      "responses": [
+        "p-series: Σ1/n^p converges if p > 1, diverges if p ≤ 1.",
+        "The harmonic series Σ1/n diverges (p = 1). But Σ1/n² converges (p = 2).",
+        "Σ1/n² = π²/6. This is a famous result by Euler.",
+        "Use p-series for comparison tests. Compare your series to 1/n^p."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "alternating_series",
+      "patterns": [
+        "alternating series", "alternating series test", "(-1)^n",
+        "conditionally convergent", "absolutely convergent", "alternating harmonic"
+      ],
+      "responses": [
+        "Alternating series test: Σ(-1)^n bₙ converges if bₙ decreases to 0.",
+        "The alternating harmonic series Σ(-1)^n/n converges (to ln 2), even though Σ1/n diverges.",
+        "Absolute convergence: Σ|aₙ| converges. Conditional: Σaₙ converges but Σ|aₙ| doesn't.",
+        "Absolute convergence implies convergence, but not vice versa."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "derivative_constant",
+      "patterns": [
+        "derivative of constant", "derivative of a number", "d/dx of 5",
+        "derivative of 0", "constant rule", "derivative of c"
+      ],
+      "responses": [
+        "The derivative of any constant is 0. d/dx[c] = 0 because constants don't change!",
+        "Constants have zero slope - they're horizontal lines. Hence derivative = 0.",
+        "d/dx[5] = 0, d/dx[π] = 0, d/dx[100] = 0. Any constant differentiates to zero.",
+        "This is why we add +C when integrating - we can't tell what constant was there."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "sum_rule",
+      "patterns": [
+        "sum rule", "derivative of sum", "add two functions derivative",
+        "f plus g derivative", "sum rule derivative", "difference rule"
+      ],
+      "responses": [
+        "Sum rule: d/dx[f + g] = f' + g'. Just differentiate each term separately.",
+        "You can differentiate term by term: d/dx[x² + sin x] = 2x + cos x.",
+        "The same works for subtraction: d/dx[f - g] = f' - g'.",
+        "This is why polynomials are easy: just apply power rule to each term."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "constant_multiple",
+      "patterns": [
+        "constant multiple rule", "derivative with constant", "d/dx of cf",
+        "factor out constant", "constant times function derivative"
+      ],
+      "responses": [
+        "Constant multiple rule: d/dx[c·f(x)] = c·f'(x). Constants just come along for the ride.",
+        "You can factor out constants: d/dx[5x²] = 5·d/dx[x²] = 5·2x = 10x.",
+        "Same for integrals: ∫c·f(x)dx = c·∫f(x)dx.",
+        "Constants don't affect the rate of change - they just scale it."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "integral_1_over_x",
+      "patterns": [
+        "integral of 1/x", "integral of 1 over x", "why ln x", "antiderivative of 1/x",
+        "integrate 1/x", "power rule doesn't work for 1/x"
+      ],
+      "responses": [
+        "∫1/x dx = ln|x| + C. This is why we need the absolute value - x could be negative.",
+        "Power rule fails for x^(-1) because you'd get x⁰/0 which is undefined. That's why we need ln.",
+        "The derivative of ln x is 1/x, so the integral of 1/x is ln|x| + C.",
+        "This is the one case where power rule doesn't work directly. Memorize it!"
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "derivative_sqrt",
+      "patterns": [
+        "derivative of sqrt x", "derivative of square root", "d/dx sqrt x",
+        "derivative of x^(1/2)", "square root derivative", "differentiate radical"
+      ],
+      "responses": [
+        "d/dx[√x] = 1/(2√x). Write √x as x^(1/2) and use power rule: (1/2)x^(-1/2) = 1/(2√x).",
+        "For √(something), use chain rule: d/dx[√u] = u'/(2√u).",
+        "√x = x^(1/2), so derivative is (1/2)x^(-1/2) = 1/(2x^(1/2)) = 1/(2√x).",
+        "Example: d/dx[√(x²+1)] = 2x/(2√(x²+1)) = x/√(x²+1)."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "absolute_value",
+      "patterns": [
+        "derivative of absolute value", "derivative of |x|", "absolute value not differentiable",
+        "|x| derivative", "absolute value calculus"
+      ],
+      "responses": [
+        "|x| is not differentiable at x = 0 because of the corner. Elsewhere, d/dx|x| = x/|x| = sign(x).",
+        "For x > 0: d/dx|x| = 1. For x < 0: d/dx|x| = -1. At x = 0: undefined.",
+        "The absolute value function has a sharp corner at the origin, so no derivative exists there.",
+        "You can write |x| = √(x²) and use chain rule: d/dx√(x²) = x/√(x²) = x/|x|."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "asymptotes",
+      "patterns": [
+        "asymptote", "vertical asymptote", "horizontal asymptote", "oblique asymptote",
+        "find asymptotes", "slant asymptote", "asymptotic behavior"
+      ],
+      "responses": [
+        "Vertical asymptotes occur where denominator = 0 (and numerator ≠ 0).",
+        "Horizontal asymptotes: look at lim(x→±∞) f(x). Compare degrees of top and bottom.",
+        "If degree of top = degree of bottom, HA is ratio of leading coefficients.",
+        "Oblique/slant asymptote occurs when degree of top is exactly one more than bottom. Do polynomial division."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "newtons_method",
+      "patterns": [
+        "newton's method", "newtons method", "find root iteratively",
+        "root finding", "newton raphson", "approximate root"
+      ],
+      "responses": [
+        "Newton's method: x_(n+1) = xₙ - f(xₙ)/f'(xₙ). Iteratively find roots.",
+        "Start with initial guess x₀, then apply the formula repeatedly until it converges.",
+        "It uses tangent lines to approximate where the function crosses zero.",
+        "Newton's method is fast but can fail if f'(x) is zero or if initial guess is bad."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "riemann_sum",
+      "patterns": [
+        "riemann sum", "left riemann", "right riemann", "midpoint rule",
+        "approximate integral", "rectangle approximation", "area with rectangles"
+      ],
+      "responses": [
+        "Riemann sums approximate integrals using rectangles. Sum up f(x*)·Δx for sample points x*.",
+        "Left Riemann: use left endpoint. Right: use right endpoint. Midpoint: use middle.",
+        "As the number of rectangles → ∞, Riemann sum → definite integral.",
+        "Error depends on the method and how the function behaves. Midpoint is often most accurate."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "trapezoidal_rule",
+      "patterns": [
+        "trapezoidal rule", "trapezoid approximation", "simpson's rule",
+        "numerical integration", "approximate integral numerically"
+      ],
+      "responses": [
+        "Trapezoidal rule: uses trapezoids instead of rectangles. More accurate than basic Riemann.",
+        "Simpson's rule: uses parabolas for even better approximation. Requires even number of intervals.",
+        "Trapezoidal: T = (Δx/2)[f(x₀) + 2f(x₁) + ... + 2f(x_{n-1}) + f(xₙ)].",
+        "Simpson's: S = (Δx/3)[f(x₀) + 4f(x₁) + 2f(x₂) + 4f(x₃) + ... + f(xₙ)]."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "arc_length",
+      "patterns": [
+        "arc length", "length of curve", "curve length formula",
+        "arc length integral", "length of graph"
+      ],
+      "responses": [
+        "Arc length: L = ∫[a to b] √(1 + [f'(x)]²) dx. Integrates the tiny diagonal pieces.",
+        "The formula comes from Pythagorean theorem on infinitesimal segments.",
+        "For parametric: L = ∫√((dx/dt)² + (dy/dt)²) dt.",
+        "Arc length integrals often don't have nice closed forms. Sometimes numerical methods are needed."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "surface_area",
+      "patterns": [
+        "surface area of revolution", "surface area integral", "rotate curve surface",
+        "SA of revolution", "surface area formula"
+      ],
+      "responses": [
+        "Surface area of revolution around x-axis: SA = 2π∫[a to b] f(x)√(1 + [f'(x)]²) dx.",
+        "Think of it as arc length times circumference of circles traced out.",
+        "Around y-axis: SA = 2π∫[a to b] x√(1 + [f'(x)]²) dx (if in terms of x).",
+        "Similar to arc length but multiplied by 2π times the radius of revolution."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "average_value",
+      "patterns": [
+        "average value of function", "mean value of function", "average over interval",
+        "f_avg", "average integral"
+      ],
+      "responses": [
+        "Average value of f on [a,b]: f_avg = (1/(b-a)) ∫[a to b] f(x) dx.",
+        "It's the height of a rectangle with same area as under the curve.",
+        "Divide the total area by the width of the interval.",
+        "MVT for integrals: f_avg = f(c) for some c in (a,b)."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "work_physics",
+      "patterns": [
+        "work integral", "work in calculus", "force times distance integral",
+        "pumping water", "spring work", "work done by variable force"
+      ],
+      "responses": [
+        "Work = ∫F(x) dx. For constant force, W = F·d, but variable force needs integration.",
+        "Spring work: W = ∫kx dx. Hooke's law says F = kx.",
+        "Pumping water: W = ∫ρgA(y)·y dy. Integrate weight times height lifted.",
+        "Units matter! Work is in Joules (N·m) or foot-pounds."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "separable_de",
+      "patterns": [
+        "separable differential equation", "separation of variables", "dy/dx equals",
+        "solve differential equation", "ODE separable", "separate and integrate"
+      ],
+      "responses": [
+        "Separable DE: get all y's and dy on one side, all x's and dx on the other, then integrate both.",
+        "dy/dx = f(x)g(y) becomes ∫(1/g(y))dy = ∫f(x)dx.",
+        "After integrating, solve for y if possible. Don't forget +C!",
+        "Example: dy/dx = xy becomes ∫(1/y)dy = ∫x dx → ln|y| = x²/2 + C."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "exponential_growth",
+      "patterns": [
+        "exponential growth", "exponential decay", "dy/dt = ky", "population model",
+        "half life", "doubling time", "growth rate"
+      ],
+      "responses": [
+        "dy/dt = ky has solution y = y₀e^(kt). k > 0 is growth, k < 0 is decay.",
+        "Half-life: time for half to remain. t = ln(2)/|k|.",
+        "Doubling time: t = ln(2)/k for growth.",
+        "Population, radioactive decay, compound interest all follow this model."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "logistic_growth",
+      "patterns": [
+        "logistic growth", "carrying capacity", "dP/dt = kP(1-P/K)",
+        "bounded growth", "logistic differential equation"
+      ],
+      "responses": [
+        "Logistic growth: dP/dt = kP(1 - P/K) where K is carrying capacity.",
+        "Growth slows as population approaches carrying capacity K.",
+        "Solution: P(t) = K / (1 + Ae^(-kt)) where A = (K-P₀)/P₀.",
+        "S-shaped curve: fast growth in middle, slows at ends."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "polar_coordinates",
+      "patterns": [
+        "polar coordinates", "r and theta", "convert polar to rectangular",
+        "polar to cartesian", "polar derivatives", "polar area"
+      ],
+      "responses": [
+        "Polar: x = r cos θ, y = r sin θ. Rectangular to polar: r = √(x²+y²), θ = arctan(y/x).",
+        "Area in polar: A = (1/2)∫[α to β] r² dθ.",
+        "dy/dx in polar: dy/dx = (dy/dθ)/(dx/dθ) = (r'sinθ + rcosθ)/(r'cosθ - rsinθ).",
+        "Common polar curves: r = a (circle), r = a cos θ (circle), r = a + b cos θ (limaçon)."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "parametric_equations",
+      "patterns": [
+        "parametric equations", "x of t y of t", "parametric derivative",
+        "eliminate parameter", "parametric curve", "dy/dx parametric"
+      ],
+      "responses": [
+        "Parametric: x = f(t), y = g(t). Both depend on parameter t.",
+        "dy/dx = (dy/dt)/(dx/dt). Divide the derivatives with respect to t.",
+        "To eliminate t: solve one equation for t, substitute into the other.",
+        "Second derivative: d²y/dx² = (d/dt(dy/dx))/(dx/dt)."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "vector_calculus_basics",
+      "patterns": [
+        "vector calculus", "gradient", "divergence", "curl",
+        "del operator", "nabla", "vector field"
+      ],
+      "responses": [
+        "Gradient: ∇f = (∂f/∂x, ∂f/∂y, ∂f/∂z). Points in direction of steepest ascent.",
+        "Divergence: ∇·F = ∂P/∂x + ∂Q/∂y + ∂R/∂z. Measures 'spreading out' of vector field.",
+        "Curl: ∇×F. Measures rotation of vector field. Zero for conservative fields.",
+        "These are topics in multivariable/vector calculus, building on single-variable concepts."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "squeeze_theorem",
+      "patterns": [
+        "squeeze theorem", "sandwich theorem", "pinching theorem",
+        "bound function limit", "squeeze limit"
+      ],
+      "responses": [
+        "Squeeze theorem: if g(x) ≤ f(x) ≤ h(x) and lim g(x) = lim h(x) = L, then lim f(x) = L.",
+        "Use it when direct evaluation is hard but you can bound the function.",
+        "Classic example: lim(x→0) x·sin(1/x) = 0 by squeezing with -|x| ≤ x·sin(1/x) ≤ |x|.",
+        "Also called sandwich theorem. The function is squeezed between two others with the same limit."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "one_sided_limits",
+      "patterns": [
+        "one sided limit", "left limit", "right limit", "limit from left",
+        "limit from right", "x approaches from left", "x approaches from right"
+      ],
+      "responses": [
+        "Left limit (x→a⁻): approach a from values less than a. Right limit (x→a⁺): from values greater.",
+        "Two-sided limit exists only if left and right limits are equal.",
+        "Notation: lim(x→a⁻) f(x) and lim(x→a⁺) f(x).",
+        "Jump discontinuities have different left and right limits."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "limits_at_infinity",
+      "patterns": [
+        "limit at infinity", "limit as x goes to infinity", "horizontal asymptote limit",
+        "end behavior", "limit to infinity"
+      ],
+      "responses": [
+        "For rational functions: compare degrees. If top < bottom, limit = 0. If equal, ratio of leading coefficients.",
+        "If top degree > bottom degree, limit is ±∞ (no horizontal asymptote).",
+        "Divide numerator and denominator by highest power of x in denominator.",
+        "lim(x→∞) e^(-x) = 0, lim(x→∞) e^x = ∞, lim(x→∞) ln x = ∞ (but slower than any polynomial)."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "infinite_limits",
+      "patterns": [
+        "infinite limit", "limit equals infinity", "vertical asymptote limit",
+        "limit undefined", "function blows up"
+      ],
+      "responses": [
+        "Infinite limit: f(x) → ±∞ as x → a. The limit doesn't exist as a number, but we describe the behavior.",
+        "Vertical asymptotes occur where function goes to infinity.",
+        "Check signs from left and right: could go to +∞ from one side and -∞ from the other.",
+        "Example: lim(x→0⁺) 1/x = +∞, lim(x→0⁻) 1/x = -∞."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "absolute_vs_local",
+      "patterns": [
+        "absolute maximum", "absolute minimum", "global maximum", "global minimum",
+        "local vs global", "extreme value theorem", "absolute extrema"
+      ],
+      "responses": [
+        "Local extrema: max/min compared to nearby points. Absolute/global: max/min over entire domain.",
+        "Extreme Value Theorem: continuous function on closed interval has absolute max and min.",
+        "To find absolute extrema on [a,b]: check critical points AND endpoints.",
+        "Local max/min found using derivative tests. Absolute may occur at endpoints."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "derivative_definition",
+      "patterns": [
+        "definition of derivative", "derivative from first principles", "limit definition derivative",
+        "derivative as limit", "h approaches 0", "difference quotient"
+      ],
+      "responses": [
+        "f'(x) = lim(h→0) [f(x+h) - f(x)]/h. This is the limit of the difference quotient.",
+        "Alternative form: f'(a) = lim(x→a) [f(x) - f(a)]/(x - a).",
+        "The derivative is the slope of the tangent line at a point.",
+        "Using the definition is called 'finding derivative from first principles.' Usually we use rules instead."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "higher_order_derivatives",
+      "patterns": [
+        "second derivative", "third derivative", "higher order derivative",
+        "f double prime", "f''", "nth derivative"
+      ],
+      "responses": [
+        "Second derivative f'' is the derivative of f'. It measures rate of change of slope.",
+        "f''(x) = d²y/dx² = d/dx[f'(x)]. Keep differentiating.",
+        "Higher orders: f''', f⁽⁴⁾, etc. For nth: f⁽ⁿ⁾(x).",
+        "Physical meaning: if f is position, f' is velocity, f'' is acceleration."
+      ],
+      "context": [""]
+    },
+    {
+      "tag": "position_velocity_acceleration",
+      "patterns": [
+        "position velocity acceleration", "derivative of position", "integral of acceleration",
+        "motion problem", "particle motion", "v equals dx/dt"
+      ],
+      "responses": [
+        "Position s(t) → Velocity v(t) = s'(t) → Acceleration a(t) = v'(t) = s''(t).",
+        "Going backwards: integrate acceleration to get velocity, integrate velocity to get position.",
+        "Speed is |v(t)|. Velocity can be negative (direction), speed is always positive.",
+        "Particle changes direction when velocity = 0 and acceleration ≠ 0."
       ],
       "context": [""]
     },
@@ -296,7 +1109,7 @@
       "patterns": [
         "weather", "sports", "news", "politics", "movie", "music", "food", "recipe",
         "game", "date", "time", "joke", "story", "who are you", "your name",
-        "complex numbers", "force", "work", "fundamental theorem"
+        "complex numbers", "tell me a joke", "what's your favorite", "where are you from"
       ],
       "responses": [
         "I only know about calculus! Try asking about derivatives, integrals, or limits.",

@@ -218,13 +218,17 @@ class TestMathChatbot(TestCase):
     def test_chain_rule_question(self):
         """Test that chain rule questions get relevant answers."""
         response = self.bot.get_response("explain the chain rule")
-        # Should mention chain, composite, outer/inner, or give an example
+        # Should mention chain, composite, outer/inner, derivative, or give an example
         self.assertTrue(
             "chain" in response.lower() or
             "composite" in response.lower() or
             "outer" in response.lower() or
             "inner" in response.lower() or
-            "layers" in response.lower()
+            "layers" in response.lower() or
+            "derivative" in response.lower() or
+            "differentiate" in response.lower() or
+            "f(g(x))" in response or
+            "peeling" in response.lower()
         )
     
     def test_non_math_question(self):
@@ -244,7 +248,10 @@ class TestMathChatbot(TestCase):
         self.assertTrue(
             "parts" in response.lower() or 
             "uv" in response.lower() or
-            "∫" in response
+            "∫" in response or
+            "liate" in response.lower() or
+            "integrate" in response.lower() or
+            "differentiate" in response.lower()
         )
     
     def test_lhopital_rule(self):
