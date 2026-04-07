@@ -82,11 +82,8 @@ class HTMLPrinter(LaTeXPrinter):
     def new_level(self):
         indent = ' ' * 4 * self.level
         self.level += 1
-        # Open the first collapsible by default, others closed
-        if self.level == 1:
-            self.lines.append(f'{indent}<div class="collapsible open"><h2>Hide steps</h2><ol class="content">')
-        else:
-            self.lines.append(f'{indent}<div class="collapsible"><h2>Show steps</h2><ol class="content">')
+        # All collapsibles start closed
+        self.lines.append(f'{indent}<div class="collapsible"><h2>Show steps</h2><ol class="content">')
         yield
         self.lines.append(f'{indent}</ol></div>')
         self.level -= 1
