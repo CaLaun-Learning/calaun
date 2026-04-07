@@ -23,7 +23,6 @@
         <a href="#derivatives" class="reference-nav__link">Derivatives</a>
         <a href="#integrals" class="reference-nav__link">Integrals</a>
         <a href="#limits" class="reference-nav__link">Limits</a>
-        <a href="#tables" class="reference-nav__link">Tables</a>
     </nav>
 
     <!-- Derivatives Section -->
@@ -305,120 +304,6 @@
             </div>
         </div>
     </section>
-
-    <!-- Tables Section -->
-    <section id="tables" class="formula-section">
-        <h2 class="formula-section__title">Reference Tables</h2>
-        <p class="formula-section__description">Visual reference tables for integration and differentiation.</p>
-        
-        <div class="search-container search-container--compact">
-            <input type="text" 
-                   id="tableSearch" 
-                   class="search-input" 
-                   placeholder="Search tables..."
-                   aria-label="Search reference tables">
-        </div>
-
-        <div class="reference__grid" id="referenceGrid">
-            <article class="reference__card" data-title="A brief table">
-                <h3>A Brief Table</h3>
-                <img src="{% static 'images/A-brief-table.png' %}" 
-                     alt="A brief integration table" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Basic Forms">
-                <h3>Basic Forms</h3>
-                <img src="{% static 'images/Page 1 Basic form.png' %}" 
-                     alt="Basic integration forms" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Forms with ax + b">
-                <h3>Forms with ax + b</h3>
-                <img src="{% static 'images/Page 2 forms with ax + b and a^2 + x^2.png' %}" 
-                     alt="Forms with ax + b" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Forms with ax + b and a^2 + x^2">
-                <h3>Forms with a² + x²</h3>
-                <img src="{% static 'images/Page 3 forms with ax + b and a^2 + x^2.png' %}" 
-                     alt="Forms with a² + x²" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Forms with a^2 - x^2">
-                <h3>Forms with a² - x²</h3>
-                <img src="{% static 'images/Page 4 forms with a^2 - x^2 and x^2 - a^2.png' %}" 
-                     alt="Forms with a² - x²" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Forms with a^2 - x^2 and x^2 - a^2">
-                <h3>Forms with x² - a²</h3>
-                <img src="{% static 'images/Page 5 forms with a^2 - x^2 and x^2 - a^2.png' %}" 
-                     alt="Forms with x² - a²" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Trigonometric Form">
-                <h3>Trigonometric Forms I</h3>
-                <img src="{% static 'images/Page 6 Trigonometric form.png' %}" 
-                     alt="Trigonometric integration forms" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Trigonometric Form">
-                <h3>Trigonometric Forms II</h3>
-                <img src="{% static 'images/Page 7 Trigonometric form.png' %}" 
-                     alt="More trigonometric forms" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Inverse Trigonometric Form">
-                <h3>Inverse Trigonometric Forms</h3>
-                <img src="{% static 'images/Page 8 inverse Trigonometric form.png' %}" 
-                     alt="Inverse trigonometric forms" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Exponential and logarithmic Form">
-                <h3>Exponential & Logarithmic</h3>
-                <img src="{% static 'images/Page 9 exponential and logarithmic form.png' %}" 
-                     alt="Exponential and logarithmic forms" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Forms with sqrt(2ax - x^2)">
-                <h3>Forms with √(2ax - x²)</h3>
-                <img src="{% static 'images/Page 10 forms with square root of 2ax - x^2.png' %}" 
-                     alt="Forms with square root of 2ax - x²" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Hyperbolic Forms">
-                <h3>Hyperbolic Forms I</h3>
-                <img src="{% static 'images/Page 11 Hyperboic forms.png' %}" 
-                     alt="Hyperbolic integration forms" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Hyperbolic Forms">
-                <h3>Hyperbolic Forms II</h3>
-                <img src="{% static 'images/Page 12 Hyperbolic forms.png' %}" 
-                     alt="More hyperbolic forms" 
-                     loading="lazy">
-            </article>
-
-            <article class="reference__card" data-title="Differentiation Rules">
-                <h3>Differentiation Rules</h3>
-                <img src="{% static 'images/Page 13 Differentiation Rules.png' %}" 
-                     alt="Common differentiation rules" 
-                     loading="lazy">
-            </article>
-        </div>
-    </section>
 </main>
 
 <!-- Back to Top -->
@@ -443,19 +328,6 @@
     window.CHATBOT_URL = '{% url "chatbot" %}';
 
     document.addEventListener('DOMContentLoaded', () => {
-        // Table search functionality
-        const searchInput = document.getElementById('tableSearch');
-        const grid = document.getElementById('referenceGrid');
-        const cards = grid.querySelectorAll('.reference__card');
-
-        searchInput.addEventListener('input', (e) => {
-            const filter = e.target.value.toLowerCase();
-            cards.forEach(card => {
-                const title = card.dataset.title.toLowerCase();
-                card.style.display = title.includes(filter) ? '' : 'none';
-            });
-        });
-
         // Back to top button
         const backToTop = document.getElementById('backToTop');
         window.addEventListener('scroll', () => {
