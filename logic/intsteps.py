@@ -2,17 +2,29 @@ import sympy
 from logic import stepprinter
 from logic.stepprinter import replace_u_var
 
-from sympy.integrals.manualintegrate import ( _manualintegrate, integral_steps, evaluates,
+from sympy.integrals.manualintegrate import (integral_steps, manualintegrate,
     ConstantRule, ConstantTimesRule, PowerRule, AddRule, URule,
-    PartsRule, CyclicPartsRule, TrigRule, ExpRule, LogRule, ArctanRule,
+    PartsRule, CyclicPartsRule, TrigRule, ExpRule, ArctanRule,
     AlternativeRule, DontKnowRule, RewriteRule
 )
+
+# Compatibility: In newer SymPy, rules have an eval() method
+# Try to import LogRule, but it may not exist in newer versions
+try:
+    from sympy.integrals.manualintegrate import LogRule
+except ImportError:
+    LogRule = None
+
+def _manualintegrate(rule):
+    """Compatibility wrapper for evaluating integration rules."""
+    if hasattr(rule, 'eval'):
+        return rule.eval()
+    return manualintegrate(rule.integrand, rule.variable)
 
 # Need this to break loops
 # TODO: add manualintegrate flag to integrate
 _evaluating = None
 
-@evaluates(DontKnowRule)
 def eval_dontknow(context, symbol):
     global _evaluating
     if _evaluating == context:
@@ -73,7 +85,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             self.print_Trig(rule)
         elif isinstance(rule, ExpRule):
             self.print_Exp(rule)
-        elif isinstance(rule, LogRule):
+        elif LogRule is not None and isinstance(rule, LogRule):
             self.print_Log(rule)
         elif isinstance(rule, ArctanRule):
             self.print_Arctan(rule)

@@ -32,6 +32,9 @@ idna>=3.4
 # Database
 psycopg2-binary>=2.9.9
 
+# Documentation
+docutils>=0.20
+
 # Utilities
 PyYAML>=6.0.1
 tqdm>=4.66.0
