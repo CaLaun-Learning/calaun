@@ -167,6 +167,21 @@ class CardLoader {
                     const output = document.createElement('div');
                     output.innerHTML = data.output;
                     card.appendChild(output);
+                    
+                    // Initialize collapsibles in the new content
+                    output.querySelectorAll('.collapsible').forEach(el => {
+                        const header = el.querySelector('h2');
+                        if (!header) return;
+                        header.addEventListener('click', () => {
+                            el.classList.toggle('open');
+                            const text = header.textContent.trim();
+                            if (el.classList.contains('open')) {
+                                header.textContent = text.replace('Show', 'Hide');
+                            } else {
+                                header.textContent = text.replace('Hide', 'Show');
+                            }
+                        });
+                    });
                 } else if (data.error) {
                     const error = document.createElement('div');
                     error.className = 'card__error-message';
@@ -220,6 +235,3 @@ document.addEventListener('DOMContentLoaded', () => {
     // Convert legacy math notation
     convertLegacyMath();
 });
-
-// Export for potential module use
-export { ChatBot, Modal, Collapsible, CardLoader };
