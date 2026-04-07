@@ -106,14 +106,18 @@ class Collapsible {
     initCollapsibles(elements) {
         elements.forEach(el => {
             // Find the h2 that is a direct child of this collapsible
-            const header = Array.from(el.children).find(child => child.tagName === 'H2');
+            const header = el.querySelector(':scope > h2');
             if (!header) return;
             
             // Skip if already initialized
             if (header.dataset.initialized) return;
             header.dataset.initialized = 'true';
             
+            // Make sure the header is clickable
+            header.style.cursor = 'pointer';
+            
             header.addEventListener('click', (e) => {
+                e.preventDefault();
                 e.stopPropagation();
                 el.classList.toggle('open');
                 const text = header.textContent.trim();
@@ -179,11 +183,13 @@ class CardLoader {
                     
                     // Initialize collapsibles in the new content
                     output.querySelectorAll('.collapsible').forEach(el => {
-                        const header = Array.from(el.children).find(child => child.tagName === 'H2');
+                        const header = el.querySelector(':scope > h2');
                         if (!header || header.dataset.initialized) return;
                         header.dataset.initialized = 'true';
+                        header.style.cursor = 'pointer';
                         
                         header.addEventListener('click', (e) => {
+                            e.preventDefault();
                             e.stopPropagation();
                             el.classList.toggle('open');
                             const text = header.textContent.trim();
@@ -241,9 +247,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Use URL from template or fall back to default
     const chatBotUrl = window.CHATBOT_URL || '/api/chatbot/';
     const chatBot = new ChatBot('#chatModal', chatBotUrl);
-    new Collapsible();
+    
+    // Initialize collapsibles
+    const collapsible = new Collapsible();
+    
+    // Initialize card loader
     new CardLoader();
     
     // Convert legacy math notation
     convertLegacyMath();
+    
+    // Re-initialize collapsibles after a short delay to catch any late-rendered content
+    setTimeout(() => {
+        collapsible.initCollapsibles(document.querySelectorAll('.collapsible'));
+    }, 500);
 });
