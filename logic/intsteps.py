@@ -117,14 +117,14 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             integrand = _get_context(rule)
             var = _get_symbol(rule)
             if integrand and var:
-                self.append(f"Evaluate the integral:")
+                self.append("Evaluate the integral:")
                 self.append(self.format_math_display(
                     sympy.Eq(sympy.Integral(integrand, var), _manualintegrate(rule))))
             else:
                 # Last resort fallback
                 result = _manualintegrate(rule)
                 if result:
-                    self.append(f"The integral evaluates to:")
+                    self.append("The integral evaluates to:")
                     self.append(self.format_math_display(result))
 
     @prints_rule(ConstantRule)
