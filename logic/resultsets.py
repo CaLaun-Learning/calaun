@@ -136,7 +136,7 @@ class MultiResultCard(ResultCard):
             html.append(card.format_input(self.input_repr, self.components))
             html.append('</div>')
             html.append(card.format_output(result, formatter))
-            html.append('<script type="math/tex; mode=display"> \mathrm{with\;constant = C}</script>')
+            html.append(r'<script type="math/tex; mode=display"> \mathrm{with\;constant = C}</script>')
             html.append("</li>")
         html.append("</ul>")
         return " ".join(html)
