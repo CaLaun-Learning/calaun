@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django import forms
 from django.views.generic.base import TemplateView
 from django.views.generic import View
-from chatbot.chat import chatbot_response
+from chatbot.math_chat import chatbot_response
 from logic.logic import UserInput
 from mathtutor import settings
 import json
