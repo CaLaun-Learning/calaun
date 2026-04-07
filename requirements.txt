@@ -35,6 +35,9 @@ psycopg2-binary>=2.9.9
 # Documentation
 docutils>=0.20
 
+# Testing
+pytest>=8.0.0
+
 # Utilities
 PyYAML>=6.0.1
 tqdm>=4.66.0

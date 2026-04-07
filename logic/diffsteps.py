@@ -302,8 +302,9 @@ def diff(rule):
 
 class DiffPrinter(stepprinter.HTMLPrinter):
     def __init__(self, rule):
-        self.print_rule(rule)
+        super().__init__()
         self.rule = rule
+        self.print_rule(rule)
 
     def print_rule(self, rule):
         if isinstance(rule, PowerRule):

@@ -31,6 +31,18 @@ A Django-based calculus tutor application with an integrated ML-powered chatbot.
    python manage.py runserver
    ```
 
+## Testing
+
+Run all tests:
+```bash
+python manage.py test
+```
+
+Or run specific test modules with pytest:
+```bash
+python -m pytest logic/tests.py -v
+```
+
 ## Tech Stack
 
 - **Backend:** Django 4.2
