@@ -399,6 +399,22 @@ def eval_limitsteps(evaluator, components, parameters=None):
     
     return limitsteps.print_html_steps(expr, var, point, direction)
 
+def eval_limit(evaluator, components, parameters=None):
+    """Evaluate limit result."""
+    expr = components.get('expression', evaluator.get('input_evaluated'))
+    var = components['variable']
+    point = components.get('point', sympy.S.Zero)
+    direction = components.get('direction', '+')
+    
+    return sympy.limit(expr, var, point, direction)
+
+def format_limit_input(line, result, components):
+    """Format limit input for display."""
+    expr = components.get('expression', result)
+    var = components['variable']
+    point = components.get('point', 0)
+    return f"limit({expr}, {var}, {point})"
+
 # https://www.python.org/dev/peps/pep-0257/
 def trim(docstring):
     if not docstring:
@@ -484,17 +500,20 @@ all_cards = {
         format_output_function=format_dict_title('Variable', 'Possible Value')
     ),
 
-    'limit': ResultCard(
+    'limit': FakeResultCard(
         "Limit",
         "limit(%s, {_var}, {point})",
-        lambda expr, var: sympy.Limit(expr, var, 0)),
+        lambda expr, var: sympy.Limit(expr, var, 0),
+        eval_method=eval_limit,
+        format_input_function=format_limit_input),
 
     'limitsteps': FakeResultCard(
         "Limit Steps",
         "limit(%s, {_var}, {point})",
         no_pre_output,
         format_output_function=format_steps,
-        eval_method=eval_limitsteps),
+        eval_method=eval_limitsteps,
+        format_input_function=format_limit_input),
 }
 
 def get_card(name):
