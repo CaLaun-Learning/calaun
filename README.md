@@ -37,7 +37,3 @@ A Django-based calculus tutor application with an integrated ML-powered chatbot.
 - **ML/AI:** TensorFlow 2.15–2.16, Keras, NLTK
 - **Math:** SymPy, NumPy, SciPy
 - **Database:** SQLite by default for development; PostgreSQL (psycopg2) as an optional deployment choice
-
-
-https://user-images.githubusercontent.com/59368349/159202148-65619603-7f24-47d9-bf71-4aedc3883eb4.mov
-
