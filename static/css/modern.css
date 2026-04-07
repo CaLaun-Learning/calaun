@@ -942,3 +942,489 @@ span.step__math {
 script[type="math/tex"] {
     display: none;
 }
+
+/* ==========================================
+   NEW HOMEPAGE STYLES
+   ========================================== */
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 4rem 1rem 3rem;
+    background: linear-gradient(135deg, var(--color-bg) 0%, var(--color-bg-light) 100%);
+}
+
+.hero__content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.hero__title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: var(--color-text-inverse);
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.hero__subtitle {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.hero__description {
+    font-size: 1.125rem;
+    color: var(--color-text-light);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+}
+
+.hero__search {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.search-form--hero {
+    box-shadow: var(--shadow-lg), 0 0 40px rgba(232, 93, 64, 0.15);
+}
+
+/* Section Title */
+.section__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text-inverse);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+/* Quick Examples */
+.quick-examples {
+    padding: 3rem 1rem;
+    background: var(--color-bg-light);
+}
+
+.quick-examples__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.quick-example {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.quick-example:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.quick-example h3 {
+    font-size: 1.25rem;
+    color: var(--color-primary);
+    margin-bottom: 0.5rem;
+}
+
+.quick-example p {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.quick-example__link {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background: var(--color-bg);
+    color: var(--color-text-inverse);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-size: 1.1rem;
+    transition: background var(--transition);
+}
+
+.quick-example__link:hover {
+    background: var(--color-primary);
+}
+
+/* Features */
+.features {
+    padding: 3rem 1rem;
+    background: var(--color-bg);
+}
+
+.features__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.feature {
+    text-align: center;
+    padding: 1.5rem;
+}
+
+.feature__icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.feature h3 {
+    color: var(--color-text-inverse);
+    font-size: 1.125rem;
+    margin-bottom: 0.75rem;
+}
+
+.feature p {
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
+
+.feature code {
+    background: var(--color-bg-light);
+    padding: 0.2rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.85rem;
+    color: var(--color-primary);
+}
+
+/* More Examples with Tabs */
+.more-examples {
+    padding: 3rem 1rem;
+    background: var(--color-bg-light);
+}
+
+.examples-tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+}
+
+.tab {
+    padding: 0.75rem 1.5rem;
+    background: var(--color-bg);
+    color: var(--color-text-light);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.tab:hover {
+    background: var(--color-primary-dark);
+    color: var(--color-text-inverse);
+}
+
+.tab.active {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+}
+
+.examples-content {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.examples-panel {
+    display: none;
+}
+
+.examples-panel.active {
+    display: block;
+}
+
+.examples-list {
+    list-style: none;
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.examples-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.examples-list li:last-child {
+    border-bottom: none;
+}
+
+.examples-list a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.examples-list a:hover {
+    text-decoration: underline;
+}
+
+/* CTA Section */
+.cta {
+    padding: 4rem 1rem;
+    text-align: center;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+}
+
+.cta h2 {
+    color: var(--color-text-inverse);
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+.cta p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.125rem;
+    margin-bottom: 1.5rem;
+}
+
+.cta__button {
+    display: inline-block;
+    padding: 1rem 2rem;
+    background: var(--color-text-inverse);
+    color: var(--color-primary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all var(--transition);
+}
+
+.cta__button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Footer */
+.footer__content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+}
+
+/* ==========================================
+   REFERENCE PAGE STYLES
+   ========================================== */
+
+.reference-guide {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.reference-guide__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-inverse);
+    text-align: center;
+    margin-bottom: 0.75rem;
+}
+
+.reference-guide__intro {
+    text-align: center;
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+/* Reference Navigation */
+.reference-nav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+    padding: 1rem;
+    background: var(--color-bg-light);
+    border-radius: var(--radius-lg);
+}
+
+.reference-nav__link {
+    padding: 0.75rem 1.5rem;
+    color: var(--color-text-inverse);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    font-weight: 500;
+    transition: all var(--transition);
+}
+
+.reference-nav__link:hover {
+    background: var(--color-primary);
+}
+
+/* Formula Sections */
+.formula-section {
+    margin-bottom: 4rem;
+    scroll-margin-top: 2rem;
+}
+
+.formula-section__title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-text-inverse);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--color-primary);
+}
+
+.formula-section__description {
+    color: var(--color-text-light);
+    margin-bottom: 1.5rem;
+}
+
+/* Formula Groups */
+.formula-group {
+    margin-bottom: 2rem;
+}
+
+.formula-group h3 {
+    color: var(--color-text-inverse);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    opacity: 0.9;
+}
+
+/* Formula Grid */
+.formula-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+/* Formula Card */
+.formula-card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition);
+}
+
+.formula-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.formula-card--wide {
+    grid-column: 1 / -1;
+}
+
+.formula-card__formula {
+    font-size: 1.1rem;
+    color: var(--color-text);
+    text-align: center;
+    padding: 0.5rem 0;
+}
+
+.formula-card__name {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    text-align: center;
+}
+
+.formula-card__try {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    margin-top: auto;
+    transition: background var(--transition);
+}
+
+.formula-card__try:hover {
+    background: var(--color-primary-dark);
+}
+
+/* Back to Top Button */
+.back-to-top {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 48px;
+    height: 48px;
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.5rem;
+    box-shadow: var(--shadow-lg);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition);
+    z-index: 100;
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-3px);
+}
+
+/* Responsive for new pages */
+@media (max-width: 768px) {
+    .hero__title {
+        font-size: 2.5rem;
+    }
+    
+    .hero__subtitle {
+        font-size: 1.25rem;
+    }
+    
+    .quick-examples__grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .examples-tabs {
+        flex-wrap: wrap;
+    }
+    
+    .tab {
+        flex: 1;
+        min-width: 100px;
+    }
+    
+    .formula-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .reference-nav {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .reference-nav__link {
+        text-align: center;
+    }
+}
