@@ -124,7 +124,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
                 # Last resort fallback
                 result = _manualintegrate(rule)
                 if result:
-                    self.append(f"The integral evaluates to:")
+                    self.append("The integral evaluates to:")
                     self.append(self.format_math_display(result))
 
     @prints_rule(ConstantRule)
