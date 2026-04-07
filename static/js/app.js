@@ -101,10 +101,12 @@ class Modal {
 class Collapsible {
     constructor(selector = '.collapsible') {
         document.querySelectorAll(selector).forEach(el => {
-            const header = el.querySelector('h2');
+            // Get only the direct child h2 (not nested ones)
+            const header = el.querySelector(':scope > h2');
             if (!header) return;
             
-            header.addEventListener('click', () => {
+            header.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent bubbling to parent collapsibles
                 el.classList.toggle('open');
                 // Toggle text based on current state
                 const text = header.textContent.trim();
@@ -170,9 +172,10 @@ class CardLoader {
                     
                     // Initialize collapsibles in the new content
                     output.querySelectorAll('.collapsible').forEach(el => {
-                        const header = el.querySelector('h2');
+                        const header = el.querySelector(':scope > h2');
                         if (!header) return;
-                        header.addEventListener('click', () => {
+                        header.addEventListener('click', (e) => {
+                            e.stopPropagation();
                             el.classList.toggle('open');
                             const text = header.textContent.trim();
                             if (el.classList.contains('open')) {
