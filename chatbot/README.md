@@ -1,31 +1,55 @@
 # Math Chatbot
 
-A retrieval-based chatbot that answers calculus questions.
+A retrieval-based chatbot that only answers calculus questions. Non-math questions are politely deflected.
 
-## What it can help with
+## Topics Covered (55+ intents)
 
-- **Derivative rules:** power rule, chain rule, product rule, quotient rule
-- **Trig derivatives:** sin, cos, tan and their derivatives
-- **Exponential & log:** derivatives of e^x and ln(x)
-- **Integration:** by parts, u-substitution, definite vs indefinite
-- **Limits:** definition, L'Hôpital's rule, indeterminate forms
-- **Other:** implicit differentiation, partial derivatives, the +C constant
+**Derivative Rules**
+- Power, chain, product, quotient, sum, constant multiple
+- Trig derivatives (sin, cos, tan, sec, csc, cot)
+- Inverse trig derivatives
+- Exponential and logarithmic
+
+**Integration Techniques**
+- U-substitution, integration by parts
+- Trig substitution, partial fractions
+- Definite vs indefinite, +C constant
+
+**Limits**
+- Definition, L'Hôpital's rule
+- Squeeze theorem, one-sided limits
+- Limits at infinity, indeterminate forms
+
+**Series & Sequences**
+- Geometric, p-series, harmonic
+- Ratio test, comparison test
+- Taylor/Maclaurin series, power series
+
+**Applications**
+- Optimization, critical points
+- Related rates, linear approximation
+- Area under curve, volume of revolution
+
+**Theorems & Concepts**
+- Fundamental Theorem of Calculus
+- Mean Value Theorem, Rolle's Theorem
+- Continuity, differentiability
 
 ## How it works
 
-Uses TF-IDF vectorization to match user questions against predefined intents. When a question comes in:
+Uses TF-IDF vectorization to match user questions against predefined intents:
 
-1. Preprocess the text (lowercase, remove punctuation)
+1. Preprocess text (lowercase, remove punctuation)
 2. Convert to TF-IDF vector
-3. Find the most similar pattern using cosine similarity
+3. Find most similar pattern using cosine similarity
 4. Return a random response from that intent
 
-If the question doesn't match any math topic, the bot politely redirects to calculus topics.
+If confidence is low or question isn't math-related, returns a fallback response.
 
 ## Files
 
-- `math_chat.py` - The chatbot class and API
-- `data/math_intents.json` - Question patterns and responses
+- `math_chat.py` - MathChatbot class using scikit-learn
+- `data/intents.json` - 55+ intent categories with patterns and responses
 
 ## Usage
 
@@ -33,4 +57,8 @@ If the question doesn't match any math topic, the bot politely redirects to calc
 from chatbot.math_chat import chatbot_response
 
 answer = chatbot_response("what is the chain rule")
+# "The chain rule is for composite functions: d/dx[f(g(x))] = f'(g(x)) · g'(x)..."
+
+answer = chatbot_response("what's the weather")
+# "I only know about calculus! Try asking about derivatives, integrals, or limits."
 ```
