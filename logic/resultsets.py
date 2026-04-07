@@ -459,7 +459,7 @@ def get_card(name):
 
 
 all_cards['integral_alternate_fake'] = MultiResultCard(
-    "I don't know the steps but here is the answer",
+    "Result",
     get_card('integral_fake'),
 )
 

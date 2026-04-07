@@ -9,6 +9,22 @@ from sympy.integrals.manualintegrate import (
     ExpRule, ArctanRule, AlternativeRule, DontKnowRule, RewriteRule
 )
 
+# Import additional rules that may exist in newer SymPy versions
+try:
+    from sympy.integrals.manualintegrate import ReciprocalRule
+except ImportError:
+    ReciprocalRule = None
+
+try:
+    from sympy.integrals.manualintegrate import SinRule, CosRule
+except ImportError:
+    SinRule = CosRule = None
+
+try:
+    from sympy.integrals.manualintegrate import ArcsinRule
+except ImportError:
+    ArcsinRule = None
+
 # LogRule may not exist in newer SymPy versions
 try:
     from sympy.integrals.manualintegrate import LogRule
@@ -21,14 +37,25 @@ def _manualintegrate(rule):
     return rule.eval() if hasattr(rule, 'eval') else manualintegrate(rule.integrand, rule.variable)
 
 
+def _get_rule_values(rule):
+    """Get field values from a rule (works with namedtuples and dataclasses)."""
+    if hasattr(rule, '_asdict'):
+        return rule._asdict().values()
+    elif hasattr(rule, '__dataclass_fields__'):
+        from dataclasses import fields
+        return [getattr(rule, f.name) for f in fields(rule)]
+    return []
+
+
 def contains_dont_know(rule):
     """Check if a rule contains any DontKnowRule."""
     if isinstance(rule, DontKnowRule):
         return True
-    for val in rule._asdict().values():
-        if isinstance(val, tuple) and contains_dont_know(val):
-            return True
-        if isinstance(val, list) and any(contains_dont_know(i) for i in val):
+    for val in _get_rule_values(rule):
+        if hasattr(val, '__dataclass_fields__') or (isinstance(val, tuple) and hasattr(val, '_asdict')):
+            if contains_dont_know(val):
+                return True
+        if isinstance(val, list) and any(contains_dont_know(i) for i in val if hasattr(i, '__dataclass_fields__') or (isinstance(i, tuple) and hasattr(i, '_asdict'))):
             return True
     return False
 
@@ -37,8 +64,22 @@ def filter_unknown_alternatives(rule):
     """Filter out alternatives that contain DontKnowRule."""
     if isinstance(rule, AlternativeRule):
         known = [r for r in rule.alternatives if not contains_dont_know(r)]
-        return AlternativeRule(known or rule.alternatives, rule.context, rule.symbol)
+        # AlternativeRule fields changed in SymPy 1.14+
+        if hasattr(rule, 'context'):
+            return AlternativeRule(known or rule.alternatives, _get_context(rule), _get_symbol(rule))
+        else:
+            return AlternativeRule(rule.integrand, rule.variable, known or rule.alternatives)
     return rule
+
+
+def _get_context(rule):
+    """Get the context/integrand from a rule (compatible with old and new SymPy)."""
+    return getattr(rule, 'context', None) or getattr(rule, 'integrand', None)
+
+
+def _get_symbol(rule):
+    """Get the symbol/variable from a rule (compatible with old and new SymPy)."""
+    return getattr(rule, 'symbol', None) or getattr(rule, 'variable', None)
 
 
 # Rule type to print method mapping
@@ -67,36 +108,52 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             if isinstance(rule, rule_type):
                 printer(self, rule)
                 return
-        self.append(repr(rule))
+        # Fallback for unknown rules - display nicely instead of repr()
+        self._print_unknown_rule(rule)
+
+    def _print_unknown_rule(self, rule):
+        """Handle unknown rule types gracefully."""
+        with self.new_step():
+            integrand = _get_context(rule)
+            var = _get_symbol(rule)
+            if integrand and var:
+                self.append("Evaluate the integral:")
+                self.append(self.format_math_display(
+                    sympy.Eq(sympy.Integral(integrand, var), _manualintegrate(rule))))
+            else:
+                # Last resort fallback
+                result = _manualintegrate(rule)
+                if result:
+                    self.append("The integral evaluates to:")
+                    self.append(self.format_math_display(result))
 
     @prints_rule(ConstantRule)
     def print_Constant(self, rule):
         with self.new_step():
             self.append("The integral of a constant is the constant times the variable of integration:")
             self.append(self.format_math_display(
-                sympy.Eq(sympy.Integral(rule.constant, rule.symbol), _manualintegrate(rule))))
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
 
     @prints_rule(ConstantTimesRule)
     def print_ConstantTimes(self, rule):
         with self.new_step():
             self.append("The integral of a constant times a function is the constant times the integral:")
             self.append(self.format_math_display(sympy.Eq(
-                sympy.Integral(rule.context, rule.symbol),
-                rule.constant * sympy.Integral(rule.other, rule.symbol))))
+                sympy.Integral(_get_context(rule), _get_symbol(rule)),
+                rule.constant * sympy.Integral(rule.other, _get_symbol(rule)))))
             with self.new_level():
                 self.print_rule(rule.substep)
-            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">So, the result is: ')
-            self.append(self.format_math(_manualintegrate(rule)) + '</ol></div>')
+            self.append(f"So, the result is: {self.format_math(_manualintegrate(rule))}")
 
     @prints_rule(PowerRule)
     def print_Power(self, rule):
         with self.new_step():
             n = sympy.Symbol('n')
-            self.append(f"The integral of {self.format_math(rule.symbol ** n)} is "
-                       f"{self.format_math((rule.symbol ** (1 + n)) / (1 + n))} when "
+            self.append(f"The integral of {self.format_math(_get_symbol(rule) ** n)} is "
+                       f"{self.format_math((_get_symbol(rule) ** (1 + n)) / (1 + n))} when "
                        f"{self.format_math(sympy.Ne(n, -1))}:")
             self.append(self.format_math_display(
-                sympy.Eq(sympy.Integral(rule.context, rule.symbol), _manualintegrate(rule))))
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
 
     @prints_rule(AddRule)
     def print_Add(self, rule):
@@ -105,32 +162,32 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             for substep in rule.substeps:
                 with self.new_level():
                     self.print_rule(substep)
-            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">The result is: ')
-            self.append(self.format_math(_manualintegrate(rule)) + '</ol></div>')
+            self.append(f"The result is: {self.format_math(_manualintegrate(rule))}")
 
     @prints_rule(URule)
     def print_U(self, rule):
         with self.new_step(), self.new_u_vars() as (u, du):
-            dx = sympy.Symbol('d' + rule.symbol.name, commutative=0)
+            var = _get_symbol(rule)
+            dx = sympy.Symbol('d' + var.name, commutative=0)
             self.append(f"Let {self.format_math(sympy.Eq(u, rule.u_func))}.")
-            self.append(f"Then let {self.format_math(sympy.Eq(du, rule.u_func.diff(rule.symbol) * dx))} "
-                       f"and substitute {self.format_math(rule.constant * du)}:")
-            integrand = rule.constant * rule.substep.context.subs(rule.u_var, u)
-            self.append(self.format_math_display(sympy.Integral(integrand, u)))
+            self.append(f"Then let {self.format_math(sympy.Eq(du, rule.u_func.diff(var) * dx))} and substitute:")
+            # Get the substep's integrand for display
+            substep_integrand = _get_context(rule.substep)
+            if substep_integrand:
+                self.append(self.format_math_display(sympy.Integral(substep_integrand.subs(rule.u_var, u), u)))
             with self.new_level():
-                self.print_rule(replace_u_var(rule.substep, rule.symbol.name, u))
-            self.append(f'<div class="collapsible"><h2>open answer</h2><ol class="content">Now replace {self.format_math(u)} to get:')
-            self.append(self.format_math_display(_manualintegrate(rule)) + '</ol></div>')
+                self.print_rule(replace_u_var(rule.substep, var.name, u))
+            self.append(f"Now replace {self.format_math(u)} to get: {self.format_math_display(_manualintegrate(rule))}")
 
     @prints_rule(PartsRule)
     def print_Parts(self, rule):
         with self.new_step():
             self.append("Use integration by parts:")
-            u, v, du, dv = [sympy.Function(f)(rule.symbol) for f in ['u', 'v', 'du', 'dv']]
+            u, v, du, dv = [sympy.Function(f)(_get_symbol(rule)) for f in ['u', 'v', 'du', 'dv']]
             self.append(self.format_math_display(
                 r"\int \operatorname{u} \operatorname{dv} = \operatorname{u}\operatorname{v} - \int \operatorname{v} \operatorname{du}"))
             self.append(f"Let {self.format_math(sympy.Eq(u, rule.u))} and let {self.format_math(sympy.Eq(dv, rule.dv))}.")
-            self.append(f"Then {self.format_math(sympy.Eq(du, rule.u.diff(rule.symbol)))}.")
+            self.append(f"Then {self.format_math(sympy.Eq(du, rule.u.diff(_get_symbol(rule))))}.")
             self.append(f"To find {self.format_math(v)}:")
             with self.new_level():
                 self.print_rule(rule.v_step)
@@ -141,8 +198,8 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
     def print_CyclicParts(self, rule):
         with self.new_step():
             self.append("Use integration by parts, noting that the integrand eventually repeats itself.")
-            u, dv = sympy.Function('u')(rule.symbol), sympy.Function('dv')(rule.symbol)
-            current_integrand = rule.context
+            u, dv = sympy.Function('u')(_get_symbol(rule)), sympy.Function('dv')(_get_symbol(rule))
+            current_integrand = _get_context(rule)
             total_result = sympy.S.Zero
             sign = 1
             with self.new_level():
@@ -151,18 +208,18 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
                         self.append(f"For the integrand {self.format_math(current_integrand)}:")
                         self.append(f"Let {self.format_math(sympy.Eq(u, rl.u))} and {self.format_math(sympy.Eq(dv, rl.dv))}.")
                         v_f = _manualintegrate(rl.v_step)
-                        du_f = rl.u.diff(rule.symbol)
+                        du_f = rl.u.diff(_get_symbol(rule))
                         total_result += sign * rl.u * v_f
                         current_integrand = v_f * du_f
-                        self.append(f"Then {self.format_math(sympy.Eq(sympy.Integral(rule.context, rule.symbol), total_result - sign * sympy.Integral(current_integrand, rule.symbol)))}.")
+                        self.append(f"Then {self.format_math(sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), total_result - sign * sympy.Integral(current_integrand, _get_symbol(rule))))}.")
                         sign *= -1
                 with self.new_step():
                     self.append("Notice that the integrand has repeated itself, so move it to one side:")
                     self.append(self.format_math_display(sympy.Eq(
-                        (1 - rule.coefficient) * sympy.Integral(rule.context, rule.symbol), total_result)))
+                        (1 - rule.coefficient) * sympy.Integral(_get_context(rule), _get_symbol(rule)), total_result)))
                     self.append("Therefore,")
                     self.append(self.format_math_display(sympy.Eq(
-                        sympy.Integral(rule.context, rule.symbol), _manualintegrate(rule))))
+                        sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
 
     @prints_rule(TrigRule)
     def print_Trig(self, rule):
@@ -176,7 +233,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             if rule.func in messages:
                 self.append(messages[rule.func])
             self.append(self.format_math_display(
-                sympy.Eq(sympy.Integral(rule.context, rule.symbol), _manualintegrate(rule))))
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
 
     @prints_rule(ExpRule)
     def print_Exp(self, rule):
@@ -186,19 +243,19 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             else:
                 self.append("The integral of an exponential function is itself divided by the natural logarithm of the base.")
             self.append(self.format_math_display(
-                sympy.Eq(sympy.Integral(rule.context, rule.symbol), _manualintegrate(rule))))
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
 
     @prints_rule(ArctanRule)
     def print_Arctan(self, rule):
         with self.new_step():
-            self.append(f"The integral of {self.format_math(1 / (1 + rule.symbol ** 2))} is "
+            self.append(f"The integral of {self.format_math(1 / (1 + _get_symbol(rule) ** 2))} is "
                        f"{self.format_math(_manualintegrate(rule))}.")
 
     @prints_rule(RewriteRule)
     def print_Rewrite(self, rule):
         with self.new_step():
             self.append("Rewrite the integrand:")
-            self.append(self.format_math_display(sympy.Eq(rule.context, rule.rewritten)))
+            self.append(self.format_math_display(sympy.Eq(_get_context(rule), rule.rewritten)))
             self.print_rule(rule.substep)
 
     @prints_rule(DontKnowRule)
@@ -206,7 +263,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
         with self.new_step():
             self.append("Don't know the steps in finding this integral.")
             self.append("But the integral is")
-            self.append(self.format_math_display(sympy.integrate(rule.context, rule.symbol)))
+            self.append(self.format_math_display(sympy.integrate(_get_context(rule), _get_symbol(rule))))
 
     @prints_rule(AlternativeRule)
     def print_Alternative(self, rule):
@@ -214,10 +271,10 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
         if len(rule.alternatives) == 1:
             self.print_rule(rule.alternatives[0])
             return
-        if rule.context.func in self.alternative_functions_printed:
+        if _get_context(rule).func in self.alternative_functions_printed:
             self.print_rule(rule.alternatives[0])
         else:
-            self.alternative_functions_printed.add(rule.context.func)
+            self.alternative_functions_printed.add(_get_context(rule).func)
             with self.new_step():
                 self.append("There are multiple ways to do this integral.")
                 for i, r in enumerate(rule.alternatives):
@@ -227,7 +284,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
                             self.print_rule(r)
 
     def format_math_constant(self, math):
-        return f'\\[{sympy.latex(math)}+ \\mathrm{{C}}\\]'
+        return f'<div class="step__math">\\[{sympy.latex(math)}+ \\mathrm{{C}}\\]</div>'
 
     def finalize(self):
         rule = filter_unknown_alternatives(self.rule)
@@ -237,11 +294,11 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             if simp != answer:
                 answer = simp
                 with self.new_step():
-                    self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">Now simplify:')
-                    self.append(self.format_math_display(simp) + '</ol></div>')
+                    self.append('Now simplify:')
+                    self.append_raw(self.format_math_display(simp))
             with self.new_step():
-                self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">Add the constant of integration to get:')
-                self.append(self.format_math_constant(answer) + '</ol></div>')
+                self.append('Add the constant of integration:')
+                self.append_raw(self.format_math_constant(answer))
         self.lines.append('</ol>')
         return '\n'.join(self.lines)
 
@@ -253,6 +310,48 @@ if LogRule is not None:
         with self.new_step():
             self.append(f"The integral of {self.format_math(1 / rule.func)} is "
                        f"{self.format_math(_manualintegrate(rule))}.")
+
+
+# Register ReciprocalRule printer if available
+if ReciprocalRule is not None:
+    @prints_rule(ReciprocalRule)
+    def print_Reciprocal(self, rule):
+        with self.new_step():
+            integrand = _get_context(rule)
+            var = _get_symbol(rule)
+            self.append(f"The integral of {self.format_math(integrand)} is the natural logarithm:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(integrand, var), _manualintegrate(rule))))
+
+
+# Register SinRule printer if available
+if SinRule is not None:
+    @prints_rule(SinRule)
+    def print_Sin(self, rule):
+        with self.new_step():
+            self.append("The integral of sine is negative cosine:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
+
+
+# Register CosRule printer if available
+if CosRule is not None:
+    @prints_rule(CosRule)
+    def print_Cos(self, rule):
+        with self.new_step():
+            self.append("The integral of cosine is sine:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
+
+
+# Register ArcsinRule printer if available
+if ArcsinRule is not None:
+    @prints_rule(ArcsinRule)
+    def print_Arcsin(self, rule):
+        with self.new_step():
+            self.append("This is a standard arcsine integral:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
 
 
 def print_html_steps(function, symbol):

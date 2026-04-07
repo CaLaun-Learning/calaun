@@ -97,15 +97,58 @@ class Modal {
     }
 }
 
-// Collapsible sections
+// Collapsible steps - click on step to toggle math visibility
 class Collapsible {
-    constructor(selector = '.collapsible') {
-        document.querySelectorAll(selector).forEach(el => {
-            const header = el.querySelector('h2');
-            header?.addEventListener('click', () => {
+    constructor(selector = '.step.collapsible') {
+        this.selector = selector;
+        this.allExpanded = false;
+        this.initCollapsibles(document.querySelectorAll(selector));
+        this.initToggleAllButton();
+    }
+    
+    initCollapsibles(elements) {
+        elements.forEach(el => {
+            // Skip if already initialized
+            if (el.dataset.initialized) return;
+            el.dataset.initialized = 'true';
+            
+            // Make the whole step clickable
+            el.style.cursor = 'pointer';
+            
+            el.addEventListener('click', (e) => {
+                // Don't toggle if clicking on a link or nested step
+                if (e.target.closest('a') || (e.target.closest('.step') !== el)) {
+                    return;
+                }
+                e.preventDefault();
+                e.stopPropagation();
                 el.classList.toggle('open');
-                header.textContent = el.classList.contains('open') ? 'hide' : 'show';
             });
+        });
+    }
+    
+    initToggleAllButton() {
+        const btn = document.getElementById('toggleAllSteps');
+        if (!btn) return;
+        
+        btn.addEventListener('click', () => {
+            this.allExpanded = !this.allExpanded;
+            const steps = document.querySelectorAll(this.selector);
+            
+            steps.forEach(step => {
+                if (this.allExpanded) {
+                    step.classList.add('open');
+                } else {
+                    step.classList.remove('open');
+                }
+            });
+            
+            btn.textContent = this.allExpanded ? 'Hide all steps' : 'Show all steps';
+            
+            // Re-render MathJax for newly visible content
+            if (this.allExpanded && window.MathJax?.typesetPromise) {
+                MathJax.typesetPromise();
+            }
         });
     }
 }
@@ -159,6 +202,22 @@ class CardLoader {
                     const output = document.createElement('div');
                     output.innerHTML = data.output;
                     card.appendChild(output);
+                    
+                    // Initialize collapsible steps in the new content
+                    output.querySelectorAll('.step.collapsible').forEach(el => {
+                        if (el.dataset.initialized) return;
+                        el.dataset.initialized = 'true';
+                        el.style.cursor = 'pointer';
+                        
+                        el.addEventListener('click', (e) => {
+                            if (e.target.closest('a') || (e.target.closest('.step') !== el)) {
+                                return;
+                            }
+                            e.preventDefault();
+                            e.stopPropagation();
+                            el.classList.toggle('open');
+                        });
+                    });
                 } else if (data.error) {
                     const error = document.createElement('div');
                     error.className = 'card__error-message';
@@ -206,12 +265,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Use URL from template or fall back to default
     const chatBotUrl = window.CHATBOT_URL || '/api/chatbot/';
     const chatBot = new ChatBot('#chatModal', chatBotUrl);
-    new Collapsible();
+    
+    // Initialize collapsibles
+    const collapsible = new Collapsible();
+    
+    // Initialize card loader
     new CardLoader();
     
     // Convert legacy math notation
     convertLegacyMath();
+    
+    // Re-initialize collapsibles after a short delay to catch any late-rendered content
+    setTimeout(() => {
+        collapsible.initCollapsibles(document.querySelectorAll('.step.collapsible'));
+    }, 500);
 });
-
-// Export for potential module use
-export { ChatBot, Modal, Collapsible, CardLoader };

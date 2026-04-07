@@ -24,6 +24,9 @@
 
 <!-- Results -->
 <div class="results">
+    <div class="steps-controls">
+        <button id="toggleAllSteps" class="btn btn--secondary">Show all steps</button>
+    </div>
     {% for cell in result %}
         {% show_card cell input %}
     {% endfor %}

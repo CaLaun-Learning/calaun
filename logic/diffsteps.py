@@ -273,8 +273,7 @@ class DiffPrinter(stepprinter.HTMLPrinter):
             self.append("The derivative of a constant times a function is the constant times the derivative of the function.")
             with self.new_level():
                 self.print_rule(rule.substep)
-            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">So, the result is: ')
-            self.append(self.format_math(diff(rule)) + '</ol></div>')
+            self.append(f"So, the result is: {self.format_math(diff(rule))}")
 
     def print_AddRule(self, rule):
         with self.new_step():
@@ -282,8 +281,7 @@ class DiffPrinter(stepprinter.HTMLPrinter):
             with self.new_level():
                 for substep in rule.substeps:
                     self.print_rule(substep)
-            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">The result is: ')
-            self.append(self.format_math(diff(rule)) + '</ol></div>')
+            self.append(f"The result is: {self.format_math(diff(rule))}")
 
     def print_MulRule(self, rule):
         with self.new_step():
@@ -305,8 +303,7 @@ class DiffPrinter(stepprinter.HTMLPrinter):
                 with self.new_level():
                     self.print_rule(substep)
             
-            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">The result is:')
-            self.append(self.format_math(diff(rule)) + '</ol></div>')
+            self.append(f"The result is: {self.format_math(diff(rule))}")
 
     def print_DivRule(self, rule):
         with self.new_step():
@@ -323,8 +320,7 @@ class DiffPrinter(stepprinter.HTMLPrinter):
             self.append(f"Find {self.format_math(gg.diff(x))}:")
             with self.new_level():
                 self.print_rule(rule.denomstep)
-            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">Now plug in to get:')
-            self.append(self.format_math(diff(rule)) + '</ol></div>')
+            self.append(f"Now plug in to get: {self.format_math(diff(rule))}")
 
     def print_ChainRule(self, rule):
         with self.new_step(), self.new_u_vars() as (u, _):
@@ -338,8 +334,7 @@ class DiffPrinter(stepprinter.HTMLPrinter):
                 self.append(f"Now, before we apply the chain rule. <br><br> First find {self.format_math(sympy.Derivative(rule.inner, rule.symbol))}:")
                 with self.new_level():
                     self.print_rule(rule.innerstep)
-                self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">The result of the chain rule is:')
-                self.append(self.format_math(diff(rule)) + '</ol></div>')
+                self.append(f"The result of the chain rule is: {self.format_math(diff(rule))}")
 
     def print_TrigRule(self, rule):
         with self.new_step():
@@ -403,8 +398,8 @@ class DiffPrinter(stepprinter.HTMLPrinter):
             simp = sympy.simplify(answer)
             if simp != answer:
                 with self.new_step():
-                    self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">Now simplify to get:')
-                    self.append(self.format_math_display(simp) + '</ol></div>')
+                    self.append('Now simplify to get:')
+                    self.append_raw(self.format_math_display(simp))
         self.lines.append('</ol>')
         return '\n'.join(self.lines)
 

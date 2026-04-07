@@ -224,67 +224,201 @@ body {
     padding: 0.5rem 0;
 }
 
-/* Steps (Collapsible) */
+/* Steps List */
 .steps {
-    margin-top: 1rem;
-}
-
-.steps ol {
     list-style: none;
     counter-reset: step;
+    margin: 1rem 0;
+    padding: 0;
 }
 
-.steps li {
-    position: relative;
-    padding: 1rem 1rem 1rem 3rem;
-    border-left: 2px solid var(--color-border);
-    margin-left: 1rem;
-}
-
-.steps li::before {
-    counter-increment: step;
-    content: counter(step);
-    position: absolute;
-    left: -0.75rem;
-    top: 1rem;
-    width: 1.5rem;
-    height: 1.5rem;
-    background: var(--color-primary);
-    color: var(--color-text-inverse);
-    border-radius: 50%;
-    font-size: 0.75rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.steps p {
+.steps--nested {
+    margin-left: 2rem;
+    margin-top: 0.5rem;
     margin-bottom: 0.5rem;
 }
 
-.collapsible h2 {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--color-primary);
+/* Individual Step */
+.step {
+    position: relative;
+    padding: 1rem 2.5rem 1rem 3rem;
+    border-left: 2px solid var(--color-border);
+    margin-left: 1.25rem;
+    margin-bottom: 0.75rem;
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition);
+}
+
+.step:hover {
+    box-shadow: var(--shadow-md);
+    border-left-color: var(--color-primary);
+}
+
+/* Step Number Badge */
+.step::before {
+    counter-increment: step;
+    content: attr(data-step);
+    position: absolute;
+    left: -1rem;
+    top: 1rem;
+    width: 2rem;
+    height: 2rem;
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    padding: 0.5rem 0;
+    transition: all var(--transition);
+    z-index: 1;
+    box-shadow: 0 2px 6px rgba(232, 93, 64, 0.35);
 }
 
-.collapsible h2:hover {
-    text-decoration: underline;
+.step:hover::before {
+    background: var(--color-primary-dark);
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(232, 93, 64, 0.4);
 }
 
-.collapsible .content {
-    display: none;
+/* Step Text - always visible */
+.step__text {
+    margin: 0.25rem 0;
+    line-height: 1.7;
+    color: var(--color-text);
+}
+
+/* Step Math - collapsible */
+.step__math {
+    transition: all var(--transition);
+    background: #f8fafc;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    margin: 0.75rem 0;
+    border-left: 3px solid var(--color-primary);
+    overflow-x: auto;
+}
+
+/* Step Content wrapper */
+.step__content {
+    transition: all var(--transition);
+}
+
+.step__content p {
+    margin: 0.25rem 0;
+    line-height: 1.6;
+}
+
+/* Collapsible Step Behavior - hide math and nested steps when collapsed */
+.step.collapsible:not(.open) .step__math,
+.step.collapsible:not(.open) > .step__content,
+.step.collapsible:not(.open) > .steps--nested {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Ensure inline math spans are also hidden */
+.step.collapsible:not(.open) span.step__math {
+    display: none !important;
+}
+
+.step.collapsible.open .step__math,
+.step.collapsible.open > .step__content,
+.step.collapsible.open > .steps--nested {
+    display: block;
+    visibility: visible;
+    height: auto;
+    overflow: visible;
+}
+
+/* Inline math stays inline when visible */
+span.step__math {
+    display: inline;
+    background: transparent;
+    padding: 0.125rem 0.25rem;
+    border-radius: 3px;
+    border-left: none;
+    margin: 0;
+}
+
+.step.collapsible.open span.step__math {
+    display: inline !important;
+    visibility: visible !important;
+    height: auto !important;
+    background: rgba(232, 93, 64, 0.1);
+    border-radius: 3px;
+}
+
+.step.collapsible.open div.step__math {
+    display: block !important;
+    visibility: visible !important;
+    height: auto !important;
+}
+
+/* Expand/Collapse Icon */
+.step.collapsible::after {
+    content: '';
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--color-primary);
+    transition: transform var(--transition);
+}
+
+.step.collapsible:not(.open)::after {
+    transform: rotate(-90deg);
+}
+
+.step.collapsible.open::after {
+    transform: rotate(0deg);
+}
+
+/* Steps Controls */
+.steps-controls {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 1.5rem;
+    gap: 0.75rem;
+}
+
+.btn {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn--secondary {
+    background: var(--color-primary);
+    color: var(--color-text-inverse);
+}
+
+.btn--secondary:hover {
+    background: var(--color-primary-dark);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Step Details (for method alternatives) */
+.step__details {
+    margin-top: 0.5rem;
     padding: 0.75rem;
     background: #f8fafc;
     border-radius: var(--radius-sm);
-    margin-top: 0.5rem;
-}
-
-.collapsible.open .content {
-    display: block;
 }
 
 /* Examples Grid */
