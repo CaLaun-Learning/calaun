@@ -959,6 +959,14 @@ script[type="math/tex"] {
     margin: 0 auto;
 }
 
+.hero__icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-md);
+}
+
 .hero__title {
     font-size: 3.5rem;
     font-weight: 800;
