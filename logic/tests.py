@@ -7,6 +7,7 @@ from sympy import Symbol, sin, cos, tan, exp, log, sqrt, pi, E, oo
 
 from logic.diffsteps import diff_steps, DiffPrinter
 from logic.intsteps import integral_steps, IntegralPrinter, _manualintegrate
+from logic.limitsteps import print_html_steps as limit_html_steps
 from logic.utils import Eval, latexify, arguments
 from logic.logic import UserInput
 
@@ -162,6 +163,69 @@ class TestIntegration(unittest.TestCase):
         self.assertEqual(sympy.simplify(result - expected), 0)
 
 
+class TestLimits(unittest.TestCase):
+    """Test cases for limit functionality."""
+
+    def setUp(self):
+        self.x = Symbol('x')
+
+    def test_simple_limit(self):
+        """Test simple polynomial limit."""
+        expr = self.x ** 2 + 2 * self.x
+        result = sympy.limit(expr, self.x, 3)
+        self.assertEqual(result, 15)
+
+    def test_limit_zero_over_zero(self):
+        """Test 0/0 indeterminate form with factoring."""
+        expr = (self.x ** 2 - 1) / (self.x - 1)
+        result = sympy.limit(expr, self.x, 1)
+        self.assertEqual(result, 2)
+
+    def test_limit_sin_x_over_x(self):
+        """Test classic sin(x)/x limit."""
+        expr = sin(self.x) / self.x
+        result = sympy.limit(expr, self.x, 0)
+        self.assertEqual(result, 1)
+
+    def test_limit_infinity(self):
+        """Test limit at infinity."""
+        expr = 1 / self.x
+        result = sympy.limit(expr, self.x, oo)
+        self.assertEqual(result, 0)
+
+    def test_limit_negative_infinity(self):
+        """Test limit at negative infinity."""
+        expr = self.x ** 2
+        result = sympy.limit(expr, self.x, -oo)
+        self.assertEqual(result, oo)
+
+    def test_limit_exponential(self):
+        """Test exponential limit."""
+        expr = exp(-self.x)
+        result = sympy.limit(expr, self.x, oo)
+        self.assertEqual(result, 0)
+
+    def test_limit_steps_generates_html(self):
+        """Test that limit_html_steps generates HTML output."""
+        expr = self.x ** 2
+        html = limit_html_steps(expr, self.x, 3)
+        self.assertIsInstance(html, str)
+        self.assertIn('<ol', html)
+        self.assertIn('step', html)
+
+    def test_limit_steps_0_over_0(self):
+        """Test limit steps for 0/0 form."""
+        expr = (self.x ** 2 - 1) / (self.x - 1)
+        html = limit_html_steps(expr, self.x, 1)
+        self.assertIn('indeterminate', html.lower())
+
+    def test_limit_steps_lhopital(self):
+        """Test limit steps uses L'Hôpital's rule."""
+        expr = sin(self.x) / self.x
+        html = limit_html_steps(expr, self.x, 0)
+        self.assertIn("pital", html)  # L'Hôpital
+
+
 class TestEvalUtility(unittest.TestCase):
     """Test cases for the Eval utility class."""
 
@@ -220,6 +284,11 @@ class TestUserInput(unittest.TestCase):
     def test_integral_expression(self):
         """Test processing an integral expression."""
         result = self.user_input.change_to_cards("integrate(x**2, x)")
+        self.assertIsInstance(result, list)
+
+    def test_limit_expression(self):
+        """Test processing a limit expression."""
+        result = self.user_input.change_to_cards("limit(x**2, x, 2)")
         self.assertIsInstance(result, list)
 
     def test_invalid_input_returns_error(self):

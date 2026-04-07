@@ -4,6 +4,7 @@ from sympy.core.symbol import Symbol
 import docutils.core
 from logic import diffsteps
 from logic import intsteps
+from logic import limitsteps
 
 
 class ResultCard(object):
@@ -195,6 +196,9 @@ def is_sum(input_evaluated):
 def is_product(input_evaluated):
     return isinstance(input_evaluated, sympy.Product)
 
+def is_limit(input_evaluated):
+    return isinstance(input_evaluated, sympy.Limit)
+
 
 # Functions to convert input and extract variable used
 
@@ -249,6 +253,24 @@ def extract_derivative(arguments, evaluated):
         'variables': variables,
         'variable': variables[0],
         'input_evaluated': arguments[1][0]
+    }
+
+def extract_limit(arguments, evaluated):
+    """Extract components from a limit expression."""
+    # limit(expr, var, point) or limit(expr, var, point, direction)
+    args = arguments[1]
+    expr = args[0]
+    var = args[1] if len(args) > 1 else list(expr.atoms(sympy.Symbol))[0]
+    point = args[2] if len(args) > 2 else sympy.S.Zero
+    direction = args[3] if len(args) > 3 else '+'
+    
+    return {
+        'expression': expr,
+        'variables': [var],
+        'variable': var,
+        'point': point,
+        'direction': direction,
+        'input_evaluated': expr
     }
 
 # Formatting functions
@@ -368,6 +390,31 @@ def eval_intsteps(evaluator, components, parameters=None):
 
     return intsteps.print_html_steps(integrand, components['variable'])
 
+def eval_limitsteps(evaluator, components, parameters=None):
+    """Evaluate limit steps."""
+    expr = components.get('expression', evaluator.get('input_evaluated'))
+    var = components['variable']
+    point = components.get('point', sympy.S.Zero)
+    direction = components.get('direction', '+')
+    
+    return limitsteps.print_html_steps(expr, var, point, direction)
+
+def eval_limit(evaluator, components, parameters=None):
+    """Evaluate limit result."""
+    expr = components.get('expression', evaluator.get('input_evaluated'))
+    var = components['variable']
+    point = components.get('point', sympy.S.Zero)
+    direction = components.get('direction', '+')
+    
+    return sympy.limit(expr, var, point, direction)
+
+def format_limit_input(line, result, components):
+    """Format limit input for display."""
+    expr = components.get('expression', result)
+    var = components['variable']
+    point = components.get('point', 0)
+    return f"limit({expr}, {var}, {point})"
+
 # https://www.python.org/dev/peps/pep-0257/
 def trim(docstring):
     if not docstring:
@@ -452,6 +499,21 @@ all_cards = {
         multivariate=False,
         format_output_function=format_dict_title('Variable', 'Possible Value')
     ),
+
+    'limit': FakeResultCard(
+        "Limit",
+        "limit(%s, {_var}, {point})",
+        lambda expr, var: sympy.Limit(expr, var, 0),
+        eval_method=eval_limit,
+        format_input_function=format_limit_input),
+
+    'limitsteps': FakeResultCard(
+        "Limit Steps",
+        "limit(%s, {_var}, {point})",
+        no_pre_output,
+        format_output_function=format_steps,
+        eval_method=eval_limitsteps,
+        format_input_function=format_limit_input),
 }
 
 def get_card(name):
@@ -488,6 +550,7 @@ result_cards: None or list
 result_sets = [
     ('integrate', extract_integral, ['integral_alternate_fake', 'intsteps']),
     ('diff', extract_derivative, ['diff', 'diffsteps']),
+    ('limit', extract_limit, ['limit', 'limitsteps']),
     ('help', extract_first, ['function_docs']),
     ('rsolve', None, None),
     ('product', None, []),  # suppress automatic Result card
@@ -499,6 +562,7 @@ result_sets = [
     (is_product, None, ['doit']),
     (is_sum, None, None),
     (is_product, None, None),
+    (is_limit, None, ['limitsteps']),
     (is_not_constant_basic, None, [ 'diff', 'integral_alternate'])
 ]
 
