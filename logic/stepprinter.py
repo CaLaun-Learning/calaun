@@ -13,14 +13,25 @@ def functionnames(numterms):
 
 def replace_u_var(rule, old_u, new_u):
     """Replace a variable in a rule with a new variable."""
-    d = rule._asdict()
+    # Handle both namedtuples (old SymPy) and dataclasses (SymPy 1.14+)
+    if hasattr(rule, '_asdict'):
+        # Old namedtuple style
+        d = rule._asdict()
+    elif hasattr(rule, '__dataclass_fields__'):
+        # New dataclass style (SymPy 1.14+)
+        from dataclasses import fields
+        d = {f.name: getattr(rule, f.name) for f in fields(rule)}
+    else:
+        return rule
+    
     for field, val in d.items():
         if isinstance(val, sympy.Basic):
             d[field] = val.subs(old_u, new_u)
-        elif isinstance(val, tuple):
+        elif hasattr(val, '__dataclass_fields__') or (isinstance(val, tuple) and hasattr(val, '_asdict')):
             d[field] = replace_u_var(val, old_u, new_u)
         elif isinstance(val, list):
-            d[field] = [replace_u_var(item, old_u, new_u) if isinstance(item, tuple) 
+            d[field] = [replace_u_var(item, old_u, new_u) 
+                        if hasattr(item, '__dataclass_fields__') or (isinstance(item, tuple) and hasattr(item, '_asdict'))
                         else item for item in val]
     return rule.__class__(**d)
 
