@@ -1,28 +1,42 @@
-# Calculus-Calculator-with-Chatbot
+# Calculus Calculator with Chatbot
 
-#### Requirements: 
-```
-python
-pip
-virtualenv
-```
-#### First, setup environment with [virtualenv](https://virtualenv.pypa.io):
+A Django-based calculus tutor application with an integrated ML-powered chatbot.
 
-```
-virtualenv env
-source env/bin/activate
-pip install -r requirements.txt
-```
+## Requirements
 
-Download nltk data for WordNetLemmatizer and word_tokenize
-```
-python chatbot/nltk_packages.py 
-```
+- Python 3.9+ (tested with Python 3.12)
+- pip
 
-Then
-```
-python manage.py runserver
-```
+## Setup
+
+1. **Create a virtual environment:**
+   ```bash
+   python3 -m venv env
+   source env/bin/activate
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   pip install --upgrade pip
+   pip install -r requirements.txt
+   ```
+
+3. **Download NLTK data** (for WordNetLemmatizer and word_tokenize):
+   ```bash
+   python chatbot/nltk_packages.py
+   ```
+
+4. **Run the development server:**
+   ```bash
+   python manage.py runserver
+   ```
+
+## Tech Stack
+
+- **Backend:** Django 4.2
+- **ML/AI:** TensorFlow 2.16, Keras, NLTK
+- **Math:** SymPy, NumPy, SciPy
+- **Database:** PostgreSQL (psycopg2)
 
 
 https://user-images.githubusercontent.com/59368349/159202148-65619603-7f24-47d9-bf71-4aedc3883eb4.mov
