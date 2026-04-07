@@ -1,129 +1,313 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Reference - Calc Tutor{% endblock %}
+{% block title %}Calculus Reference Guide - Calc Tutor{% endblock %}
 
 {% block content %}
 <!-- Header -->
 <header class="header">
     <h1 class="header__title"><a href="/">Calc Tutor</a></h1>
     <nav class="header__nav">
+        <a href="/" class="header__link">Home</a>
         <a href="#" class="header__link" data-chat-trigger>Chat Bot</a>
     </nav>
 </header>
 
-<!-- Reference Tables -->
-<main class="reference">
-    <h2 class="reference__title">Integration & Differentiation Tables</h2>
+<!-- Reference Guide -->
+<main class="reference-guide">
+    <h1 class="reference-guide__title">Quick Reference</h1>
+    <p class="reference-guide__intro">All the formulas you need in one spot. Tap any one to try it out.</p>
     
-    <div class="search-container search-container--compact">
-        <input type="text" 
-               id="tableSearch" 
-               class="search-input" 
-               placeholder="Search tables..."
-               aria-label="Search reference tables">
-    </div>
+    <!-- Navigation -->
+    <nav class="reference-nav">
+        <a href="#derivatives" class="reference-nav__link">Derivatives</a>
+        <a href="#integrals" class="reference-nav__link">Integrals</a>
+        <a href="#limits" class="reference-nav__link">Limits</a>
+    </nav>
 
-    <div class="reference__grid" id="referenceGrid">
-        <article class="reference__card" data-title="A brief table">
-            <h3>A Brief Table</h3>
-            <img src="{% static 'images/A-brief-table.png' %}" 
-                 alt="A brief integration table" 
-                 loading="lazy">
-        </article>
+    <!-- Derivatives Section -->
+    <section id="derivatives" class="formula-section">
+        <h2 class="formula-section__title">Derivative Rules</h2>
+        
+        <div class="formula-group">
+            <h3>Basic Rules</h3>
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[c] = 0\)</div>
+                    <div class="formula-card__name">Constant Rule</div>
+                    <a href="/input/?i=diff(5, x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[x^n] = nx^{n-1}\)</div>
+                    <div class="formula-card__name">Power Rule</div>
+                    <a href="/input/?i=diff(x^5, x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[cf(x)] = c \cdot f'(x)\)</div>
+                    <div class="formula-card__name">Constant Multiple</div>
+                    <a href="/input/?i=diff(3*x^2, x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[f + g] = f' + g'\)</div>
+                    <div class="formula-card__name">Sum Rule</div>
+                    <a href="/input/?i=diff(x^2 + x^3, x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[fg] = f'g + fg'\)</div>
+                    <div class="formula-card__name">Product Rule</div>
+                    <a href="/input/?i=diff(x*sin(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}\left[\frac{f}{g}\right] = \frac{f'g - fg'}{g^2}\)</div>
+                    <div class="formula-card__name">Quotient Rule</div>
+                    <a href="/input/?i=diff(x/(x+1), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[f(g(x))] = f'(g(x)) \cdot g'(x)\)</div>
+                    <div class="formula-card__name">Chain Rule</div>
+                    <a href="/input/?i=diff(sin(x^2), x)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
 
-        <article class="reference__card" data-title="Basic Forms">
-            <h3>Basic Forms</h3>
-            <img src="{% static 'images/Page 1 Basic form.png' %}" 
-                 alt="Basic integration forms" 
-                 loading="lazy">
-        </article>
+        <div class="formula-group">
+            <h3>Trigonometric Functions</h3>
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\sin x] = \cos x\)</div>
+                    <a href="/input/?i=diff(sin(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\cos x] = -\sin x\)</div>
+                    <a href="/input/?i=diff(cos(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\tan x] = \sec^2 x\)</div>
+                    <a href="/input/?i=diff(tan(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\cot x] = -\csc^2 x\)</div>
+                    <a href="/input/?i=diff(cot(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\sec x] = \sec x \tan x\)</div>
+                    <a href="/input/?i=diff(sec(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\csc x] = -\csc x \cot x\)</div>
+                    <a href="/input/?i=diff(csc(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
 
-        <article class="reference__card" data-title="Forms with ax + b">
-            <h3>Forms with ax + b</h3>
-            <img src="{% static 'images/Page 2 forms with ax + b and a^2 + x^2.png' %}" 
-                 alt="Forms with ax + b" 
-                 loading="lazy">
-        </article>
+        <div class="formula-group">
+            <h3>Inverse Trigonometric Functions</h3>
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\arcsin x] = \frac{1}{\sqrt{1-x^2}}\)</div>
+                    <a href="/input/?i=diff(asin(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\arccos x] = \frac{-1}{\sqrt{1-x^2}}\)</div>
+                    <a href="/input/?i=diff(acos(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\arctan x] = \frac{1}{1+x^2}\)</div>
+                    <a href="/input/?i=diff(atan(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
 
-        <article class="reference__card" data-title="Forms with ax + b and a^2 + x^2">
-            <h3>Forms with a² + x²</h3>
-            <img src="{% static 'images/Page 3 forms with ax + b and a^2 + x^2.png' %}" 
-                 alt="Forms with a² + x²" 
-                 loading="lazy">
-        </article>
-
-        <article class="reference__card" data-title="Forms with a^2 - x^2">
-            <h3>Forms with a² - x²</h3>
-            <img src="{% static 'images/Page 4 forms with a^2 - x^2 and x^2 - a^2.png' %}" 
-                 alt="Forms with a² - x²" 
-                 loading="lazy">
-        </article>
-
-        <article class="reference__card" data-title="Forms with a^2 - x^2 and x^2 - a^2">
-            <h3>Forms with x² - a²</h3>
-            <img src="{% static 'images/Page 5 forms with a^2 - x^2 and x^2 - a^2.png' %}" 
-                 alt="Forms with x² - a²" 
-                 loading="lazy">
-        </article>
-
-        <article class="reference__card" data-title="Trigonometric Form">
-            <h3>Trigonometric Forms I</h3>
-            <img src="{% static 'images/Page 6 Trigonometric form.png' %}" 
-                 alt="Trigonometric integration forms" 
-                 loading="lazy">
-        </article>
-
-        <article class="reference__card" data-title="Trigonometric Form">
-            <h3>Trigonometric Forms II</h3>
-            <img src="{% static 'images/Page 7 Trigonometric form.png' %}" 
-                 alt="More trigonometric forms" 
-                 loading="lazy">
-        </article>
-
-        <article class="reference__card" data-title="Inverse Trigonometric Form">
-            <h3>Inverse Trigonometric Forms</h3>
-            <img src="{% static 'images/Page 8 inverse Trigonometric form.png' %}" 
-                 alt="Inverse trigonometric forms" 
-                 loading="lazy">
-        </article>
-
-        <article class="reference__card" data-title="Exponential and logarithmic Form">
+        <div class="formula-group">
             <h3>Exponential & Logarithmic</h3>
-            <img src="{% static 'images/Page 9 exponential and logarithmic form.png' %}" 
-                 alt="Exponential and logarithmic forms" 
-                 loading="lazy">
-        </article>
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[e^x] = e^x\)</div>
+                    <a href="/input/?i=diff(exp(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[a^x] = a^x \ln a\)</div>
+                    <a href="/input/?i=diff(2^x, x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\ln x] = \frac{1}{x}\)</div>
+                    <a href="/input/?i=diff(ln(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\frac{d}{dx}[\log_a x] = \frac{1}{x \ln a}\)</div>
+                    <a href="/input/?i=diff(log(x, 10), x)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <article class="reference__card" data-title="Forms with sqrt(2ax - x^2)">
-            <h3>Forms with √(2ax - x²)</h3>
-            <img src="{% static 'images/Page 10 forms with square root of 2ax - x^2.png' %}" 
-                 alt="Forms with square root of 2ax - x²" 
-                 loading="lazy">
-        </article>
+    <!-- Integrals Section -->
+    <section id="integrals" class="formula-section">
+        <h2 class="formula-section__title">Integration Formulas</h2>
+        
+        <div class="formula-group">
+            <h3>Basic Integrals</h3>
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int x^n \, dx = \frac{x^{n+1}}{n+1} + C\)</div>
+                    <div class="formula-card__name">Power Rule (n ≠ -1)</div>
+                    <a href="/input/?i=integrate(x^3, x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \frac{1}{x} \, dx = \ln|x| + C\)</div>
+                    <a href="/input/?i=integrate(1/x, x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int e^x \, dx = e^x + C\)</div>
+                    <a href="/input/?i=integrate(exp(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int a^x \, dx = \frac{a^x}{\ln a} + C\)</div>
+                    <a href="/input/?i=integrate(2^x, x)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
 
-        <article class="reference__card" data-title="Hyperbolic Forms">
-            <h3>Hyperbolic Forms I</h3>
-            <img src="{% static 'images/Page 11 Hyperboic forms.png' %}" 
-                 alt="Hyperbolic integration forms" 
-                 loading="lazy">
-        </article>
+        <div class="formula-group">
+            <h3>Trigonometric Integrals</h3>
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \sin x \, dx = -\cos x + C\)</div>
+                    <a href="/input/?i=integrate(sin(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \cos x \, dx = \sin x + C\)</div>
+                    <a href="/input/?i=integrate(cos(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \sec^2 x \, dx = \tan x + C\)</div>
+                    <a href="/input/?i=integrate(sec(x)^2, x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \csc^2 x \, dx = -\cot x + C\)</div>
+                    <a href="/input/?i=integrate(csc(x)^2, x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \sec x \tan x \, dx = \sec x + C\)</div>
+                    <a href="/input/?i=integrate(sec(x)*tan(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \csc x \cot x \, dx = -\csc x + C\)</div>
+                    <a href="/input/?i=integrate(csc(x)*cot(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \tan x \, dx = -\ln|\cos x| + C\)</div>
+                    <a href="/input/?i=integrate(tan(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \cot x \, dx = \ln|\sin x| + C\)</div>
+                    <a href="/input/?i=integrate(cot(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
 
-        <article class="reference__card" data-title="Hyperbolic Forms">
-            <h3>Hyperbolic Forms II</h3>
-            <img src="{% static 'images/Page 12 Hyperbolic forms.png' %}" 
-                 alt="More hyperbolic forms" 
-                 loading="lazy">
-        </article>
+        <div class="formula-group">
+            <h3>Inverse Trig Forms</h3>
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \frac{1}{\sqrt{1-x^2}} \, dx = \arcsin x + C\)</div>
+                    <a href="/input/?i=integrate(1/sqrt(1-x^2), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \frac{1}{1+x^2} \, dx = \arctan x + C\)</div>
+                    <a href="/input/?i=integrate(1/(1+x^2), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int \frac{1}{x\sqrt{x^2-1}} \, dx = \text{arcsec}|x| + C\)</div>
+                    <a href="/input/?i=integrate(1/(x*sqrt(x^2-1)), x)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
 
-        <article class="reference__card" data-title="Differentiation Rules">
-            <h3>Differentiation Rules</h3>
-            <img src="{% static 'images/Page 13 Differentiation Rules.png' %}" 
-                 alt="Common differentiation rules" 
-                 loading="lazy">
-        </article>
-    </div>
+        <div class="formula-group">
+            <h3>Integration Techniques</h3>
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int u \, dv = uv - \int v \, du\)</div>
+                    <div class="formula-card__name">Integration by Parts</div>
+                    <a href="/input/?i=integrate(x*exp(x), x)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\int f(g(x))g'(x) \, dx = F(g(x)) + C\)</div>
+                    <div class="formula-card__name">U-Substitution</div>
+                    <a href="/input/?i=integrate(2*x*cos(x^2), x)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Limits Section -->
+    <section id="limits" class="formula-section">
+        <h2 class="formula-section__title">Limit Formulas</h2>
+        
+        <div class="formula-group">
+            <h3>Important Limits</h3>
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\lim_{x \to 0} \frac{\sin x}{x} = 1\)</div>
+                    <a href="/input/?i=limit(sin(x)/x, x, 0)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\lim_{x \to 0} \frac{1 - \cos x}{x} = 0\)</div>
+                    <a href="/input/?i=limit((1-cos(x))/x, x, 0)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\lim_{x \to 0} \frac{e^x - 1}{x} = 1\)</div>
+                    <a href="/input/?i=limit((exp(x)-1)/x, x, 0)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\lim_{x \to 0} \frac{\ln(1+x)}{x} = 1\)</div>
+                    <a href="/input/?i=limit(ln(1+x)/x, x, 0)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\lim_{x \to \infty} \left(1 + \frac{1}{x}\right)^x = e\)</div>
+                    <a href="/input/?i=limit((1+1/x)^x, x, oo)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\lim_{x \to 0} (1+x)^{1/x} = e\)</div>
+                    <a href="/input/?i=limit((1+x)^(1/x), x, 0)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="formula-group">
+            <h3>Limits at Infinity</h3>
+            <div class="formula-grid">
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\lim_{x \to \infty} \frac{1}{x^n} = 0\) for n > 0</div>
+                    <a href="/input/?i=limit(1/x^2, x, oo)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\lim_{x \to \infty} e^{-x} = 0\)</div>
+                    <a href="/input/?i=limit(exp(-x), x, oo)" class="formula-card__try">Try it →</a>
+                </div>
+                <div class="formula-card">
+                    <div class="formula-card__formula">\(\lim_{x \to \infty} \frac{\ln x}{x} = 0\)</div>
+                    <a href="/input/?i=limit(ln(x)/x, x, oo)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="formula-group">
+            <h3>L'Hôpital's Rule</h3>
+            <div class="formula-grid">
+                <div class="formula-card formula-card--wide">
+                    <div class="formula-card__formula">\(\text{If } \lim_{x \to a} \frac{f(x)}{g(x)} = \frac{0}{0} \text{ or } \frac{\pm\infty}{\pm\infty}, \text{ then } \lim_{x \to a} \frac{f(x)}{g(x)} = \lim_{x \to a} \frac{f'(x)}{g'(x)}\)</div>
+                    <div class="formula-card__name">L'Hôpital's Rule for Indeterminate Forms</div>
+                    <a href="/input/?i=limit(x*ln(x), x, 0)" class="formula-card__try">Try it →</a>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
+
+<!-- Back to Top -->
+<a href="#" class="back-to-top" id="backToTop" aria-label="Back to top">↑</a>
 
 <!-- Chat Modal -->
 <div id="chatModal" class="modal">
@@ -143,19 +327,19 @@
 <script>
     window.CHATBOT_URL = '{% url "chatbot" %}';
 
-    // Reference table search functionality
     document.addEventListener('DOMContentLoaded', () => {
-        const searchInput = document.getElementById('tableSearch');
-        const grid = document.getElementById('referenceGrid');
-        const cards = grid.querySelectorAll('.reference__card');
-
-        searchInput.addEventListener('input', (e) => {
-            const filter = e.target.value.toLowerCase();
-            
-            cards.forEach(card => {
-                const title = card.dataset.title.toLowerCase();
-                const matches = title.includes(filter);
-                card.style.display = matches ? '' : 'none';
+        // Back to top button
+        const backToTop = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            backToTop.classList.toggle('visible', window.scrollY > 300);
+        });
+        
+        // Smooth scroll for nav links
+        document.querySelectorAll('.reference-nav__link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                target.scrollIntoView({ behavior: 'smooth' });
             });
         });
     });
