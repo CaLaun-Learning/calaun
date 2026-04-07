@@ -34,6 +34,14 @@ HOME_PAGE_EXAMPLES = [
             ('And if we don\'t know, we will let you know',
              'integrate(1/sqrt(x^2+1), x)'),
         ]],
+        ['Limits', [
+            ('Direct substitution', 'limit(x^2 + 2*x, x, 3)'),
+            ('Classic indeterminate form', 'limit(sin(x)/x, x, 0)'),
+            ('Factor and cancel', 'limit((x^2 - 1)/(x - 1), x, 1)'),
+            ('L\'Hôpital\'s Rule', 'limit((exp(x) - 1)/x, x, 0)'),
+            ('Limit at infinity', 'limit(1/x, x, oo)'),
+            ('Polynomial at infinity', 'limit((2*x^2 + 3)/(x^2 - 1), x, oo)'),
+        ]],
     ]),
 ]
 
