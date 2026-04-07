@@ -258,6 +258,68 @@ function convertLegacyMath() {
     }
 }
 
+// Tab switching functionality
+class TabSwitcher {
+    constructor(tabSelector = '.tab', panelSelector = '.examples-panel') {
+        this.tabs = document.querySelectorAll(tabSelector);
+        this.panels = document.querySelectorAll(panelSelector);
+        
+        if (this.tabs.length === 0) return;
+        
+        this.init();
+    }
+    
+    init() {
+        this.tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.dataset.tab;
+                
+                // Update active tab
+                this.tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update active panel
+                this.panels.forEach(panel => {
+                    panel.classList.remove('active');
+                    if (panel.id === target) {
+                        panel.classList.add('active');
+                    }
+                });
+            });
+        });
+    }
+}
+
+// Back to top button
+class BackToTop {
+    constructor(selector = '.back-to-top') {
+        this.button = document.querySelector(selector);
+        if (!this.button) return;
+        
+        this.init();
+    }
+    
+    init() {
+        // Show/hide based on scroll position
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                this.button.classList.add('visible');
+            } else {
+                this.button.classList.remove('visible');
+            }
+        });
+        
+        // Smooth scroll to top
+        this.button.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+}
+
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize components
@@ -274,6 +336,12 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Convert legacy math notation
     convertLegacyMath();
+    
+    // Initialize tabs
+    new TabSwitcher();
+    
+    // Initialize back to top button
+    new BackToTop();
     
     // Re-initialize collapsibles after a short delay to catch any late-rendered content
     setTimeout(() => {

@@ -1,6 +1,13 @@
-# Calculus Calculator with Chatbot
+# Calc Tutor
 
-A Django-based calculus tutor application with an integrated ML-powered chatbot.
+A Django-based calculus tutor that shows step-by-step solutions for derivatives, integrals, and limits. Includes an AI chatbot for answering calculus questions.
+
+## Features
+
+- **Step-by-step solutions** for derivatives, integrals, and limits
+- **AI chatbot** that answers calculus questions
+- **Reference page** with common formulas and "try it" links
+- **Modern responsive UI** with MathJax 3 for beautiful math rendering
 
 ## Requirements
 
@@ -21,31 +28,47 @@ A Django-based calculus tutor application with an integrated ML-powered chatbot.
    pip install -r requirements.txt
    ```
 
-3. **Download NLTK data** (for WordNetLemmatizer and word_tokenize):
-   ```bash
-   python chatbot/nltk_packages.py
-   ```
-
-4. **Run the development server:**
+3. **Run the development server:**
    ```bash
    python manage.py runserver
    ```
 
+4. **Visit** http://127.0.0.1:8000
+
+## Usage
+
+Enter calculus expressions like:
+- `diff(sin(x)*cos(x), x)` - Derivative
+- `integrate(x*exp(x), x)` - Integral  
+- `limit(sin(x)/x, x, 0)` - Limit
+
 ## Testing
 
-Run all tests:
 ```bash
 python manage.py test
-```
-
-Or run specific test modules with pytest:
-```bash
-python -m pytest logic/tests.py -v
 ```
 
 ## Tech Stack
 
 - **Backend:** Django 4.2
-- **ML/AI:** TensorFlow 2.15–2.16, Keras, NLTK
-- **Math:** SymPy, NumPy, SciPy
-- **Database:** SQLite by default for development; PostgreSQL (psycopg2) as an optional deployment choice
+- **Math Engine:** SymPy
+- **Chatbot:** scikit-learn (TF-IDF + cosine similarity)
+- **Frontend:** Vanilla ES6 JavaScript, MathJax 3, CSS custom properties
+- **Database:** SQLite (dev) / PostgreSQL (prod)
+
+## Project Structure
+
+```
+├── app/                 # Django app (views, URLs)
+├── chatbot/             # AI chatbot module
+│   ├── math_chat.py     # TF-IDF chatbot
+│   └── data/intents.json
+├── logic/               # Math solving logic
+│   ├── diffsteps.py     # Derivative steps
+│   ├── intsteps.py      # Integral steps
+│   ├── limitsteps.py    # Limit steps
+│   └── resultsets.py    # Result card definitions
+├── static/              # CSS, JS, images
+├── templates/           # HTML templates
+└── mathtutor/           # Django settings
+```

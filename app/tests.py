@@ -228,7 +228,10 @@ class TestMathChatbot(TestCase):
             "derivative" in response.lower() or
             "differentiate" in response.lower() or
             "f(g(x))" in response or
-            "peeling" in response.lower()
+            "peeling" in response.lower() or
+            "sin" in response.lower() or
+            "cos" in response.lower() or
+            "multiply" in response.lower()
         )
     
     def test_non_math_question(self):

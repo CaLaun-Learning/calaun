@@ -5,63 +5,136 @@
 {% block title %}Calc Tutor - Learn Calculus Step by Step{% endblock %}
 
 {% block content %}
-<!-- Header -->
-<header class="header">
-    <h1 class="header__title"><a href="/">Calc Tutor</a></h1>
-    <nav class="header__nav">
-        <a href="#" class="header__link" data-chat-trigger>Chat Bot</a>
-        <a href="/reference" class="header__link">Reference</a>
-    </nav>
-</header>
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero__content">
+        <img src="{% static 'images/calc_bot.png' %}" alt="Calc Tutor" class="hero__icon">
+        <h1 class="hero__title">Calc Tutor</h1>
+        <p class="hero__subtitle">Calculus, one step at a time</p>
+        <p class="hero__description">
+            Stuck on a derivative or integral? Type it in and we'll walk you through it.
+        </p>
+        <div class="hero__search">
+            <form action="/input/" class="search-form search-form--hero" method="GET">
+                {{ form.i }}
+                <input type="submit" value="Solve">
+            </form>
+        </div>
+    </div>
+</section>
 
-<!-- Search -->
-<div class="search-container">
-    <form action="/input/" class="search-form" method="GET">
-        {{ form.i }}
-        <input type="submit" value="Solve">
-    </form>
-</div>
+<!-- Quick Examples -->
+<section class="quick-examples">
+    <h2 class="section__title">Jump right in</h2>
+    <div class="quick-examples__grid">
+        <div class="quick-example">
+            <h3>Derivatives</h3>
+            <p>See how to find the derivative</p>
+            <a href="/input/?i=diff(sin(x)*cos(x), x)" class="quick-example__link">
+                \(\frac{d}{dx}[\sin(x)\cos(x)]\)
+            </a>
+        </div>
+        <div class="quick-example">
+            <h3>Integrals</h3>
+            <p>Integration broken down</p>
+            <a href="/input/?i=integrate(x*exp(x), x)" class="quick-example__link">
+                \(\int x e^x \, dx\)
+            </a>
+        </div>
+        <div class="quick-example">
+            <h3>Limits</h3>
+            <p>Limits made clear</p>
+            <a href="/input/?i=limit(sin(x)/x, x, 0)" class="quick-example__link">
+                \(\lim_{x \to 0} \frac{\sin(x)}{x}\)
+            </a>
+        </div>
+    </div>
+</section>
 
-<!-- Examples -->
-<div class="examples">
-    {% for category in examples %}
-    <div class="example-group">
-        <h3>{{ category.0 }}</h3>
-        {% for subcategory in category.1 %}
-            {% if subcategory.0 %}
-            <h4>{{ subcategory.0 }}</h4>
-            {% endif %}
-            <ul>
-                {% for example in subcategory.1 %}
+<!-- Features -->
+<section class="features">
+    <h2 class="section__title">Here's how it works</h2>
+    <div class="features__grid">
+        <div class="feature">
+            <div class="feature__icon">📝</div>
+            <h3>Type it in</h3>
+            <p>Use notation like <code>diff(x^2, x)</code> or <code>integrate(sin(x), x)</code>. Don't worry, it's easier than it looks</p>
+        </div>
+        <div class="feature">
+            <div class="feature__icon">📖</div>
+            <h3>Follow along</h3>
+            <p>We'll show you each step so you can actually see what's happening</p>
+        </div>
+        <div class="feature">
+            <div class="feature__icon">🎓</div>
+            <h3>Pick up the tricks</h3>
+            <p>Power rule, chain rule, u-sub, L'Hôpital. You'll get the hang of it</p>
+        </div>
+    </div>
+</section>
+
+<!-- More Examples -->
+<section class="more-examples">
+    <h2 class="section__title">Browse more examples</h2>
+    <div class="examples-tabs">
+        <button class="tab active" data-tab="derivatives">Derivatives</button>
+        <button class="tab" data-tab="integrals">Integrals</button>
+        <button class="tab" data-tab="limits">Limits</button>
+    </div>
+    
+    <div class="examples-content">
+        <div class="examples-panel active" id="derivatives">
+            <ul class="examples-list">
+                {% for example in examples.0.1.0.1 %}
                 <li>{% make_example example %}</li>
                 {% endfor %}
             </ul>
-        {% endfor %}
+        </div>
+        <div class="examples-panel" id="integrals">
+            <ul class="examples-list">
+                {% for example in examples.0.1.1.1 %}
+                <li>{% make_example example %}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="examples-panel" id="limits">
+            <ul class="examples-list">
+                {% for example in examples.0.1.2.1 %}
+                <li>{% make_example example %}</li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
-    {% endfor %}
-</div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <h2>Looking for a quick reference?</h2>
+    <p>We've got all the common formulas in one place</p>
+    <a href="/reference" class="cta__button">See the cheat sheet</a>
+</section>
 
 <!-- Footer -->
 <footer class="footer">
-    <div class="footer__grid">
+    <div class="footer__content">
         <div class="footer__section">
             <h4>About</h4>
-            <p>Calc-Tutor makes differentiation and integration straightforward and interactive. The step-by-step presentation promotes active learning and builds intuition for solving calculus problems.</p>
+            <p>A free tool for learning calculus. No signup, no cost.</p>
+        </div>
+        <div class="footer__section">
+            <h4>Quick Links</h4>
+            <ul class="footer__links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/reference">Reference Guide</a></li>
+                <li><a href="#" data-chat-trigger>Ask the Chat Bot</a></li>
+            </ul>
         </div>
         <div class="footer__section">
             <h4>Built With</h4>
             <ul class="footer__links">
-                <li><a href="https://www.djangoproject.com">Django</a></li>
                 <li><a href="https://www.sympy.org">SymPy</a></li>
-                <li><a href="https://www.tensorflow.org">TensorFlow</a></li>
-                <li><a href="https://www.nltk.org">NLTK</a></li>
-            </ul>
-        </div>
-        <div class="footer__section">
-            <h4>Links</h4>
-            <ul class="footer__links">
-                <li><a href="/">Home</a></li>
-                <li><a href="/reference">Reference Guide</a></li>
+                <li><a href="https://www.djangoproject.com">Django</a></li>
+                <li><a href="https://www.mathjax.org">MathJax</a></li>
             </ul>
         </div>
     </div>
@@ -76,15 +149,32 @@
         </div>
         <div class="chat-log"></div>
         <div class="chat-input">
-            <input type="text" placeholder="Ask a question..." aria-label="Chat message">
+            <input type="text" placeholder="Ask a calculus question..." aria-label="Chat message">
             <button>Send</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Pass Django URL to JavaScript
     window.CHATBOT_URL = '{% url "chatbot" %}';
+    
+    // Tab functionality
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabs = document.querySelectorAll('.tab');
+        const panels = document.querySelectorAll('.examples-panel');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove active class from all tabs and panels
+                tabs.forEach(t => t.classList.remove('active'));
+                panels.forEach(p => p.classList.remove('active'));
+                
+                // Add active class to clicked tab and corresponding panel
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+    });
 </script>
 {% endblock %}
 
