@@ -85,8 +85,8 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
                 rule.constant * sympy.Integral(rule.other, rule.symbol))))
             with self.new_level():
                 self.print_rule(rule.substep)
-            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">So, the result is: ')
-            self.append(self.format_math(_manualintegrate(rule)) + '</ol></div>')
+            self.append('<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>So, the result is: ')
+            self.append(self.format_math(_manualintegrate(rule)) + '</li></ol></div>')
 
     @prints_rule(PowerRule)
     def print_Power(self, rule):
@@ -105,8 +105,8 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             for substep in rule.substeps:
                 with self.new_level():
                     self.print_rule(substep)
-            self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">The result is: ')
-            self.append(self.format_math(_manualintegrate(rule)) + '</ol></div>')
+            self.append('<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>The result is: ')
+            self.append(self.format_math(_manualintegrate(rule)) + '</li></ol></div>')
 
     @prints_rule(URule)
     def print_U(self, rule):
@@ -119,8 +119,8 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             self.append(self.format_math_display(sympy.Integral(integrand, u)))
             with self.new_level():
                 self.print_rule(replace_u_var(rule.substep, rule.symbol.name, u))
-            self.append(f'<div class="collapsible"><h2>open answer</h2><ol class="content">Now replace {self.format_math(u)} to get:')
-            self.append(self.format_math_display(_manualintegrate(rule)) + '</ol></div>')
+            self.append(f'<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>Now replace {self.format_math(u)} to get: ')
+            self.append(self.format_math_display(_manualintegrate(rule)) + '</li></ol></div>')
 
     @prints_rule(PartsRule)
     def print_Parts(self, rule):
@@ -237,11 +237,11 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             if simp != answer:
                 answer = simp
                 with self.new_step():
-                    self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">Now simplify:')
-                    self.append(self.format_math_display(simp) + '</ol></div>')
+                    self.append('<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>Now simplify: ')
+                    self.append(self.format_math_display(simp) + '</li></ol></div>')
             with self.new_step():
-                self.append('<div class="collapsible"><h2>open answer</h2><ol class="content">Add the constant of integration to get:')
-                self.append(self.format_math_constant(answer) + '</ol></div>')
+                self.append('<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>Add the constant of integration: ')
+                self.append(self.format_math_constant(answer) + '</li></ol></div>')
         self.lines.append('</ol>')
         return '\n'.join(self.lines)
 

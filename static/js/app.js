@@ -102,9 +102,17 @@ class Collapsible {
     constructor(selector = '.collapsible') {
         document.querySelectorAll(selector).forEach(el => {
             const header = el.querySelector('h2');
-            header?.addEventListener('click', () => {
+            if (!header) return;
+            
+            header.addEventListener('click', () => {
                 el.classList.toggle('open');
-                header.textContent = el.classList.contains('open') ? 'hide' : 'show';
+                // Toggle text based on current state
+                const text = header.textContent.trim();
+                if (el.classList.contains('open')) {
+                    header.textContent = text.replace('Show', 'Hide');
+                } else {
+                    header.textContent = text.replace('Hide', 'Show');
+                }
             });
         });
     }
