@@ -121,23 +121,33 @@ class CardLoader {
         
         for (const card of cards) {
             const cardName = card.dataset.cardName;
-            const variable = card.dataset.variable;
-            const expr = card.dataset.expr;
+            const variable = card.dataset.variable || '';
+            const expr = card.dataset.expr || '';
             const params = card.dataset.parameters;
             
-            if (!cardName || !expr) continue;
+            if (!cardName) continue;
             
             try {
-                const response = await fetch('/api/card/', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        card: cardName,
-                        expression: expr,
-                        variable: variable,
-                        parameters: params ? JSON.parse(params) : {}
-                    })
+                // Build URL with query parameters (matching old card.js behavior)
+                const searchParams = new URLSearchParams({
+                    variable: variable,
+                    expression: expr
                 });
+                
+                // Add any additional parameters
+                if (params) {
+                    try {
+                        const extraParams = JSON.parse(params);
+                        Object.entries(extraParams).forEach(([k, v]) => {
+                            searchParams.append(k, v);
+                        });
+                    } catch (e) {
+                        console.warn('Failed to parse card parameters:', e);
+                    }
+                }
+                
+                const url = `/card/${cardName}?${searchParams.toString()}`;
+                const response = await fetch(url);
                 
                 if (!response.ok) throw new Error('Failed to load card');
                 
@@ -145,9 +155,16 @@ class CardLoader {
                 const loader = card.querySelector('.loader');
                 if (loader) loader.remove();
                 
-                const output = document.createElement('div');
-                output.innerHTML = data.output || '';
-                card.appendChild(output);
+                if (data.output) {
+                    const output = document.createElement('div');
+                    output.innerHTML = data.output;
+                    card.appendChild(output);
+                } else if (data.error) {
+                    const error = document.createElement('div');
+                    error.className = 'card__error-message';
+                    error.textContent = data.error;
+                    card.appendChild(error);
+                }
                 
                 // Re-render MathJax
                 if (window.MathJax?.typesetPromise) {
@@ -186,7 +203,9 @@ function convertLegacyMath() {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize components
     const chatModal = new Modal('#chatModal', '[data-chat-trigger]');
-    const chatBot = new ChatBot('#chatModal', '/api/chatbot/');
+    // Use URL from template or fall back to default
+    const chatBotUrl = window.CHATBOT_URL || '/api/chatbot/';
+    const chatBot = new ChatBot('#chatModal', chatBotUrl);
     new Collapsible();
     new CardLoader();
     
