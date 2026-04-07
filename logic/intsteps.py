@@ -9,6 +9,22 @@ from sympy.integrals.manualintegrate import (
     ExpRule, ArctanRule, AlternativeRule, DontKnowRule, RewriteRule
 )
 
+# Import additional rules that may exist in newer SymPy versions
+try:
+    from sympy.integrals.manualintegrate import ReciprocalRule
+except ImportError:
+    ReciprocalRule = None
+
+try:
+    from sympy.integrals.manualintegrate import SinRule, CosRule
+except ImportError:
+    SinRule = CosRule = None
+
+try:
+    from sympy.integrals.manualintegrate import ArcsinRule
+except ImportError:
+    ArcsinRule = None
+
 # LogRule may not exist in newer SymPy versions
 try:
     from sympy.integrals.manualintegrate import LogRule
@@ -92,7 +108,24 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             if isinstance(rule, rule_type):
                 printer(self, rule)
                 return
-        self.append(repr(rule))
+        # Fallback for unknown rules - display nicely instead of repr()
+        self._print_unknown_rule(rule)
+
+    def _print_unknown_rule(self, rule):
+        """Handle unknown rule types gracefully."""
+        with self.new_step():
+            integrand = _get_context(rule)
+            var = _get_symbol(rule)
+            if integrand and var:
+                self.append(f"Evaluate the integral:")
+                self.append(self.format_math_display(
+                    sympy.Eq(sympy.Integral(integrand, var), _manualintegrate(rule))))
+            else:
+                # Last resort fallback
+                result = _manualintegrate(rule)
+                if result:
+                    self.append(f"The integral evaluates to:")
+                    self.append(self.format_math_display(result))
 
     @prints_rule(ConstantRule)
     def print_Constant(self, rule):
@@ -280,6 +313,48 @@ if LogRule is not None:
         with self.new_step():
             self.append(f"The integral of {self.format_math(1 / rule.func)} is "
                        f"{self.format_math(_manualintegrate(rule))}.")
+
+
+# Register ReciprocalRule printer if available
+if ReciprocalRule is not None:
+    @prints_rule(ReciprocalRule)
+    def print_Reciprocal(self, rule):
+        with self.new_step():
+            integrand = _get_context(rule)
+            var = _get_symbol(rule)
+            self.append(f"The integral of {self.format_math(integrand)} is the natural logarithm:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(integrand, var), _manualintegrate(rule))))
+
+
+# Register SinRule printer if available
+if SinRule is not None:
+    @prints_rule(SinRule)
+    def print_Sin(self, rule):
+        with self.new_step():
+            self.append("The integral of sine is negative cosine:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
+
+
+# Register CosRule printer if available
+if CosRule is not None:
+    @prints_rule(CosRule)
+    def print_Cos(self, rule):
+        with self.new_step():
+            self.append("The integral of cosine is sine:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
+
+
+# Register ArcsinRule printer if available
+if ArcsinRule is not None:
+    @prints_rule(ArcsinRule)
+    def print_Arcsin(self, rule):
+        with self.new_step():
+            self.append("This is a standard arcsine integral:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
 
 
 def print_html_steps(function, symbol):
