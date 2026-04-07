@@ -1,18 +1,17 @@
 {% extends "base.html" %}
-    {% block head_additional %}
-    <link rel="stylesheet" href="/static/css/style.css" type="text/css" />
-    {% endblock %}
-    {% block title %}
-    Math Tutor
-    {% endblock %}
 
-    {% block content %}
-        <div class="input">
-            <h1><a href="/">Math Tutor</a></h1>
-        </div>
-        <div class="result">
-            <h2>Oops!</h2>
-            <p>Looks like we've had a
-            problem...
-        </div>
-    {% endblock %}
+{% block title %}Server Error - Calc Tutor{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <header class="header">
+        <h1 class="header__title"><a href="/">Calc Tutor</a></h1>
+    </header>
+
+    <main class="error-page__content">
+        <h2 class="error-page__title">500</h2>
+        <p class="error-page__message">Oops! Something went wrong on our end.</p>
+        <a href="/" class="btn btn--primary">Go back to Calc Tutor</a>
+    </main>
+</div>
+{% endblock %}

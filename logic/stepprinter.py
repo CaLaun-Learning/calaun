@@ -64,7 +64,7 @@ class LaTeXPrinter(Printer):
 
 
 class HTMLPrinter(LaTeXPrinter):
-    """Printer that outputs HTML with embedded LaTeX for MathJax."""
+    """Printer that outputs HTML with embedded LaTeX for MathJax 3."""
     
     def __init__(self):
         super().__init__()
@@ -72,11 +72,11 @@ class HTMLPrinter(LaTeXPrinter):
         self.u = self.du = None
 
     def format_math(self, math):
-        return f'<script type="math/tex; mode=inline">{latex(math)}</script>'
+        return f'\\({latex(math)}\\)'
 
     def format_math_display(self, math):
         math_latex = math if isinstance(math, str) else latex(math)
-        return f'<script type="math/tex; mode=display">{math_latex}</script>'
+        return f'\\[{math_latex}\\]'
 
     @contextmanager
     def new_level(self):

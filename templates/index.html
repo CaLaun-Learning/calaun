@@ -1,148 +1,90 @@
 {% extends "base.html" %}
 {% load static %}
 {% load extra_tags %}
-{% block title %}
-Math Tutor
-{% endblock %}
+
+{% block title %}Calc Tutor - Learn Calculus Step by Step{% endblock %}
 
 {% block content %}
-<h1><a href="/">Calc Tutor &nbsp;</a>
-  <a id="myBtn" href="#">Bot</a></br>
-  <a id="myBtn" href="/reference">Reference</a>
-</h1>
-<div id="myModal" class="modal">
-  <div class="modal-content">
-    <div class="container">
-      <h1 class="image_input"><a class="close" id="myBtn" href="#">Calc-Bot</a></h1>
+<!-- Header -->
+<header class="header">
+    <h1 class="header__title"><a href="/">Calc Tutor</a></h1>
+    <nav class="header__nav">
+        <a href="#" class="header__link" data-chat-trigger>Chat Bot</a>
+        <a href="/reference" class="header__link">Reference</a>
+    </nav>
+</header>
 
-      <div class="row">
-        <div class="col-xs-6 offset-xs-3">
-          <ul class="list-group chat-log js-chat-log">
-          </ul>
-
-          <div class="input-group input-group-lg mt-1">
-            <input type="text" class="form-control js-text" placeholder="Type something and press enter to begin..."/>
-            <span class="input-group-btn">
-            </span>
-          </div>
-          
-        </div>
-      </div>
-
-    </div>
-    <script src="{% static 'js/jquery.js' %}"></script>    
-    <script>
-      var chatterbotUrl = '{% url "chatbot" %}';
-      var $chatlog = $('.js-chat-log');
-      var $input = $('.js-text');
-      var $sayButton = $('.js-say');
-
-      function createRow(text) {
-        var $row = $('<li class="list-group-item"></li>');
-
-        $row.text(text);
-        $chatlog.append($row);
-      }
-
-      function submitInput() {
-        var inputData = {
-          'text': $input.val()
-        }
-
-        createRow(inputData.text);
-
-        var $submit = $.ajax({
-          type: 'POST',
-          url: chatterbotUrl,
-          data: JSON.stringify(inputData),
-          contentType: 'application/json'
-        });
-
-        $submit.done(function(statement) {
-            createRow(statement.text);
-            $input.val('');
-            $chatlog[0].scrollTop = $chatlog[0].scrollHeight;
-        });
-
-        $submit.fail(function(err) {
-            console.error(err)
-        });
-      }
-
-      $sayButton.click(function() {
-        submitInput();
-      });
-
-      $input.keydown(function(event) {
-        if (event.keyCode == 13) {
-          submitInput();
-        }
-      });
-    </script>
-
-  </div>
-
-</div>
-    <div class="search1">
-      <form action="/input/" class="search-form" method="GET">
+<!-- Search -->
+<div class="search-container">
+    <form action="/input/" class="search-form" method="GET">
         {{ form.i }}
         <input type="submit" value="Solve">
-      </form>
-    </div>
+    </form>
+</div>
 
-    <div class="main">
-        <div class="col example">
-            {% for category in examples %}
-            <div class="example-group">
-              <div class="contents2">
-                {% for subcategory in category.1 %}
-                  {% if subcategory.0 %}
-                  <h4>{{ subcategory.0 }}</h4>
-                  {% endif %}
-                  <ul>
-                    {% for example in subcategory.1 %}
-                    <li>{% make_example example %}</li>
-                    {% endfor %}
-                  </ul>
+<!-- Examples -->
+<div class="examples">
+    {% for category in examples %}
+    <div class="example-group">
+        <h3>{{ category.0 }}</h3>
+        {% for subcategory in category.1 %}
+            {% if subcategory.0 %}
+            <h4>{{ subcategory.0 }}</h4>
+            {% endif %}
+            <ul>
+                {% for example in subcategory.1 %}
+                <li>{% make_example example %}</li>
                 {% endfor %}
-              </div>
-            </div>
-            {% endfor %}
+            </ul>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
 
-        <link rel="stylesheet" href="https://formden.com/static/assets/demos/bootstrap-iso/bootstrap-iso/bootstrap-iso.css">
-        <div class="bootstrap-iso">
-        <div class="site-footer">
-            <div class="row">
-              <div class="container2">
-              <div class="col-sm-12 col-md-6">
-                <h6>About</h6>
-                <p class="text-justify">Cal-Tutor came from the need to make differentiating and integration straightforward and more interactive for students. Over time it has evolved so that it could help anyone seeking to understand the necessary steps required to solve certain integral or derivative problems. The hidden step-by-step presentation is meant to emphasize and promote active learning. Also, it implicitly provides intuition for new problems, even the one that don't have a step-by-step presentation. As always the more you practice the easier it becomes. Have fun! </p>              </div>
-              <div class="col-xs-6 col-md-3">
-                <h6>tools</h6>
-                <ul class="footer-links">
-                  <li><a href="https://www.djangoproject.com">Django</a></li>
-                  <li><a href="https://numpy.org">Numpy</a></li>
-                  <li><a href="https://keras.io">Keras</a></li>
-                  <li><a href="https://www.tensorflow.org">Tensorflow</a></li>
-                  <li><a href="https://www.sympy.org/en/index.html">SymPy</a></li>
-                  <li><a href="https://www.nltk.org">NLTK</a></li>
-                </ul>
-              </div>
-              <div class="col-xs-6 col-md-3">
-                <h6>Quick Links</h6>
-                <ul class="footer-links">
-                  <li><a href="/">Home</a></li>
-                  <li><a href="/about">Reference Guide</a></li>
-                  <li><a id="myBtn" href="#">Top page</a></li>
-                  <li><a href="https://docs.djangoproject.com/en/3.0/intro/tutorial01/">Start your first Django project</a></li>
-                </ul>
-              </div>
-            </div>
-            <hr>
-          </div>
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer__grid">
+        <div class="footer__section">
+            <h4>About</h4>
+            <p>Calc-Tutor makes differentiation and integration straightforward and interactive. The step-by-step presentation promotes active learning and builds intuition for solving calculus problems.</p>
         </div>
-      </div>
+        <div class="footer__section">
+            <h4>Built With</h4>
+            <ul class="footer__links">
+                <li><a href="https://www.djangoproject.com">Django</a></li>
+                <li><a href="https://www.sympy.org">SymPy</a></li>
+                <li><a href="https://www.tensorflow.org">TensorFlow</a></li>
+                <li><a href="https://www.nltk.org">NLTK</a></li>
+            </ul>
+        </div>
+        <div class="footer__section">
+            <h4>Links</h4>
+            <ul class="footer__links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/reference">Reference Guide</a></li>
+            </ul>
         </div>
     </div>
+</footer>
+
+<!-- Chat Modal -->
+<div id="chatModal" class="modal">
+    <div class="modal__content">
+        <div class="modal__header">
+            <h2 class="modal__title">Calc Bot</h2>
+            <button class="modal__close" aria-label="Close">&times;</button>
+        </div>
+        <div class="chat-log"></div>
+        <div class="chat-input">
+            <input type="text" placeholder="Ask a question..." aria-label="Chat message">
+            <button>Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pass Django URL to JavaScript
+    window.CHATBOT_URL = '{% url "chatbot" %}';
+</script>
 {% endblock %}
 

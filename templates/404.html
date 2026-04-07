@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-    {% block head_additional %}
-    <link rel="stylesheet" href="/static/css/style.css" type="text/css" />
-    {% endblock %}
-    {% block title %}
-    Math Tutor
-    {% endblock %}
 
-    {% block content %}
-        <div class="input">
-            <h1><a href="/">Math Tutor</a></h1>
-        </div>
-        <div class="result">
-            <h2>Whoa!</h2>
-            <p>This page doesn't exist... <a href="/">Go back to Math Tutor!</a></p>
-        </div>
-    {% endblock %}
+{% block title %}Page Not Found - Calc Tutor{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <header class="header">
+        <h1 class="header__title"><a href="/">Calc Tutor</a></h1>
+    </header>
+
+    <main class="error-page__content">
+        <h2 class="error-page__title">404</h2>
+        <p class="error-page__message">This page doesn't exist.</p>
+        <a href="/" class="btn btn--primary">Go back to Calc Tutor</a>
+    </main>
+</div>
+{% endblock %}

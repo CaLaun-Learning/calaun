@@ -227,7 +227,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
                             self.print_rule(r)
 
     def format_math_constant(self, math):
-        return f'<script type="math/tex; mode=display">{sympy.latex(math)}+ \\mathrm{{C}}</script>'
+        return f'\\[{sympy.latex(math)}+ \\mathrm{{C}}\\]'
 
     def finalize(self):
         rule = filter_unknown_alternatives(self.rule)
