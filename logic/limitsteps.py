@@ -122,6 +122,11 @@ class LimitPrinter(stepprinter.HTMLPrinter):
         """Handle limits of rational functions."""
         numer, denom = expr.as_numer_denom()
         
+        # Special handling for limits at infinity
+        if point in (oo, -oo):
+            self.handle_rational_at_infinity(expr, var, point, direction, numer, denom)
+            return
+        
         with self.new_step():
             self.append("This is a rational function. Analyze numerator and denominator separately:")
             self.append(self.format_math_display(sympy.Eq(
@@ -170,6 +175,51 @@ class LimitPrinter(stepprinter.HTMLPrinter):
             with self.new_step():
                 result = numer_at_point / denom_at_point
                 self.append(f"The limit is:")
+                self.append(self.format_math_display(result))
+    
+    def handle_rational_at_infinity(self, expr, var, point, direction, numer, denom):
+        """Handle limits of rational functions as x approaches infinity."""
+        # Get the degrees of numerator and denominator
+        numer_poly = sympy.Poly(numer, var) if numer.is_polynomial(var) else None
+        denom_poly = sympy.Poly(denom, var) if denom.is_polynomial(var) else None
+        
+        if numer_poly and denom_poly:
+            numer_degree = numer_poly.degree()
+            denom_degree = denom_poly.degree()
+            numer_leading = numer_poly.LC()
+            denom_leading = denom_poly.LC()
+            
+            with self.new_step():
+                self.append(f"For limits at {self.format_math(point)}, compare the degrees of numerator and denominator:")
+                self.append(f"Degree of numerator: {numer_degree}")
+                self.append(f"Degree of denominator: {denom_degree}")
+            
+            if numer_degree < denom_degree:
+                with self.new_step():
+                    self.append("Since the degree of the numerator is less than the degree of the denominator, the limit is 0.")
+                    self.append(self.format_math_display(0))
+            elif numer_degree > denom_degree:
+                with self.new_step():
+                    result = limit(expr, var, point, direction)
+                    self.append("Since the degree of the numerator is greater than the degree of the denominator, the limit is infinite.")
+                    self.append(self.format_math_display(result))
+            else:
+                # Degrees are equal - limit is ratio of leading coefficients
+                result = numer_leading / denom_leading
+                with self.new_step():
+                    self.append("Since the degrees are equal, the limit is the ratio of the leading coefficients:")
+                    self.append(self.format_math_display(sympy.Eq(
+                        Limit(expr, var, point),
+                        sympy.Rational(numer_leading, denom_leading) if denom_leading != 0 else result,
+                        evaluate=False)))
+                with self.new_step():
+                    self.append(f"The limit is:")
+                    self.append(self.format_math_display(sympy.simplify(result)))
+        else:
+            # Fall back to direct computation
+            with self.new_step():
+                result = limit(expr, var, point, direction)
+                self.append(f"Computing the limit at {self.format_math(point)}:")
                 self.append(self.format_math_display(result))
     
     def try_factoring(self, expr, var, point, direction, numer, denom):
