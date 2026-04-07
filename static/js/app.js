@@ -97,36 +97,58 @@ class Modal {
     }
 }
 
-// Collapsible sections
+// Collapsible steps - click on step to toggle math visibility
 class Collapsible {
-    constructor(selector = '.collapsible') {
+    constructor(selector = '.step.collapsible') {
+        this.selector = selector;
+        this.allExpanded = false;
         this.initCollapsibles(document.querySelectorAll(selector));
+        this.initToggleAllButton();
     }
     
     initCollapsibles(elements) {
         elements.forEach(el => {
-            // Find the h2 that is a direct child of this collapsible
-            const header = el.querySelector(':scope > h2');
-            if (!header) return;
-            
             // Skip if already initialized
-            if (header.dataset.initialized) return;
-            header.dataset.initialized = 'true';
+            if (el.dataset.initialized) return;
+            el.dataset.initialized = 'true';
             
-            // Make sure the header is clickable
-            header.style.cursor = 'pointer';
+            // Make the whole step clickable
+            el.style.cursor = 'pointer';
             
-            header.addEventListener('click', (e) => {
+            el.addEventListener('click', (e) => {
+                // Don't toggle if clicking on a link or nested step
+                if (e.target.closest('a') || (e.target.closest('.step') !== el)) {
+                    return;
+                }
                 e.preventDefault();
                 e.stopPropagation();
                 el.classList.toggle('open');
-                const text = header.textContent.trim();
-                if (el.classList.contains('open')) {
-                    header.textContent = text.replace('Show', 'Hide');
+            });
+        });
+    }
+    
+    initToggleAllButton() {
+        const btn = document.getElementById('toggleAllSteps');
+        if (!btn) return;
+        
+        btn.addEventListener('click', () => {
+            this.allExpanded = !this.allExpanded;
+            const steps = document.querySelectorAll(this.selector);
+            
+            steps.forEach(step => {
+                if (this.allExpanded) {
+                    step.classList.add('open');
                 } else {
-                    header.textContent = text.replace('Hide', 'Show');
+                    step.classList.remove('open');
                 }
             });
+            
+            btn.textContent = this.allExpanded ? 'Hide all steps' : 'Show all steps';
+            
+            // Re-render MathJax for newly visible content
+            if (this.allExpanded && window.MathJax?.typesetPromise) {
+                MathJax.typesetPromise();
+            }
         });
     }
 }
@@ -181,23 +203,19 @@ class CardLoader {
                     output.innerHTML = data.output;
                     card.appendChild(output);
                     
-                    // Initialize collapsibles in the new content
-                    output.querySelectorAll('.collapsible').forEach(el => {
-                        const header = el.querySelector(':scope > h2');
-                        if (!header || header.dataset.initialized) return;
-                        header.dataset.initialized = 'true';
-                        header.style.cursor = 'pointer';
+                    // Initialize collapsible steps in the new content
+                    output.querySelectorAll('.step.collapsible').forEach(el => {
+                        if (el.dataset.initialized) return;
+                        el.dataset.initialized = 'true';
+                        el.style.cursor = 'pointer';
                         
-                        header.addEventListener('click', (e) => {
+                        el.addEventListener('click', (e) => {
+                            if (e.target.closest('a') || (e.target.closest('.step') !== el)) {
+                                return;
+                            }
                             e.preventDefault();
                             e.stopPropagation();
                             el.classList.toggle('open');
-                            const text = header.textContent.trim();
-                            if (el.classList.contains('open')) {
-                                header.textContent = text.replace('Show', 'Hide');
-                            } else {
-                                header.textContent = text.replace('Hide', 'Show');
-                            }
                         });
                     });
                 } else if (data.error) {
@@ -259,6 +277,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Re-initialize collapsibles after a short delay to catch any late-rendered content
     setTimeout(() => {
-        collapsible.initCollapsibles(document.querySelectorAll('.collapsible'));
+        collapsible.initCollapsibles(document.querySelectorAll('.step.collapsible'));
     }, 500);
 });

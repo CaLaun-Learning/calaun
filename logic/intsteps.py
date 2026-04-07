@@ -143,8 +143,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
                 rule.constant * sympy.Integral(rule.other, _get_symbol(rule)))))
             with self.new_level():
                 self.print_rule(rule.substep)
-            self.append_raw('<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>So, the result is: ')
-            self.append_raw(self.format_math(_manualintegrate(rule)) + '</li></ol></div>')
+            self.append(f"So, the result is: {self.format_math(_manualintegrate(rule))}")
 
     @prints_rule(PowerRule)
     def print_Power(self, rule):
@@ -163,8 +162,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             for substep in rule.substeps:
                 with self.new_level():
                     self.print_rule(substep)
-            self.append_raw('<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>The result is: ')
-            self.append_raw(self.format_math(_manualintegrate(rule)) + '</li></ol></div>')
+            self.append(f"The result is: {self.format_math(_manualintegrate(rule))}")
 
     @prints_rule(URule)
     def print_U(self, rule):
@@ -179,8 +177,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
                 self.append(self.format_math_display(sympy.Integral(substep_integrand.subs(rule.u_var, u), u)))
             with self.new_level():
                 self.print_rule(replace_u_var(rule.substep, var.name, u))
-            self.append_raw(f'<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>Now replace {self.format_math(u)} to get: ')
-            self.append_raw(self.format_math_display(_manualintegrate(rule)) + '</li></ol></div>')
+            self.append(f"Now replace {self.format_math(u)} to get: {self.format_math_display(_manualintegrate(rule))}")
 
     @prints_rule(PartsRule)
     def print_Parts(self, rule):
@@ -287,7 +284,7 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
                             self.print_rule(r)
 
     def format_math_constant(self, math):
-        return f'\\[{sympy.latex(math)}+ \\mathrm{{C}}\\]'
+        return f'<div class="step__math">\\[{sympy.latex(math)}+ \\mathrm{{C}}\\]</div>'
 
     def finalize(self):
         rule = filter_unknown_alternatives(self.rule)
@@ -297,12 +294,12 @@ class IntegralPrinter(stepprinter.HTMLPrinter):
             if simp != answer:
                 answer = simp
                 with self.new_step():
-                    self.append_raw('<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>Now simplify: ')
-                    self.append_raw(self.format_math_display(simp) + '</li></ol></div>')
+                    self.append('Now simplify:')
+                    self.append_raw(self.format_math_display(simp))
             with self.new_step():
-                self.append_raw('<div class="collapsible"><h2>Show answer</h2><ol class="content"><li>Add the constant of integration: ')
-                self.append_raw(self.format_math_constant(answer) + '</li></ol></div>')
-        self.lines.append('</ol></div>')
+                self.append('Add the constant of integration:')
+                self.append_raw(self.format_math_constant(answer))
+        self.lines.append('</ol>')
         return '\n'.join(self.lines)
 
 
