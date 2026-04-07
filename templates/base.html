@@ -1,27 +1,41 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-    <head>
-        {% load static %}
-        <title>{% block title %}{% endblock %}</title>
-        <link rel="icon" href="/static/images/favicon.ico" type="image/ico" />
-        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=.5, maximum-scale=.5" />
-
-        {% block head_additional %}{% endblock %}
-        <link rel="stylesheet" href="{{ MEDIA_URL }}css/style.css" type="text/css" media="screen"/>
-        <link href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet" />
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"
-                type="text/javascript"></script>
-        <script src="https://d3js.org/d3.v3.min.js" type="text/javascript"></script>
-        <script src="{{ MEDIA_URL }}js/base.js" type="text/javascript"></script>
-        <script src="{{ MEDIA_URL }}js/modal.js" type="text/javascript"></script>
-        <script src="{{ MEDIA_URL }}js/card.js" type="text/javascript"></script>
-        <script src="{{ MEDIA_URL }}js/gamma.js" type="text/javascript"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML-full"></script>
-    </head>
-    <body>
-    {% block content %}  
-    {% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Calc Tutor{% endblock %}</title>
+    
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="{% static 'css/modern.css' %}">
+    {% block head_additional %}{% endblock %}
+    
+    <!-- MathJax 3 -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+<body>
+    <div class="app-container">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <script src="{% static 'js/app.js' %}" type="module"></script>
 </body>
 </html>
