@@ -100,15 +100,22 @@ class Modal {
 // Collapsible sections
 class Collapsible {
     constructor(selector = '.collapsible') {
-        document.querySelectorAll(selector).forEach(el => {
-            // Get only the direct child h2 (not nested ones)
-            const header = el.querySelector(':scope > h2');
+        this.initCollapsibles(document.querySelectorAll(selector));
+    }
+    
+    initCollapsibles(elements) {
+        elements.forEach(el => {
+            // Find the h2 that is a direct child of this collapsible
+            const header = Array.from(el.children).find(child => child.tagName === 'H2');
             if (!header) return;
             
+            // Skip if already initialized
+            if (header.dataset.initialized) return;
+            header.dataset.initialized = 'true';
+            
             header.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent bubbling to parent collapsibles
+                e.stopPropagation();
                 el.classList.toggle('open');
-                // Toggle text based on current state
                 const text = header.textContent.trim();
                 if (el.classList.contains('open')) {
                     header.textContent = text.replace('Show', 'Hide');
@@ -172,8 +179,10 @@ class CardLoader {
                     
                     // Initialize collapsibles in the new content
                     output.querySelectorAll('.collapsible').forEach(el => {
-                        const header = el.querySelector(':scope > h2');
-                        if (!header) return;
+                        const header = Array.from(el.children).find(child => child.tagName === 'H2');
+                        if (!header || header.dataset.initialized) return;
+                        header.dataset.initialized = 'true';
+                        
                         header.addEventListener('click', (e) => {
                             e.stopPropagation();
                             el.classList.toggle('open');

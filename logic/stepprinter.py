@@ -111,6 +111,11 @@ class HTMLPrinter(LaTeXPrinter):
         indent = ' ' * 4 * (self.level + 1)
         self.lines.append(f'{indent}<p>{text}</p>')
 
+    def append_raw(self, html):
+        """Append raw HTML without wrapping in <p> tags."""
+        indent = ' ' * 4 * (self.level + 1)
+        self.lines.append(f'{indent}{html}')
+
     def append_header(self, text):
         indent = ' ' * 4 * (self.level + 1)
         self.lines.append(f'{indent}<h2>{text}</h2>')
