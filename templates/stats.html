@@ -19,11 +19,12 @@
     .stats-header h1 {
         font-size: 2rem;
         margin-bottom: 0.5rem;
+        color: #fff;
     }
     
     .stats-header .period {
-        color: var(--text-muted);
-        font-size: 0.9rem;
+        color: #94a3b8;
+        font-size: 1rem;
     }
     
     .stats-grid {
@@ -34,10 +35,10 @@
     }
     
     .stats-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
+        background: #fff;
         border-radius: 12px;
         padding: 1.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
     
     .stats-card h2 {
@@ -46,6 +47,7 @@
         display: flex;
         align-items: center;
         gap: 0.5rem;
+        color: #1e293b;
     }
     
     .stats-card .icon {
@@ -55,8 +57,9 @@
     .stat-row {
         display: flex;
         justify-content: space-between;
+        align-items: center;
         padding: 0.75rem 0;
-        border-bottom: 1px solid var(--border);
+        border-bottom: 1px solid #e2e8f0;
     }
     
     .stat-row:last-child {
@@ -64,28 +67,30 @@
     }
     
     .stat-label {
-        color: var(--text-muted);
+        color: #64748b;
+        font-size: 0.95rem;
     }
     
     .stat-value {
         font-weight: 600;
         font-variant-numeric: tabular-nums;
+        color: #1e293b;
     }
     
     .stat-value.large {
-        font-size: 1.5rem;
-        color: var(--primary);
+        font-size: 2rem;
+        color: #e85d40;
     }
     
     .breakdown {
         margin-top: 1rem;
         padding-top: 1rem;
-        border-top: 1px solid var(--border);
+        border-top: 1px solid #e2e8f0;
     }
     
     .breakdown h3 {
-        font-size: 0.85rem;
-        color: var(--text-muted);
+        font-size: 0.8rem;
+        color: #64748b;
         margin-bottom: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;
@@ -94,21 +99,22 @@
     .breakdown-item {
         display: flex;
         justify-content: space-between;
-        padding: 0.4rem 0;
+        padding: 0.5rem 0;
+        color: #1e293b;
     }
     
     .breakdown-bar {
-        height: 6px;
-        background: var(--border);
-        border-radius: 3px;
+        height: 8px;
+        background: #e2e8f0;
+        border-radius: 4px;
         margin-top: 0.25rem;
         overflow: hidden;
     }
     
     .breakdown-bar-fill {
         height: 100%;
-        background: var(--primary);
-        border-radius: 3px;
+        background: #e85d40;
+        border-radius: 4px;
         transition: width 0.3s ease;
     }
     
@@ -116,9 +122,10 @@
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        color: var(--primary);
+        color: #fff;
         text-decoration: none;
         margin-bottom: 1.5rem;
+        font-size: 0.95rem;
     }
     
     .back-link:hover {
@@ -133,9 +140,10 @@
     }
     
     .time-btn {
-        padding: 0.5rem 1rem;
-        border: 1px solid var(--border);
-        background: var(--surface);
+        padding: 0.6rem 1.2rem;
+        border: 1px solid #334155;
+        background: #1e293b;
+        color: #fff;
         border-radius: 6px;
         cursor: pointer;
         font-size: 0.9rem;
@@ -143,20 +151,29 @@
     }
     
     .time-btn:hover {
-        border-color: var(--primary);
+        border-color: #e85d40;
     }
     
     .time-btn.active {
-        background: var(--primary);
+        background: #e85d40;
         color: white;
-        border-color: var(--primary);
+        border-color: #e85d40;
     }
     
     .refresh-note {
         text-align: center;
-        color: var(--text-muted);
+        color: #94a3b8;
         font-size: 0.85rem;
         margin-top: 2rem;
+    }
+    
+    .refresh-note a {
+        color: #e85d40;
+    }
+    
+    .no-data {
+        color: #94a3b8;
+        font-style: italic;
     }
 </style>
 {% endblock %}
@@ -204,7 +221,7 @@
                 </div>
                 {% empty %}
                 <div class="breakdown-item">
-                    <span class="stat-label">No data yet</span>
+                    <span class="no-data">No data yet</span>
                 </div>
                 {% endfor %}
             </div>
