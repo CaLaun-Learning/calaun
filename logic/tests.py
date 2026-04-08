@@ -221,9 +221,17 @@ class TestLimits(unittest.TestCase):
 
     def test_limit_steps_lhopital(self):
         """Test limit steps uses L'Hôpital's rule."""
-        expr = sin(self.x) / self.x
+        # Use x^2 * sin(1/x) / x which requires L'Hôpital
+        # Or use a non-special 0/0 form
+        expr = (self.x - sin(self.x)) / self.x**3
         html = limit_html_steps(expr, self.x, 0)
         self.assertIn("pital", html)  # L'Hôpital
+    
+    def test_limit_special_sin_over_x(self):
+        """Test special limit sin(x)/x -> 1."""
+        expr = sin(self.x) / self.x
+        html = limit_html_steps(expr, self.x, 0)
+        self.assertIn("fundamental trigonometric limit", html)
 
 
 class TestEvalUtility(unittest.TestCase):
