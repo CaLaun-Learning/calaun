@@ -1,5 +1,7 @@
 # Core Django
 Django>=4.2,<5.0
+gunicorn>=21.0.0
+whitenoise>=6.6.0
 
 # Math engine
 sympy>=1.12
