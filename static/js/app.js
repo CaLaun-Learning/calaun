@@ -22,6 +22,34 @@ function formatMarkdown(text) {
     return text;
 }
 
+// Fix bare LaTeX that isn't wrapped in MathJax delimiters
+function fixBareLatex(text) {
+    if (!text) return '';
+    
+    // Common LaTeX commands that indicate math content
+    const latexPatterns = [
+        // Display math: standalone lines with LaTeX commands
+        /^(\\frac\{[^}]+\}\{[^}]+\}.*)$/gm,
+        /^(\\lim_\{[^}]+\}.*)$/gm,
+        /^(\\int[^a-zA-Z].*)$/gm,
+        /^(\\sum[^a-zA-Z].*)$/gm,
+    ];
+    
+    // Wrap standalone LaTeX lines in display math delimiters
+    latexPatterns.forEach(pattern => {
+        text = text.replace(pattern, '\\[$1\\]');
+    });
+    
+    // Find inline LaTeX patterns not already wrapped
+    // Match \frac, \lim, \int, \sum, etc. that aren't inside \( \) or \[ \]
+    const inlineLatex = /(?<![\\[(])\\(frac|lim|int|sum|sqrt|sin|cos|tan|log|ln|cdot|theta|alpha|beta|pi|infty)\b[^\\]*?(?![\\)\]])/g;
+    
+    // For simple inline math like sin(θ), cos(θ), wrap them
+    text = text.replace(/(?<![\\(])\\(theta|alpha|beta|pi|infty)(?![\\)])/g, '\\($&\\)');
+    
+    return text;
+}
+
 // Chat functionality
 class ChatBot {
     constructor(containerSelector, apiUrl, options = {}) {
@@ -52,9 +80,11 @@ class ChatBot {
         const msg = document.createElement('div');
         msg.className = `chat-message chat-message--${isUser ? 'user' : 'bot'}`;
         
-        // For bot messages, format markdown and render LaTeX
+        // For bot messages, fix LaTeX, format markdown, and render
         if (!isUser) {
-            msg.innerHTML = formatMarkdown(text);
+            let formattedText = fixBareLatex(text);
+            formattedText = formatMarkdown(formattedText);
+            msg.innerHTML = formattedText;
             if (window.MathJax) {
                 MathJax.typesetPromise([msg]).catch(err => console.log('MathJax error:', err));
             }
