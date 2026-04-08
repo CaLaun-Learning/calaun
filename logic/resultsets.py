@@ -245,13 +245,15 @@ def extract_derivative(arguments, evaluated):
 
     variable = arguments[1][1:]
     if variable:
-        variables.remove(variable[0])
+        # Only try to remove if the variable is in the list
+        if variable[0] in variables:
+            variables.remove(variable[0])
         variables.insert(0, variable[0])
 
     return {
         'function': arguments[1][0],
         'variables': variables,
-        'variable': variables[0],
+        'variable': variables[0] if variables else variable[0] if variable else sympy.Symbol('x'),
         'input_evaluated': arguments[1][0]
     }
 
