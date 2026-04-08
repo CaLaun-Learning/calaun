@@ -152,6 +152,10 @@ def eval_logdiff(base, exp, base_step, exp_step, expr, symbol):
 # Rule generators
 def diff_steps(expr, symbol):
     """Generate differentiation steps for an expression."""
+    # Convert Python numbers to SymPy objects
+    if isinstance(expr, (int, float)):
+        expr = sympy.sympify(expr)
+    
     deriv = DerivativeInfo(expr, symbol)
 
     def key(d):
