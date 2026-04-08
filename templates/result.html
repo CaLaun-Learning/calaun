@@ -9,7 +9,9 @@
 <header class="header">
     <h1 class="header__title"><a href="/">Calc Tutor</a></h1>
     <nav class="header__nav">
-        <a href="#" class="header__link" data-chat-trigger>Chat Bot</a>
+        <a href="#" class="header__link" data-chat-trigger>
+            <span class="chat-trigger__text">Chat Bot</span>
+        </a>
         <a href="/reference" class="header__link">Reference</a>
     </nav>
 </header>
@@ -22,33 +24,44 @@
     </form>
 </div>
 
-<!-- Results -->
-<div class="results" id="resultsContainer">
-    <div class="steps-controls">
-        <button id="toggleAllSteps" class="btn btn--secondary">Show all steps</button>
-    </div>
-    {% for cell in result %}
-        {% show_card cell input %}
-    {% endfor %}
-</div>
-
-<!-- Chat Modal -->
-<div id="chatModal" class="modal">
-    <div class="modal__content">
-        <div class="modal__header">
-            <h2 class="modal__title">Calc Bot <span class="modal__badge">AI</span></h2>
-            <button class="modal__close" aria-label="Close">&times;</button>
+<!-- Main Content Layout -->
+<div class="content-layout">
+    <!-- Results Panel -->
+    <div class="results-panel">
+        <div class="results" id="resultsContainer">
+            <div class="steps-controls">
+                <button id="toggleAllSteps" class="btn btn--secondary">Show all steps</button>
+            </div>
+            {% for cell in result %}
+                {% if cell.card %}
+                    {% show_card cell input %}
+                {% endif %}
+            {% endfor %}
         </div>
-        <div class="chat-log">
-            <div class="chat-message chat-message--bot">
-                Hi! I'm here to help you understand these solution steps. Ask me anything about the calculus problem above!
+    </div>
+
+    <!-- Chat Sidebar -->
+    <aside id="chatSidebar" class="chat-sidebar">
+        <div class="chat-sidebar__header">
+            <h2 class="chat-sidebar__title">
+                Calc Bot <span class="chat-sidebar__badge">AI</span>
+            </h2>
+            <button class="chat-sidebar__toggle" aria-label="Toggle chat" data-chat-trigger>
+                <span class="toggle-icon">›</span>
+            </button>
+        </div>
+        <div class="chat-sidebar__body">
+            <div class="chat-log">
+                <div class="chat-message chat-message--bot">
+                    Hi! I'm here to help you understand these solution steps. Ask me anything about the calculus problem!
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" placeholder="Ask about any step..." aria-label="Chat message">
+                <button>Send</button>
             </div>
         </div>
-        <div class="chat-input">
-            <input type="text" placeholder="Ask about any step..." aria-label="Chat message">
-            <button>Send</button>
-        </div>
-    </div>
+    </aside>
 </div>
 
 <script>

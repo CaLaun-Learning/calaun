@@ -107,7 +107,7 @@ class ChatBot {
     }
 }
 
-// Modal functionality
+// Modal functionality (kept for legacy/mobile support)
 class Modal {
     constructor(modalSelector, triggerSelector) {
         this.modal = document.querySelector(modalSelector);
@@ -144,6 +144,55 @@ class Modal {
     close() {
         this.modal?.classList.remove('open');
         document.body.style.overflow = '';
+    }
+}
+
+// Chat Sidebar functionality
+class ChatSidebar {
+    constructor(sidebarSelector, triggerSelector) {
+        this.sidebar = document.querySelector(sidebarSelector);
+        this.triggers = document.querySelectorAll(triggerSelector);
+        
+        if (!this.sidebar) return;
+        
+        this.init();
+    }
+    
+    init() {
+        this.triggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggle();
+            });
+        });
+        
+        // Escape key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.sidebar.classList.contains('open')) {
+                this.close();
+            }
+        });
+    }
+    
+    toggle() {
+        if (this.sidebar.classList.contains('open')) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+    
+    open() {
+        this.sidebar.classList.add('open');
+        // Focus the input when opening
+        const input = this.sidebar.querySelector('.chat-input input');
+        if (input) {
+            setTimeout(() => input.focus(), 300);
+        }
+    }
+    
+    close() {
+        this.sidebar.classList.remove('open');
     }
 }
 
@@ -372,12 +421,15 @@ class BackToTop {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize components
-    const chatModal = new Modal('#chatModal', '[data-chat-trigger]');
+    // Initialize chat sidebar (new style)
+    const chatSidebar = new ChatSidebar('#chatSidebar', '[data-chat-trigger]');
+    
     // Use URL from template or fall back to default
     const chatBotUrl = window.CHATBOT_URL || '/api/chatbot/';
     const useLLM = window.USE_LLM_CHATBOT || false;
-    const chatBot = new ChatBot('#chatModal', chatBotUrl, {
+    
+    // Initialize chatbot with sidebar container
+    const chatBot = new ChatBot('#chatSidebar', chatBotUrl, {
         useLLM: useLLM,
         stepsSelector: '#resultsContainer'
     });
