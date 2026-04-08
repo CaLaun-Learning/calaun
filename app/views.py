@@ -53,7 +53,7 @@ HOME_PAGE_EXAMPLES = [
             ('Classic indeterminate form', 'limit((x^2 - 4)/(x - 2), x, 2)'),
             ('Factor and cancel', 'limit((x^2 - 1)/(x - 1), x, 1)'),
             ('Fundamental trig limit', 'limit(sin(x)/x, x, 0)'),
-            ('Definition of e', 'limit((1 + 1/x)^x, x, oo)'),
+            ('Exponential limit', 'limit((exp(x) - 1)/x, x, 0)'),
             # Limits at infinity
             ('Limit at infinity', 'limit(1/x, x, oo)'),
             ('Rational function', 'limit((2*x^2 + 3)/(x^2 - 1), x, oo)'),
