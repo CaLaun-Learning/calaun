@@ -1,0 +1,50 @@
+databases:
+  - name: calc-tutor-db
+    plan: free
+    databaseName: calc_tutor
+    user: calc_tutor_user
+
+services:
+  - type: web
+    name: calc-tutor
+    runtime: python
+    plan: free
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate
+    startCommand: gunicorn mathtutor.wsgi --bind 0.0.0.0:$PORT
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ALLOWED_HOSTS
+        fromService:
+          name: calc-tutor
+          type: web
+          property: host
+      - key: DB_ENGINE
+        value: django.db.backends.postgresql
+      - key: DB_NAME
+        fromDatabase:
+          name: calc-tutor-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: calc-tutor-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: calc-tutor-db
+          property: password
+      - key: DB_HOST
+        fromDatabase:
+          name: calc-tutor-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: calc-tutor-db
+          property: port
+      - key: GROQ_API_KEY
+        sync: false  # You'll set this manually in dashboard
