@@ -231,19 +231,25 @@ class LLMChatBotApiView(View):
         return result
 
 
-def analytics_stats(request):
-    """View usage statistics. Protected by secret token in production."""
-    # Simple token-based auth for stats endpoint
-    token = request.GET.get('token', '')
-    expected_token = os.environ.get('STATS_TOKEN', 'dev-stats-token')
-    
-    if token != expected_token:
-        return JsonResponse({'error': 'Unauthorized'}, status=401)
-    
+def stats_page(request):
+    """Public stats page showing usage analytics."""
     hours = int(request.GET.get('hours', 24))
     stats = get_analytics().get_stats(hours=hours)
     
-    return JsonResponse(stats)
+    # Calculate percentages for the breakdown bars
+    total_solver = stats['solver']['total_requests']
+    if total_solver > 0:
+        stats['solver']['by_type_with_pct'] = {
+            k: {'count': v, 'pct': round(v / total_solver * 100)}
+            for k, v in stats['solver']['by_type'].items()
+        }
+    else:
+        stats['solver']['by_type_with_pct'] = {}
+    
+    return render(request, 'stats.html', {
+        'stats': stats,
+        'hours': hours,
+    })
 
 
 def handler404(request, exception):
