@@ -1292,48 +1292,32 @@ script[type="math/tex"] {
 /* Chatbot Info Section */
 .chatbot-info {
     padding: 3rem 1rem;
-    background: var(--color-bg);
+    background: var(--color-bg-light);
     text-align: center;
 }
 
 .section__subtitle {
-    color: var(--color-text-light);
+    color: #cbd5e1;
     font-size: 1.1rem;
     margin-bottom: 2rem;
 }
 
 .chatbot-info__grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    max-width: 800px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+    max-width: 700px;
     margin: 0 auto;
 }
 
 .chatbot-tip {
     background: var(--color-surface);
-    border-radius: var(--radius-lg);
-    padding: 1rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    text-align: left;
-    box-shadow: var(--shadow-sm);
-}
-
-.chatbot-tip__icon {
-    font-size: 1.25rem;
-    flex-shrink: 0;
-}
-
-.chatbot-tip span:last-child {
+    border-radius: var(--radius-md);
+    padding: 0.75rem 1.25rem;
     color: var(--color-text);
-    font-size: 0.9rem;
-    line-height: 1.4;
-}
-
-.chatbot-tip strong {
-    color: var(--color-text);
+    font-size: 0.95rem;
+    font-weight: 500;
 }
 
 /* More Examples with Tabs */
