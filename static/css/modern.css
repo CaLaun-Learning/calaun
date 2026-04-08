@@ -1405,9 +1405,54 @@ script[type="math/tex"] {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 2rem;
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 3rem 1rem;
+    padding: 3rem 1rem 2rem;
+}
+
+.footer__section--about {
+    grid-column: span 1;
+}
+
+@media (min-width: 768px) {
+    .footer__section--about {
+        grid-column: span 2;
+    }
+}
+
+.footer__section--about p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+}
+
+.footer__icon {
+    vertical-align: middle;
+    margin-right: 0.375rem;
+}
+
+.footer__bottom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+    border-top: 1px solid var(--color-border);
+    text-align: center;
+}
+
+.footer__bottom p {
+    font-size: 0.875rem;
+    color: var(--color-text-light);
+    line-height: 1.7;
+}
+
+.footer__bottom a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition);
+}
+
+.footer__bottom a:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
 }
 
 /* ==========================================
