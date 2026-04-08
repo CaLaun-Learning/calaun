@@ -4,6 +4,7 @@ from django import forms
 from django.views.generic.base import TemplateView
 from django.views.generic import View
 from chatbot.math_chat import chatbot_response
+from chatbot.llm_chat import llm_response
 from logic.logic import UserInput
 from mathtutor import settings
 import json
@@ -142,6 +143,22 @@ class ChatBotApiView(View):
             'text': [
                 response
             ]
+        }, status=200)
+
+
+class LLMChatBotApiView(View):
+    """LLM-powered chatbot that helps students understand solution steps."""
+    
+    def post(self, request, *args, **kwargs):
+        input_data = json.loads(request.body.decode('utf-8'))
+        msg = input_data.get('text', '')
+        steps_html = input_data.get('steps', '')
+        history = input_data.get('history', [])
+        
+        response = llm_response(msg, steps_html, history)
+        
+        return JsonResponse({
+            'text': response
         }, status=200)
 
 

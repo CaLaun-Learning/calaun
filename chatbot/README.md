@@ -1,8 +1,69 @@
 # Math Chatbot
 
+This module contains two chatbot implementations:
+
+1. **TF-IDF Chatbot** (`math_chat.py`) - Fast, retrieval-based for common questions
+2. **LLM Step Helper** (`llm_chat.py`) - AI-powered assistant for understanding solution steps
+
+## LLM Step Helper (Groq - Free)
+
+An AI-powered chatbot that helps students understand calculus solution steps. Uses **Groq's free API** to run open-source LLMs (Llama 3.1) with extremely fast inference.
+
+### Features
+
+- **Free Tier**: 30 requests/minute, no credit card needed
+- **Open Source Models**: Llama 3.1, Mixtral, Gemma
+- **Step-aware**: Receives the current solution steps as context
+- **Calculus-focused**: Only answers calculus-related questions
+- **Conversation memory**: Remembers previous messages in the chat
+- **LaTeX support**: Responds with mathematical notation
+
+### Setup
+
+1. **Get a free API key** at https://console.groq.com/keys
+
+2. **Set the environment variable**:
+   ```bash
+   export GROQ_API_KEY="gsk_..."
+   ```
+
+3. **Restart the server**
+
+Optional environment variables:
+- `GROQ_MODEL` - Model to use (default: `llama-3.1-8b-instant`)
+
+### Supported Models
+
+All free on Groq:
+- `llama-3.1-8b-instant` - Fast, good for most questions (default)
+- `llama-3.3-70b-versatile` - More capable, slightly slower  
+- `mixtral-8x7b-32768` - Great reasoning ability
+- `gemma2-9b-it` - Good balance of speed and quality
+
+### Usage
+
+```python
+from chatbot.llm_chat import llm_response
+
+# With solution steps context
+steps_html = "<div>Step 1: Apply power rule...</div>"
+answer = llm_response("Why do we multiply by 2 here?", steps_html=steps_html)
+
+# With conversation history
+history = [
+    {"role": "user", "content": "What is a derivative?"},
+    {"role": "assistant", "content": "A derivative measures..."}
+]
+answer = llm_response("Can you give an example?", conversation_history=history)
+```
+
+---
+
+## TF-IDF Chatbot (Original)
+
 A retrieval-based chatbot that only answers calculus questions. Non-math questions are politely deflected.
 
-## Topics Covered (55+ intents)
+### Topics Covered (55+ intents)
 
 **Derivative Rules**
 - Power, chain, product, quotient, sum, constant multiple

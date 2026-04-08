@@ -533,6 +533,20 @@ span.step__math {
 .modal__title {
     font-size: 1.125rem;
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal__badge {
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.125rem 0.375rem;
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: white;
+    border-radius: var(--radius-sm);
 }
 
 .modal__close {
@@ -581,6 +595,31 @@ span.step__math {
     align-self: flex-start;
     background: #f1f5f9;
     color: var(--color-text);
+}
+
+.chat-message--typing {
+    background: #f1f5f9;
+    color: var(--color-text-light);
+}
+
+.typing-dots {
+    display: inline-flex;
+    gap: 0.2rem;
+}
+
+.typing-dots span {
+    animation: typingBounce 1.4s infinite ease-in-out;
+    font-size: 1.5rem;
+    line-height: 0.5;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: 0s; }
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-0.25rem); }
 }
 
 .chat-input {
