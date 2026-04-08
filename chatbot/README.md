@@ -5,12 +5,13 @@ This module contains two chatbot implementations:
 1. **TF-IDF Chatbot** (`math_chat.py`) - Fast, retrieval-based for common questions
 2. **LLM Step Helper** (`llm_chat.py`) - AI-powered assistant for understanding solution steps
 
-## LLM Step Helper (NEW)
+## LLM Step Helper (Ollama)
 
-An AI-powered chatbot that helps students understand calculus solution steps. Uses OpenAI's API to provide contextual explanations.
+An AI-powered chatbot that helps students understand calculus solution steps. Uses **Ollama** to run open-source LLMs locally - completely free, no API keys, no data sent to third parties.
 
 ### Features
 
+- **100% Free & Private**: Runs locally using open-source models
 - **Step-aware**: Receives the current solution steps as context
 - **Calculus-focused**: Only answers calculus-related questions
 - **Conversation memory**: Remembers previous messages in the chat
@@ -18,15 +19,35 @@ An AI-powered chatbot that helps students understand calculus solution steps. Us
 
 ### Setup
 
-Set the OpenAI API key as an environment variable:
+1. **Install Ollama** (free, open-source):
+   ```bash
+   # macOS
+   brew install ollama
+   
+   # Or download from https://ollama.com/download
+   ```
 
-```bash
-export OPENAI_API_KEY="sk-..."
-```
+2. **Pull a model** (Llama 3.2 recommended):
+   ```bash
+   ollama pull llama3.2
+   ```
+
+3. **Start the server**:
+   ```bash
+   ollama serve
+   ```
 
 Optional environment variables:
-- `OPENAI_MODEL` - Model to use (default: `gpt-4o-mini`)
-- `OPENAI_BASE_URL` - Custom API endpoint for compatible providers
+- `OLLAMA_URL` - Server URL (default: `http://localhost:11434`)
+- `OLLAMA_MODEL` - Model to use (default: `llama3.2`)
+
+### Supported Models
+
+Any Ollama model works! Some good options for calculus tutoring:
+- `llama3.2` - Fast, good for most questions (default)
+- `llama3.1` - More capable, slower
+- `mistral` - Good balance of speed and quality
+- `phi3` - Lightweight, fast responses
 
 ### Usage
 

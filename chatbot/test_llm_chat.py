@@ -1,4 +1,4 @@
-"""Tests for the LLM Step Helper chatbot."""
+"""Tests for the LLM Step Helper chatbot (using Ollama)."""
 
 import unittest
 from unittest.mock import patch, MagicMock
@@ -10,37 +10,7 @@ class TestLLMStepHelper(unittest.TestCase):
     
     def setUp(self):
         """Set up test fixtures."""
-        # Mock the OpenAI client
-        self.mock_client_patcher = patch('chatbot.llm_chat.OpenAI')
-        self.mock_openai = self.mock_client_patcher.start()
-        
-        # Create a mock response
-        mock_response = MagicMock()
-        mock_response.choices = [MagicMock()]
-        mock_response.choices[0].message.content = "This is a test response about calculus."
-        
-        # Set up the mock client
-        self.mock_client = MagicMock()
-        self.mock_client.chat.completions.create.return_value = mock_response
-        self.mock_openai.return_value = self.mock_client
-        
-        # Create helper with mock API key
-        self.helper = LLMStepHelper(api_key='test-key')
-    
-    def tearDown(self):
-        """Clean up mocks."""
-        self.mock_client_patcher.stop()
-    
-    def test_init_requires_api_key(self):
-        """Test that initialization requires an API key."""
-        self.mock_client_patcher.stop()  # Stop the patcher for this test
-        
-        with patch.dict('os.environ', {}, clear=True):
-            with self.assertRaises(ValueError) as context:
-                LLMStepHelper()
-            self.assertIn('API key required', str(context.exception))
-        
-        self.mock_client_patcher.start()  # Restart for other tests
+        self.helper = LLMStepHelper()
     
     def test_is_calculus_related_with_keywords(self):
         """Test calculus keyword detection."""
@@ -69,23 +39,49 @@ class TestLLMStepHelper(unittest.TestCase):
         self.assertTrue(helper._is_calculus_related("Why did we do that step?", has_steps=True))
         self.assertTrue(helper._is_calculus_related("I don't understand step 2", has_steps=True))
     
-    def test_get_response_non_calculus(self):
+    @patch('chatbot.llm_chat.LLMStepHelper._is_ollama_available')
+    def test_get_response_non_calculus(self, mock_available):
         """Test response for non-calculus questions."""
+        mock_available.return_value = True
+        
         response = self.helper.get_response("What's your favorite color?")
         
         self.assertIn("calculus", response.lower())
         self.assertIn("derivatives", response.lower())
     
-    def test_get_response_calculus_question(self):
+    @patch('chatbot.llm_chat.requests.post')
+    @patch('chatbot.llm_chat.LLMStepHelper._is_ollama_available')
+    def test_get_response_calculus_question(self, mock_available, mock_post):
         """Test response for calculus questions."""
+        mock_available.return_value = True
+        
+        # Mock Ollama response
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "message": {"content": "This is a test response about calculus."}
+        }
+        mock_response.raise_for_status = MagicMock()
+        mock_post.return_value = mock_response
+        
         response = self.helper.get_response("How do I use the chain rule?")
         
         # Should have called the API
-        self.mock_client.chat.completions.create.assert_called_once()
+        mock_post.assert_called_once()
         self.assertEqual(response, "This is a test response about calculus.")
     
-    def test_get_response_with_steps(self):
+    @patch('chatbot.llm_chat.requests.post')
+    @patch('chatbot.llm_chat.LLMStepHelper._is_ollama_available')
+    def test_get_response_with_steps(self, mock_available, mock_post):
         """Test response includes steps context."""
+        mock_available.return_value = True
+        
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "message": {"content": "Test response"}
+        }
+        mock_response.raise_for_status = MagicMock()
+        mock_post.return_value = mock_response
+        
         steps_html = """
         <div class="step">
             <h3>Step 1: Apply power rule</h3>
@@ -96,8 +92,9 @@ class TestLLMStepHelper(unittest.TestCase):
         response = self.helper.get_response("Why do we multiply by 2?", steps_html=steps_html)
         
         # Should have called the API with steps context
-        call_args = self.mock_client.chat.completions.create.call_args
-        messages = call_args.kwargs['messages']
+        call_args = mock_post.call_args
+        json_data = call_args.kwargs['json']
+        messages = json_data['messages']
         
         # Should have system prompt, steps context, and user message
         self.assertGreaterEqual(len(messages), 2)
@@ -127,8 +124,19 @@ class TestLLMStepHelper(unittest.TestCase):
         self.assertNotIn("<div>", text)
         self.assertNotIn("<h3>", text)
     
-    def test_conversation_history(self):
+    @patch('chatbot.llm_chat.requests.post')
+    @patch('chatbot.llm_chat.LLMStepHelper._is_ollama_available')
+    def test_conversation_history(self, mock_available, mock_post):
         """Test that conversation history is included."""
+        mock_available.return_value = True
+        
+        mock_response = MagicMock()
+        mock_response.json.return_value = {
+            "message": {"content": "Test response"}
+        }
+        mock_response.raise_for_status = MagicMock()
+        mock_post.return_value = mock_response
+        
         history = [
             {"role": "user", "content": "What is a derivative?"},
             {"role": "assistant", "content": "A derivative measures rate of change."}
@@ -139,34 +147,27 @@ class TestLLMStepHelper(unittest.TestCase):
             conversation_history=history
         )
         
-        call_args = self.mock_client.chat.completions.create.call_args
-        messages = call_args.kwargs['messages']
+        call_args = mock_post.call_args
+        json_data = call_args.kwargs['json']
+        messages = json_data['messages']
         
         # Should include history
         user_messages = [m for m in messages if m['role'] == 'user']
         self.assertGreaterEqual(len(user_messages), 2)
     
-    def test_api_error_handling(self):
-        """Test graceful handling of API errors."""
-        self.mock_client.chat.completions.create.side_effect = Exception("API Error")
+    @patch('chatbot.llm_chat.LLMStepHelper._is_ollama_available')
+    def test_ollama_not_available(self, mock_available):
+        """Test response when Ollama is not running."""
+        mock_available.return_value = False
         
-        response = self.helper.get_response("What is calculus?")
+        response = self.helper.get_response("What is a derivative?")
         
-        self.assertIn("trouble connecting", response.lower())
+        self.assertIn("ollama", response.lower())
+        self.assertIn("not available", response.lower())
 
 
 class TestLLMResponseFunction(unittest.TestCase):
     """Tests for the llm_response convenience function."""
-    
-    @patch('chatbot.llm_chat.get_llm_helper')
-    def test_llm_response_no_api_key(self, mock_get_helper):
-        """Test response when no API key is configured."""
-        mock_get_helper.return_value = None
-        
-        response = llm_response("What is a derivative?")
-        
-        self.assertIn("not configured", response.lower())
-        self.assertIn("OPENAI_API_KEY", response)
     
     @patch('chatbot.llm_chat.get_llm_helper')
     def test_llm_response_with_helper(self, mock_get_helper):

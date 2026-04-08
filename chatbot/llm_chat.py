@@ -1,13 +1,18 @@
 """
 LLM Step Helper - An AI assistant that helps students understand calculus steps.
 
-Uses OpenAI-compatible API to answer questions about the solution steps.
-Only answers questions related to calculus or the current problem.
+Uses Ollama to run open-source LLMs locally. No API keys required, no data
+sent to third parties. Supports models like Llama 3, Mistral, Phi, etc.
+
+Setup:
+1. Install Ollama: https://ollama.com/download
+2. Pull a model: ollama pull llama3.2
+3. Start server: ollama serve (runs on http://localhost:11434)
 """
 
 import os
 import re
-from openai import OpenAI
+import requests
 
 
 # System prompt that constrains the LLM to calculus topics only
@@ -27,34 +32,24 @@ If the student's question is NOT about calculus or the current problem, respond 
 When steps are provided, reference them specifically to help the student understand."""
 
 
+# Default Ollama settings
+DEFAULT_OLLAMA_URL = "http://localhost:11434"
+DEFAULT_MODEL = "llama3.2"
+
+
 class LLMStepHelper:
     """An LLM-based assistant that helps students understand calculus solution steps."""
     
-    def __init__(self, api_key=None, base_url=None, model=None):
+    def __init__(self, base_url=None, model=None):
         """
-        Initialize the LLM helper.
+        Initialize the LLM helper using Ollama.
         
         Args:
-            api_key: OpenAI API key (defaults to OPENAI_API_KEY env var)
-            base_url: Optional base URL for OpenAI-compatible APIs
-            model: Model to use (defaults to OPENAI_MODEL env var or gpt-4o-mini)
+            base_url: Ollama server URL (defaults to http://localhost:11434)
+            model: Model to use (defaults to OLLAMA_MODEL env var or llama3.2)
         """
-        self.api_key = api_key or os.environ.get('OPENAI_API_KEY')
-        self.base_url = base_url or os.environ.get('OPENAI_BASE_URL')
-        self.model = model or os.environ.get('OPENAI_MODEL', 'gpt-4o-mini')
-        
-        if not self.api_key:
-            raise ValueError(
-                "OpenAI API key required. Set OPENAI_API_KEY environment variable "
-                "or pass api_key parameter."
-            )
-        
-        # Initialize OpenAI client
-        client_kwargs = {'api_key': self.api_key}
-        if self.base_url:
-            client_kwargs['base_url'] = self.base_url
-        
-        self.client = OpenAI(**client_kwargs)
+        self.base_url = base_url or os.environ.get('OLLAMA_URL', DEFAULT_OLLAMA_URL)
+        self.model = model or os.environ.get('OLLAMA_MODEL', DEFAULT_MODEL)
         
         # Keywords for calculus topic detection
         self.calculus_keywords = {
@@ -69,6 +64,14 @@ class LLMStepHelper:
             'factor', 'expand', 'coefficient', 'constant', 'variable',
             'theorem', 'proof', 'definition', 'notation', 'dx', 'dy',
         }
+    
+    def _is_ollama_available(self):
+        """Check if Ollama server is running."""
+        try:
+            response = requests.get(f"{self.base_url}/api/tags", timeout=2)
+            return response.status_code == 200
+        except requests.exceptions.RequestException:
+            return False
     
     def _is_calculus_related(self, message, has_steps=False):
         """
@@ -155,6 +158,15 @@ class LLMStepHelper:
         """
         has_steps = bool(steps_html)
         
+        # Check if Ollama is running
+        if not self._is_ollama_available():
+            return (
+                "The AI assistant is not available. Please make sure Ollama is running:\n\n"
+                "1. Install Ollama from https://ollama.com\n"
+                "2. Run: ollama pull llama3.2\n"
+                "3. Run: ollama serve"
+            )
+        
         # Check if the question is calculus-related
         if not self._is_calculus_related(message, has_steps):
             return (
@@ -188,19 +200,29 @@ class LLMStepHelper:
         messages.append({"role": "user", "content": message})
         
         try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                max_tokens=500,
-                temperature=0.7,
+            response = requests.post(
+                f"{self.base_url}/api/chat",
+                json={
+                    "model": self.model,
+                    "messages": messages,
+                    "stream": False,
+                    "options": {
+                        "temperature": 0.7,
+                        "num_predict": 500,
+                    }
+                },
+                timeout=60
             )
-            return response.choices[0].message.content
-        except Exception as e:
-            # Log the error but return a friendly message
-            print(f"LLM API error: {e}")
+            response.raise_for_status()
+            data = response.json()
+            return data.get("message", {}).get("content", "I couldn't generate a response.")
+        except requests.exceptions.Timeout:
+            return "The response is taking too long. Please try a shorter question."
+        except requests.exceptions.RequestException as e:
+            print(f"Ollama API error: {e}")
             return (
-                "I'm having trouble connecting right now. "
-                "Please try again in a moment."
+                "I'm having trouble connecting to the AI model. "
+                "Please make sure Ollama is running: ollama serve"
             )
 
 
@@ -212,11 +234,7 @@ def get_llm_helper():
     """Get or create the LLM helper instance."""
     global _llm_helper
     if _llm_helper is None:
-        try:
-            _llm_helper = LLMStepHelper()
-        except ValueError:
-            # API key not configured
-            return None
+        _llm_helper = LLMStepHelper()
     return _llm_helper
 
 
@@ -230,12 +248,7 @@ def llm_response(message, steps_html=None, conversation_history=None):
         conversation_history: Optional list of previous messages
         
     Returns:
-        The assistant's response, or a fallback if LLM is not available
+        The assistant's response
     """
     helper = get_llm_helper()
-    if helper is None:
-        return (
-            "AI assistant is not configured. Please set the OPENAI_API_KEY "
-            "environment variable to enable this feature."
-        )
     return helper.get_response(message, steps_html, conversation_history)
