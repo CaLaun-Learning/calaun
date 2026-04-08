@@ -1293,64 +1293,47 @@ script[type="math/tex"] {
 .chatbot-info {
     padding: 3rem 1rem;
     background: var(--color-bg);
+    text-align: center;
 }
 
-.chatbot-info__content {
-    max-width: 700px;
+.section__subtitle {
+    color: var(--color-text-light);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+
+.chatbot-info__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    max-width: 800px;
     margin: 0 auto;
+}
+
+.chatbot-tip {
     background: var(--color-surface);
-    border-radius: var(--radius-xl);
-    padding: 2rem;
-    box-shadow: var(--shadow-lg);
-}
-
-.chatbot-info__content p {
-    color: var(--color-text);
-    font-size: 1.05rem;
-    line-height: 1.7;
-    margin-bottom: 1rem;
-}
-
-.chatbot-info__content p:last-of-type {
-    margin-bottom: 1.5rem;
-}
-
-.chatbot-info__limits {
-    background: #fef3c7;
     border-radius: var(--radius-lg);
-    padding: 1.5rem;
-    border-left: 4px solid #f59e0b;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: left;
+    box-shadow: var(--shadow-sm);
 }
 
-.chatbot-info__limits h3 {
-    color: #92400e;
-    font-size: 1rem;
-    margin-bottom: 0.75rem;
+.chatbot-tip__icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
 }
 
-.chatbot-info__limits ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.chatbot-tip span:last-child {
+    color: var(--color-text);
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
 
-.chatbot-info__limits li {
-    color: #78350f;
-    padding: 0.5rem 0;
-    padding-left: 1.5rem;
-    position: relative;
-    line-height: 1.5;
-}
-
-.chatbot-info__limits li::before {
-    content: "→";
-    position: absolute;
-    left: 0;
-    color: #f59e0b;
-}
-
-.chatbot-info__limits li strong {
-    color: #92400e;
+.chatbot-tip strong {
+    color: var(--color-text);
 }
 
 /* More Examples with Tabs */
