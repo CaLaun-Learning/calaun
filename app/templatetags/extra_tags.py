@@ -9,6 +9,15 @@ register = template.Library()
 def show_card(cell, input):
     return {'cell': cell, 'input': input}
 
+
+@register.filter
+def is_steps_card(card_name):
+    """Check if the card name is a steps card (ends with 'steps')."""
+    if not card_name:
+        return False
+    return card_name.endswith('steps')
+
+
 @register.tag(name='make_example')
 def do_make_example(parser, token):
     try:

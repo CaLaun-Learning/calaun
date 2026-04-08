@@ -205,6 +205,16 @@ class TestLimits(unittest.TestCase):
         result = sympy.limit(expr, self.x, oo)
         self.assertEqual(result, 0)
 
+    def test_limit_exponential_form(self):
+        """Test exponential form (1+1/x)^x limit (definition of e)."""
+        expr = (1 + 1/self.x)**self.x
+        result = sympy.limit(expr, self.x, oo)
+        self.assertEqual(result, sympy.E)
+        # Test that steps are generated with the 1^infinity form
+        html = limit_html_steps(expr, self.x, oo)
+        self.assertIn('indeterminate', html.lower())
+        self.assertIn('logarithm', html.lower())
+
     def test_limit_steps_generates_html(self):
         """Test that limit_html_steps generates HTML output."""
         expr = self.x ** 2

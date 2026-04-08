@@ -39,6 +39,16 @@ class LimitPrinter(stepprinter.HTMLPrinter):
             return sympy.Limit(expr, var, point)
         return sympy.Limit(expr, var, point, direction)
     
+    def _safe_limit(self, expr, var, point, direction='+'):
+        """Safely compute a limit, returning None on failure."""
+        try:
+            result = limit(expr, var, point, direction)
+            if result.has(nan, zoo) or isinstance(result, type(sympy.S.ComplexInfinity)):
+                return None
+            return result
+        except Exception:
+            return None
+    
     def evaluate_limit(self):
         """Main entry point for evaluating the limit step by step."""
         expr = self.expr
@@ -54,6 +64,12 @@ class LimitPrinter(stepprinter.HTMLPrinter):
         special_result = self.check_special_limits(expr, var, point, direction)
         if special_result is not None:
             return
+        
+        # Check for exponential indeterminate forms (1^∞, 0^0, ∞^0)
+        if expr.is_Pow:
+            exp_result = self.handle_exponential_form(expr, var, point, direction)
+            if exp_result is not None:
+                return
         
         # Try direct substitution first
         result = self.try_direct_substitution(expr, var, point, direction)
@@ -147,6 +163,127 @@ class LimitPrinter(stepprinter.HTMLPrinter):
             return 1
         
         return None
+    
+    def handle_exponential_form(self, expr, var, point, direction):
+        """Handle exponential indeterminate forms like 1^∞, 0^0, ∞^0."""
+        if not expr.is_Pow:
+            return None
+        
+        base = expr.base
+        exponent = expr.exp
+        
+        # Try to evaluate base and exponent at the limit point
+        base_limit = self._safe_limit(base, var, point, direction)
+        exp_limit = self._safe_limit(exponent, var, point, direction)
+        
+        if base_limit is None or exp_limit is None:
+            return None
+        
+        # Check for 1^∞ form
+        is_one_inf = (base_limit == 1 and exp_limit in (oo, -oo))
+        # Check for 0^0 form
+        is_zero_zero = (base_limit == 0 and exp_limit == 0)
+        # Check for ∞^0 form
+        is_inf_zero = (base_limit in (oo, -oo) and exp_limit == 0)
+        
+        if not (is_one_inf or is_zero_zero or is_inf_zero):
+            return None
+        
+        with self.new_step():
+            if is_one_inf:
+                self.append(f"This is an indeterminate form of type {self.format_math(sympy.Symbol('1^{\\infty}'))}.")
+            elif is_zero_zero:
+                self.append(f"This is an indeterminate form of type {self.format_math(sympy.Symbol('0^0'))}.")
+            else:
+                self.append(f"This is an indeterminate form of type {self.format_math(sympy.Symbol('\\infty^0'))}.")
+            
+            self.append("To evaluate, use the logarithm technique:")
+            self.append(f"Let {self.format_math(sympy.Symbol('L'))} = {self.format_math(Limit(expr, var, point))}")
+        
+        log_expr = exponent * sympy.log(base)
+        
+        with self.new_step():
+            self.append("Take the natural log of both sides:")
+            self.append(self.format_math_display(sympy.Eq(
+                sympy.log(sympy.Symbol('L')), 
+                Limit(log_expr, var, point))))
+            self.append(f"Since {self.format_math(sympy.log(base**exponent))} = {self.format_math(exponent * sympy.log(base))}")
+        
+        with self.new_step():
+            self.append("Now evaluate the limit of the logarithm:")
+            self.append(self.format_math_display(Limit(log_expr, var, point)))
+        
+        # Simplify the log expression
+        log_expr_simplified = sympy.simplify(log_expr)
+        if log_expr_simplified != log_expr:
+            with self.new_step():
+                self.append("Simplify:")
+                self.append(self.format_math_display(sympy.Eq(log_expr, log_expr_simplified)))
+                log_expr = log_expr_simplified
+        
+        # For 1^∞ form with exponent = var, apply L'Hopital's technique
+        if is_one_inf and exponent == var:
+            with self.new_step():
+                # Rewrite x*ln(f(x)) as ln(f(x))/(1/x) for L'Hopital
+                self.append("Rewrite as a fraction to apply L'Hôpital's Rule:")
+                inner = sympy.log(base) / (1/var)
+                inner_simplified = sympy.simplify(inner)
+                self.append(f"{self.format_math(log_expr)} = {self.format_math(inner_simplified)}")
+            
+            with self.new_step():
+                self.append(f"As {self.format_math(var)} → {self.format_math(point)}, this has the form 0/0.")
+                self.append("Apply L'Hôpital's Rule:")
+                
+                numer = sympy.log(base)
+                denom = 1/var
+                numer_deriv = sympy.diff(numer, var)
+                denom_deriv = sympy.diff(denom, var)
+                
+                self.append(f"Derivative of numerator: {self.format_math(numer_deriv)}")
+                self.append(f"Derivative of denominator: {self.format_math(denom_deriv)}")
+                
+                new_ratio = numer_deriv / denom_deriv
+                new_ratio_simplified = sympy.simplify(new_ratio)
+                
+                self.append(self.format_math_display(sympy.Eq(
+                    Limit(numer/denom, var, point),
+                    Limit(new_ratio_simplified, var, point))))
+            
+            with self.new_step():
+                log_limit = self._safe_limit(new_ratio_simplified, var, point, direction)
+                self.append(f"Evaluating the limit:")
+                self.append(self.format_math_display(sympy.Eq(
+                    Limit(new_ratio_simplified, var, point), log_limit)))
+                self.append(f"So {self.format_math(sympy.log(sympy.Symbol('L')))} = {self.format_math(log_limit)}")
+        else:
+            # Try to evaluate the log limit directly
+            log_limit = self._safe_limit(log_expr, var, point, direction)
+            
+            if log_limit is not None:
+                with self.new_step():
+                    self.append(f"The limit of the logarithm is:")
+                    self.append(self.format_math_display(log_limit))
+            else:
+                # Fall back to sympy computation
+                with self.new_step():
+                    result = limit(expr, var, point, direction)
+                    self.append("Evaluating this limit:")
+                    self.append(self.format_math_display(result))
+                    return result
+        
+        # Now exponentiate to get the final result
+        with self.new_step():
+            self.append(f"Since ln(L) = {self.format_math(log_limit)}, we have:")
+            final_result = sympy.exp(log_limit)
+            final_simplified = sympy.simplify(final_result)
+            self.append(self.format_math_display(sympy.Eq(
+                sympy.Symbol('L'), final_simplified)))
+        
+        with self.new_step():
+            self.append("Therefore, the limit is:")
+            self.append(self.format_math_display(final_simplified))
+        
+        return final_simplified
     
     def try_direct_substitution(self, expr, var, point, direction):
         """Try direct substitution to evaluate the limit."""

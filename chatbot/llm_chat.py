@@ -19,9 +19,16 @@ SYSTEM_PROMPT = """You are Calc Bot, a friendly calculus tutor. Help students un
 
 STYLE RULES:
 - Be concise. No filler phrases like "Does this make sense?" or "Do you have questions?"
-- Use clean LaTeX formatting: \\( inline \\) or \\[ display \\]
+- ALWAYS wrap LaTeX in proper delimiters: \\( ... \\) for inline math, \\[ ... \\] for display math
+- NEVER use bare LaTeX like \\frac without delimiters - ALWAYS wrap it!
 - One short paragraph max, then show the general formula
 - Be warm but brief
+
+LATEX FORMATTING (CRITICAL):
+- Inline: "The derivative \\( \\frac{dy}{dx} \\) represents..."
+- Display: "The power rule is: \\[ \\frac{d}{dx} x^n = n \\cdot x^{n-1} \\]"
+- WRONG: "\\frac{1}{2}" (missing delimiters!)
+- RIGHT: "\\( \\frac{1}{2} \\)" or "\\[ \\frac{1}{2} \\]"
 
 CRITICAL - DO NOT CALCULATE:
 - NEVER compute numerical answers, evaluate expressions, or solve problems
@@ -67,15 +74,13 @@ class LLMStepHelper:
         # Keywords for calculus topic detection
         self.calculus_keywords = {
             'derivative', 'integral', 'limit', 'differentiate', 'integrate',
-            'calculus', 'function', 'rule', 'chain', 'power', 'product',
-            'quotient', 'substitution', 'parts', 'sin', 'cos', 'tan',
-            'log', 'ln', 'exponential', 'antiderivative', 'slope', 'tangent',
-            'rate', 'change', 'continuous', 'lhopital', "l'hopital",
-            'indeterminate', 'infinity', 'converge', 'diverge', 'step',
-            'why', 'how', 'what', 'explain', 'understand', 'confused',
-            'help', 'mean', 'formula', 'equation', 'solve', 'simplify',
-            'factor', 'expand', 'coefficient', 'constant', 'variable',
-            'theorem', 'proof', 'definition', 'notation', 'dx', 'dy',
+            'calculus', 'chain rule', 'power rule', 'product rule',
+            'quotient rule', 'substitution', 'integration by parts',
+            'antiderivative', 'slope', 'tangent',
+            'rate of change', 'continuous', 'lhopital', "l'hopital",
+            'indeterminate', 'infinity', 'converge', 'diverge',
+            'theorem', 'proof', 'dx', 'dy', 'sin(', 'cos(', 'tan(',
+            'log(', 'ln(', 'exp(',
         }
     
     def _is_configured(self):

@@ -140,7 +140,7 @@ class TestLLMStepHelper(unittest.TestCase):
         ]
         
         response = self.helper.get_response(
-            "Can you give me an example?",
+            "Can you explain the power rule?",
             conversation_history=history
         )
         

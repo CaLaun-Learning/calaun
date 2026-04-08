@@ -3,6 +3,53 @@
  * ES6+ modules, no jQuery dependency
  */
 
+// Simple markdown to HTML converter for chat messages
+function formatMarkdown(text) {
+    if (!text) return '';
+    
+    // Convert **bold** to <strong>
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    
+    // Convert *italic* to <em>
+    text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    
+    // Convert `code` to <code>
+    text = text.replace(/`(.+?)`/g, '<code>$1</code>');
+    
+    // Convert newlines to <br> for proper line breaks
+    text = text.replace(/\n/g, '<br>');
+    
+    return text;
+}
+
+// Fix bare LaTeX that isn't wrapped in MathJax delimiters
+function fixBareLatex(text) {
+    if (!text) return '';
+    
+    // Common LaTeX commands that indicate math content
+    const latexPatterns = [
+        // Display math: standalone lines with LaTeX commands
+        /^(\\frac\{[^}]+\}\{[^}]+\}.*)$/gm,
+        /^(\\lim_\{[^}]+\}.*)$/gm,
+        /^(\\int[^a-zA-Z].*)$/gm,
+        /^(\\sum[^a-zA-Z].*)$/gm,
+    ];
+    
+    // Wrap standalone LaTeX lines in display math delimiters
+    latexPatterns.forEach(pattern => {
+        text = text.replace(pattern, '\\[$1\\]');
+    });
+    
+    // Find inline LaTeX patterns not already wrapped
+    // Match \frac, \lim, \int, \sum, etc. that aren't inside \( \) or \[ \]
+    const inlineLatex = /(?<![\\[(])\\(frac|lim|int|sum|sqrt|sin|cos|tan|log|ln|cdot|theta|alpha|beta|pi|infty)\b[^\\]*?(?![\\)\]])/g;
+    
+    // For simple inline math like sin(θ), cos(θ), wrap them
+    text = text.replace(/(?<![\\(])\\(theta|alpha|beta|pi|infty)(?![\\)])/g, '\\($&\\)');
+    
+    return text;
+}
+
 // Chat functionality
 class ChatBot {
     constructor(containerSelector, apiUrl, options = {}) {
@@ -33,10 +80,19 @@ class ChatBot {
         const msg = document.createElement('div');
         msg.className = `chat-message chat-message--${isUser ? 'user' : 'bot'}`;
         
-        // For bot messages, render potential LaTeX
-        if (!isUser && window.MathJax) {
-            msg.innerHTML = text;
-            MathJax.typesetPromise([msg]).catch(err => console.log('MathJax error:', err));
+        // For bot messages, fix LaTeX, format markdown, and render
+        if (!isUser) {
+            let formattedText = fixBareLatex(text);
+            formattedText = formatMarkdown(formattedText);
+            msg.innerHTML = formattedText;
+            
+            // Render MathJax - wait for it to be ready
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                MathJax.typesetPromise([msg]).catch(err => console.log('MathJax error:', err));
+            } else if (window.MathJax && window.MathJax.Hub) {
+                // Fallback for MathJax 2
+                MathJax.Hub.Queue(['Typeset', MathJax.Hub, msg]);
+            }
         } else {
             msg.textContent = text;
         }
@@ -107,7 +163,7 @@ class ChatBot {
     }
 }
 
-// Modal functionality
+// Modal functionality (kept for legacy/mobile support)
 class Modal {
     constructor(modalSelector, triggerSelector) {
         this.modal = document.querySelector(modalSelector);
@@ -144,6 +200,55 @@ class Modal {
     close() {
         this.modal?.classList.remove('open');
         document.body.style.overflow = '';
+    }
+}
+
+// Chat Sidebar functionality
+class ChatSidebar {
+    constructor(sidebarSelector, triggerSelector) {
+        this.sidebar = document.querySelector(sidebarSelector);
+        this.triggers = document.querySelectorAll(triggerSelector);
+        
+        if (!this.sidebar) return;
+        
+        this.init();
+    }
+    
+    init() {
+        this.triggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.toggle();
+            });
+        });
+        
+        // Escape key to close
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.sidebar.classList.contains('open')) {
+                this.close();
+            }
+        });
+    }
+    
+    toggle() {
+        if (this.sidebar.classList.contains('open')) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+    
+    open() {
+        this.sidebar.classList.add('open');
+        // Focus the input when opening
+        const input = this.sidebar.querySelector('.chat-input input');
+        if (input) {
+            setTimeout(() => input.focus(), 300);
+        }
+    }
+    
+    close() {
+        this.sidebar.classList.remove('open');
     }
 }
 
@@ -372,12 +477,15 @@ class BackToTop {
 
 // Initialize on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize components
-    const chatModal = new Modal('#chatModal', '[data-chat-trigger]');
+    // Initialize chat sidebar (new style)
+    const chatSidebar = new ChatSidebar('#chatSidebar', '[data-chat-trigger]');
+    
     // Use URL from template or fall back to default
     const chatBotUrl = window.CHATBOT_URL || '/api/chatbot/';
     const useLLM = window.USE_LLM_CHATBOT || false;
-    const chatBot = new ChatBot('#chatModal', chatBotUrl, {
+    
+    // Initialize chatbot with sidebar container
+    const chatBot = new ChatBot('#chatSidebar', chatBotUrl, {
         useLLM: useLLM,
         stepsSelector: '#resultsContainer'
     });
