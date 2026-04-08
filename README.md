@@ -9,8 +9,6 @@ A Django-based calculus tutor that shows step-by-step solutions for derivatives,
 - **Step-by-step solutions** for derivatives, integrals, and limits
 - **AI chatbot sidebar** that explains calculus concepts (powered by Groq/Llama 3.1)
 - **Reference page** with common formulas and "try it" links
-- **Modern responsive UI** with MathJax 3 for math rendering
-- **Exponential limit support** including the definition of e: `(1 + 1/x)^x`
 
 ## Screenshots
 
