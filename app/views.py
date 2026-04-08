@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django import forms
 from django.views.generic.base import TemplateView
 from django.views.generic import View
-from chatbot.math_chat import chatbot_response
 from chatbot.llm_chat import llm_response
 from logic.logic import UserInput
 from mathtutor import settings
@@ -20,7 +19,7 @@ HOME_PAGE_EXAMPLES = [
             ('See the steps for derivatives of this function',
              'diff(x^4 / (1 + (tan(sin(x))))^2)'),
             ('Learn multiple ways to derive functions', 'diff(cot(y), y)'),
-            ('And if we don\'t know, we will let you know',
+            ('Logarithmic differentiation for x^x',
              'diff(x^x, x)'),
             ('Learn how to us the product rule on multiple functions', 'diff(x*cos(x)*sin(x)*tan(x), x)'),
 
@@ -32,8 +31,9 @@ HOME_PAGE_EXAMPLES = [
              'integrate(exp(2x) / (1 + exp(x)), x)'),
             'integrate(1 /(x^2-x-2),x)',
             'integrate((2+3/x)**2)',
-            ('And if we don\'t know, we will let you know',
+            ('Inverse hyperbolic functions',
              'integrate(1/sqrt(x^2+1), x)'),
+            ('Hyperbolic function integrals', 'integrate(sinh(x)*cosh(x), x)'),
         ]],
         ['Limits', [
             ('Direct substitution', 'limit(x^2 + 2*x, x, 3)'),
@@ -131,19 +131,6 @@ def reference_guide(request):
 
 class ChatBotAppView(TemplateView):
     template_name = 'app.html'
-
-
-class ChatBotApiView(View):
-    def post(self, request, *args, **kwargs):
-        input_data = json.loads(request.body.decode('utf-8'))
-        msg = input_data['text']
-        response = chatbot_response(msg)
-
-        return JsonResponse({
-            'text': [
-                response
-            ]
-        }, status=200)
 
 
 class LLMChatBotApiView(View):

@@ -1,30 +1,24 @@
-# Math Chatbot
-
-This module contains two chatbot implementations:
-
-1. **TF-IDF Chatbot** (`math_chat.py`) - Fast, retrieval-based for common questions
-2. **LLM Step Helper** (`llm_chat.py`) - AI-powered assistant for understanding solution steps
-
-## LLM Step Helper (Groq - Free)
+# Math Step Helper Chatbot
 
 An AI-powered chatbot that helps students understand calculus solution steps. Uses **Groq's free API** to run open-source LLMs (Llama 3.1) with extremely fast inference.
 
-### Features
+## Features
 
 - **Free Tier**: 30 requests/minute, no credit card needed
 - **Open Source Models**: Llama 3.1, Mixtral, Gemma
 - **Step-aware**: Receives the current solution steps as context
 - **Calculus-focused**: Only answers calculus-related questions
+- **Teaching-focused**: Explains concepts without giving direct answers
 - **Conversation memory**: Remembers previous messages in the chat
 - **LaTeX support**: Responds with mathematical notation
 
-### Setup
+## Setup
 
 1. **Get a free API key** at https://console.groq.com/keys
 
-2. **Set the environment variable**:
-   ```bash
-   export GROQ_API_KEY="gsk_..."
+2. **Create a `.env` file** in the project root:
+   ```
+   GROQ_API_KEY=gsk_your_key_here
    ```
 
 3. **Restart the server**
@@ -32,7 +26,7 @@ An AI-powered chatbot that helps students understand calculus solution steps. Us
 Optional environment variables:
 - `GROQ_MODEL` - Model to use (default: `llama-3.1-8b-instant`)
 
-### Supported Models
+## Supported Models
 
 All free on Groq:
 - `llama-3.1-8b-instant` - Fast, good for most questions (default)
@@ -40,7 +34,7 @@ All free on Groq:
 - `mixtral-8x7b-32768` - Great reasoning ability
 - `gemma2-9b-it` - Good balance of speed and quality
 
-### Usage
+## Usage
 
 ```python
 from chatbot.llm_chat import llm_response
@@ -57,69 +51,38 @@ history = [
 answer = llm_response("Can you give an example?", conversation_history=history)
 ```
 
----
+## How It Works
 
-## TF-IDF Chatbot (Original)
+The chatbot is designed to be a helpful tutor, not a calculator:
 
-A retrieval-based chatbot that only answers calculus questions. Non-math questions are politely deflected.
+1. **Receives context**: Gets the current solution steps being displayed
+2. **Understands the question**: Uses Llama 3.1 to understand what the student is asking
+3. **Explains concepts**: Provides explanations of rules and techniques
+4. **Never calculates**: Won't solve problems directly - encourages learning
 
-### Topics Covered (55+ intents)
+## Topics It Can Help With
 
 **Derivative Rules**
-- Power, chain, product, quotient, sum, constant multiple
+- Power, chain, product, quotient rules
 - Trig derivatives (sin, cos, tan, sec, csc, cot)
-- Inverse trig derivatives
-- Exponential and logarithmic
+- Inverse trig and hyperbolic derivatives
+- Exponential and logarithmic differentiation
 
 **Integration Techniques**
 - U-substitution, integration by parts
 - Trig substitution, partial fractions
-- Definite vs indefinite, +C constant
+- Inverse hyperbolic integrals
 
 **Limits**
-- Definition, L'Hôpital's rule
-- Squeeze theorem, one-sided limits
-- Limits at infinity, indeterminate forms
+- Direct substitution, factoring
+- L'Hôpital's rule, rationalization
+- Special limits (sin(x)/x, etc.)
 
-**Series & Sequences**
-- Geometric, p-series, harmonic
-- Ratio test, comparison test
-- Taylor/Maclaurin series, power series
-
-**Applications**
-- Optimization, critical points
-- Related rates, linear approximation
-- Area under curve, volume of revolution
-
-**Theorems & Concepts**
-- Fundamental Theorem of Calculus
-- Mean Value Theorem, Rolle's Theorem
+**General Calculus Concepts**
 - Continuity, differentiability
-
-## How it works
-
-Uses TF-IDF vectorization to match user questions against predefined intents:
-
-1. Preprocess text (lowercase, remove punctuation)
-2. Convert to TF-IDF vector
-3. Find most similar pattern using cosine similarity
-4. Return a random response from that intent
-
-If confidence is low or question isn't math-related, returns a fallback response.
+- Fundamental Theorem of Calculus
+- Applications and word problems
 
 ## Files
 
-- `math_chat.py` - MathChatbot class using scikit-learn
-- `data/intents.json` - 55+ intent categories with patterns and responses
-
-## Usage
-
-```python
-from chatbot.math_chat import chatbot_response
-
-answer = chatbot_response("what is the chain rule")
-# "The chain rule is for composite functions: d/dx[f(g(x))] = f'(g(x)) · g'(x)..."
-
-answer = chatbot_response("what's the weather")
-# "I only know about calculus! Try asking about derivatives, integrals, or limits."
-```
+- `llm_chat.py` - LLM chatbot using Groq API

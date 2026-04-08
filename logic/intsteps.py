@@ -25,6 +25,27 @@ try:
 except ImportError:
     ArcsinRule = None
 
+# Hyperbolic function rules
+try:
+    from sympy.integrals.manualintegrate import SinhRule, CoshRule
+except ImportError:
+    SinhRule = CoshRule = None
+
+try:
+    from sympy.integrals.manualintegrate import ArcsinhRule
+except ImportError:
+    ArcsinhRule = None
+
+try:
+    from sympy.integrals.manualintegrate import HyperbolicRule
+except ImportError:
+    HyperbolicRule = None
+
+try:
+    from sympy.integrals.manualintegrate import ReciprocalSqrtQuadraticRule
+except ImportError:
+    ReciprocalSqrtQuadraticRule = None
+
 # LogRule may not exist in newer SymPy versions
 try:
     from sympy.integrals.manualintegrate import LogRule
@@ -352,6 +373,73 @@ if ArcsinRule is not None:
             self.append("This is a standard arcsine integral:")
             self.append(self.format_math_display(
                 sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
+
+
+# Register ArcsinhRule printer if available (inverse hyperbolic sine)
+if ArcsinhRule is not None:
+    @prints_rule(ArcsinhRule)
+    def print_Arcsinh(self, rule):
+        with self.new_step():
+            self.append("This is a standard inverse hyperbolic sine integral. "
+                       f"The integral of {self.format_math(1 / sympy.sqrt(_get_symbol(rule)**2 + 1))} is "
+                       f"{self.format_math(sympy.asinh(_get_symbol(rule)))}:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
+
+
+# Register SinhRule printer if available
+if SinhRule is not None:
+    @prints_rule(SinhRule)
+    def print_Sinh(self, rule):
+        with self.new_step():
+            self.append("The integral of sinh is cosh:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
+
+
+# Register CoshRule printer if available
+if CoshRule is not None:
+    @prints_rule(CoshRule)
+    def print_Cosh(self, rule):
+        with self.new_step():
+            self.append("The integral of cosh is sinh:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
+
+
+# Register HyperbolicRule printer if available (generic hyperbolic)
+if HyperbolicRule is not None:
+    @prints_rule(HyperbolicRule)
+    def print_Hyperbolic(self, rule):
+        with self.new_step():
+            messages = {
+                'sinh': "The integral of sinh is cosh:",
+                'cosh': "The integral of cosh is sinh:",
+                'sech*tanh': "The integral of sech times tanh is -sech:",
+                'csch*coth': "The integral of csch times coth is -csch:",
+            }
+            func_name = getattr(rule, 'func', None)
+            if func_name in messages:
+                self.append(messages[func_name])
+            else:
+                self.append("Applying hyperbolic function integration:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), _manualintegrate(rule))))
+
+
+# Register ReciprocalSqrtQuadraticRule printer if available
+if ReciprocalSqrtQuadraticRule is not None:
+    @prints_rule(ReciprocalSqrtQuadraticRule)
+    def print_ReciprocalSqrtQuadratic(self, rule):
+        with self.new_step():
+            result = _manualintegrate(rule)
+            # Check if the result involves inverse hyperbolic functions or logs
+            if result.has(sympy.acosh) or result.has(sympy.asinh) or result.has(sympy.atanh):
+                self.append("This integral has the form of an inverse hyperbolic function:")
+            else:
+                self.append("This integral involves a reciprocal square root of a quadratic:")
+            self.append(self.format_math_display(
+                sympy.Eq(sympy.Integral(_get_context(rule), _get_symbol(rule)), result)))
 
 
 def print_html_steps(function, symbol):

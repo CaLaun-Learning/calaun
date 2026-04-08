@@ -7,7 +7,8 @@ from logic import stepprinter
 from logic.stepprinter import functionnames, replace_u_var
 
 from sympy.core.function import AppliedUndef
-from sympy.functions.elementary.trigonometric import TrigonometricFunction
+from sympy.functions.elementary.trigonometric import TrigonometricFunction, InverseTrigonometricFunction
+from sympy.functions.elementary.hyperbolic import HyperbolicFunction
 from sympy.strategies.core import switch
 
 
@@ -23,8 +24,11 @@ MulRule = Rule("MulRule", "terms substeps")
 DivRule = Rule("DivRule", "numerator denominator numerstep denomstep")
 ChainRule = Rule("ChainRule", "substep inner u_var innerstep")
 TrigRule = Rule("TrigRule", "f")
+InverseTrigRule = Rule("InverseTrigRule", "f")  # For asin, acos, atan, etc.
+HyperbolicRule = Rule("HyperbolicRule", "f")  # For sinh, cosh, tanh, etc.
 ExpRule = Rule("ExpRule", "f base")
 LogRule = Rule("LogRule", "arg base")
+LogDiffRule = Rule("LogDiffRule", "base exp base_step exp_step")  # For f(x)^g(x)
 FunctionRule = Rule("FunctionRule")
 AlternativeRule = Rule("AlternativeRule", "alternatives")
 DontKnowRule = Rule("DontKnowRule")
@@ -97,7 +101,36 @@ def eval_alternative(alternatives, expr, symbol):
 @evaluates(LogRule)
 @evaluates(DontKnowRule)
 @evaluates(FunctionRule)
+@evaluates(InverseTrigRule)
+@evaluates(HyperbolicRule)
 def eval_default(*args):
+    func, symbol = args[-2], args[-1]
+    if isinstance(func, sympy.Symbol):
+        func = sympy.Pow(func, 1, evaluate=False)
+    
+    substitutions, mapping = [], {}
+    constant_symbol = sympy.Dummy()
+    for arg in func.args:
+        if symbol in arg.free_symbols:
+            mapping[symbol] = arg
+            substitutions.append(symbol)
+        else:
+            mapping[constant_symbol] = arg
+            substitutions.append(constant_symbol)
+    
+    rule = func.func(*substitutions).diff(symbol)
+    return rule.subs(mapping)
+
+
+@evaluates(LogDiffRule)
+def eval_logdiff(base, exp, base_step, exp_step, expr, symbol):
+    """Evaluate f(x)^g(x) using logarithmic differentiation.
+    
+    d/dx[f^g] = f^g * (g' * ln(f) + g * f'/f)
+    """
+    f, g = base, exp
+    df, dg = diff(base_step), diff(exp_step)
+    return expr * (dg * sympy.log(f) + g * df / f)
     func, symbol = args[-2], args[-1]
     if isinstance(func, sympy.Symbol):
         func = sympy.Pow(func, 1, evaluate=False)
@@ -125,6 +158,10 @@ def diff_steps(expr, symbol):
         e = d.expr
         if isinstance(e, TrigonometricFunction):
             return TrigonometricFunction
+        if isinstance(e, InverseTrigonometricFunction):
+            return InverseTrigonometricFunction
+        if isinstance(e, HyperbolicFunction):
+            return HyperbolicFunction
         if isinstance(e, AppliedUndef):
             return AppliedUndef
         if not e.has(symbol):
@@ -138,6 +175,8 @@ def diff_steps(expr, symbol):
         sympy.Add: add_rule,
         sympy.Mul: mul_rule,
         TrigonometricFunction: trig_rule,
+        InverseTrigonometricFunction: inverse_trig_rule,
+        HyperbolicFunction: hyperbolic_rule,
         sympy.exp: exp_rule,
         sympy.log: log_rule,
         AppliedUndef: function_rule,
@@ -161,7 +200,10 @@ def power_rule(derivative):
         u = sympy.Dummy()
         f = u ** exp
         return ChainRule(PowerRule(u, exp, f, u), base, u, diff_steps(base, symbol), expr, symbol)
-    return DontKnowRule(expr, symbol)
+    else:
+        # Both base and exponent contain the variable: use logarithmic differentiation
+        # d/dx[f^g] = f^g * (g' * ln(f) + g * f'/f)
+        return LogDiffRule(base, exp, diff_steps(base, symbol), diff_steps(exp, symbol), expr, symbol)
 
 
 def add_rule(derivative):
@@ -212,6 +254,32 @@ def trig_rule(derivative):
         return AlternativeRule(alts, expr, symbol)
     
     return DontKnowRule(expr, symbol)
+
+
+def inverse_trig_rule(derivative):
+    """Handle inverse trig functions: asin, acos, atan, acot, asec, acsc."""
+    expr, symbol = derivative.expr, derivative.symbol
+    arg = expr.args[0]
+    
+    default = InverseTrigRule(expr, expr, symbol)
+    if not isinstance(arg, sympy.Symbol):
+        u = sympy.Dummy()
+        default = ChainRule(InverseTrigRule(expr.func(u), expr.func(u), u), arg, u, diff_steps(arg, symbol), expr, symbol)
+    
+    return default
+
+
+def hyperbolic_rule(derivative):
+    """Handle hyperbolic functions: sinh, cosh, tanh, coth, sech, csch."""
+    expr, symbol = derivative.expr, derivative.symbol
+    arg = expr.args[0]
+    
+    default = HyperbolicRule(expr, expr, symbol)
+    if not isinstance(arg, sympy.Symbol):
+        u = sympy.Dummy()
+        default = ChainRule(HyperbolicRule(expr.func(u), expr.func(u), u), arg, u, diff_steps(arg, symbol), expr, symbol)
+    
+    return default
 
 
 def exp_rule(derivative):
@@ -348,6 +416,34 @@ class DiffPrinter(stepprinter.HTMLPrinter):
                 self.append(messages[type(rule.f)])
             self.append(self.format_math_display(sympy.Eq(sympy.Derivative(rule.f, rule.symbol), diff(rule))))
 
+    def print_InverseTrigRule(self, rule):
+        with self.new_step():
+            messages = {
+                sympy.asin: "The derivative of arcsin is:",
+                sympy.acos: "The derivative of arccos is:",
+                sympy.atan: "The derivative of arctan is:",
+                sympy.acot: "The derivative of arccot is:",
+                sympy.asec: "The derivative of arcsec is:",
+                sympy.acsc: "The derivative of arccsc is:",
+            }
+            if type(rule.f) in messages:
+                self.append(messages[type(rule.f)])
+            self.append(self.format_math_display(sympy.Eq(sympy.Derivative(rule.f, rule.symbol), diff(rule))))
+
+    def print_HyperbolicRule(self, rule):
+        with self.new_step():
+            messages = {
+                sympy.sinh: "The derivative of sinh is cosh:",
+                sympy.cosh: "The derivative of cosh is sinh:",
+                sympy.tanh: "The derivative of tanh is sech²:",
+                sympy.coth: "The derivative of coth is -csch²:",
+                sympy.sech: "The derivative of sech is -sech·tanh:",
+                sympy.csch: "The derivative of csch is -csch·coth:",
+            }
+            if type(rule.f) in messages:
+                self.append(messages[type(rule.f)])
+            self.append(self.format_math_display(sympy.Eq(sympy.Derivative(rule.f, rule.symbol), diff(rule))))
+
     def print_ExpRule(self, rule):
         with self.new_step():
             if rule.base == sympy.E:
@@ -385,6 +481,35 @@ class DiffPrinter(stepprinter.HTMLPrinter):
         with self.new_step():
             self.append("Trivial:")
             self.append(self.format_math_display(sympy.Eq(sympy.Derivative(rule.context, rule.symbol), diff(rule))))
+
+    def print_LogDiffRule(self, rule):
+        """Print steps for logarithmic differentiation of f(x)^g(x)."""
+        f, g = rule.base, rule.exp
+        x = rule.symbol
+        
+        with self.new_step():
+            self.append(f"Use <strong>logarithmic differentiation</strong> for {self.format_math(f**g)} since both base and exponent contain {self.format_math(x)}.")
+        
+        with self.new_step():
+            self.append(f"Let {self.format_math(sympy.Symbol('y'))} = {self.format_math(f**g)}, then take the natural log of both sides:")
+            self.append(self.format_math_display(sympy.Eq(sympy.log(sympy.Symbol('y')), g * sympy.log(f))))
+        
+        with self.new_step():
+            self.append("Differentiate both sides implicitly:")
+            self.append(self.format_math_display(sympy.Symbol(r'\frac{1}{y} \cdot \frac{dy}{dx} = \frac{d}{dx}\left[' + sympy.latex(g) + r' \cdot \ln(' + sympy.latex(f) + r')\right]')))
+        
+        with self.new_step():
+            self.append("Apply the product rule to the right side:")
+            df = diff(rule.base_step)
+            dg = diff(rule.exp_step)
+            # g' * ln(f) + g * f'/f
+            rhs = dg * sympy.log(f) + g * df / f
+            self.append(self.format_math_display(sympy.Symbol(r'\frac{1}{y} \cdot \frac{dy}{dx} = ' + sympy.latex(rhs))))
+        
+        with self.new_step():
+            self.append(f"Solve for {self.format_math(sympy.Symbol('dy/dx'))} by multiplying both sides by {self.format_math(sympy.Symbol('y'))} = {self.format_math(f**g)}:")
+            result = diff(rule)
+            self.append(self.format_math_display(sympy.Eq(sympy.Derivative(rule.context, x), result)))
 
     def print_DontKnowRule(self, rule):
         with self.new_step():
