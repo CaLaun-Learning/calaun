@@ -3,13 +3,20 @@ from django.shortcuts import render
 from django import forms
 from django.views.generic.base import TemplateView
 from django.views.generic import View
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from chatbot.llm_chat import llm_response
 from logic.logic import UserInput
 from mathtutor import settings
+from app.analytics import get_analytics, get_client_ip, rate_limit_chatbot
 import json
+import os
 import urllib
 import urllib.parse
 import traceback
+import logging
+
+logger = logging.getLogger('calc_tutor')
 
 
 HOME_PAGE_EXAMPLES = [
@@ -86,11 +93,29 @@ def index(request):
         "examples": HOME_PAGE_EXAMPLES
     })
 
+def _detect_expression_type(input_str):
+    """Detect the type of calculus expression."""
+    input_lower = input_str.lower().strip()
+    if input_lower.startswith('diff(') or input_lower.startswith('derivative('):
+        return 'derivative'
+    elif input_lower.startswith('integrate(') or input_lower.startswith('integral('):
+        return 'integral'
+    elif input_lower.startswith('limit('):
+        return 'limit'
+    else:
+        return 'other'
+
 def input(request):
     if request.method == "GET":
         form = SearchForm(request.GET)
         if form.is_valid():
             input = form.cleaned_data["i"]
+            
+            # Log solver usage
+            ip = get_client_ip(request)
+            expr_type = _detect_expression_type(input)
+            get_analytics().log_solver_request(ip, expr_type)
+            
             evaluated = UserInput().change_to_cards(input)
             if not evaluated:
                 evaluated = [{
@@ -153,20 +178,72 @@ class ChatBotAppView(TemplateView):
     template_name = 'app.html'
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class LLMChatBotApiView(View):
     """LLM-powered chatbot that helps students understand solution steps."""
     
     def post(self, request, *args, **kwargs):
+        # Rate limiting check
+        ip = get_client_ip(request)
+        analytics = get_analytics()
+        
+        # 10 requests per minute per IP
+        is_allowed, remaining, retry_after = analytics.check_rate_limit(
+            ip, max_requests=10, window_seconds=60
+        )
+        
+        if not is_allowed:
+            logger.warning(f"Rate limit exceeded for {ip[:12]}...")
+            return JsonResponse({
+                'text': (
+                    "You've sent too many messages. "
+                    f"Please wait {retry_after} seconds and try again. "
+                    "This limit helps ensure fair access for all students."
+                ),
+                'rate_limited': True,
+                'retry_after': retry_after,
+            }, status=429)
+        
+        # Parse request
         input_data = json.loads(request.body.decode('utf-8'))
         msg = input_data.get('text', '')
         steps_html = input_data.get('steps', '')
         history = input_data.get('history', [])
         
+        # Log the request
+        analytics.log_chatbot_request(
+            ip_address=ip,
+            was_calculus_related=True,  # Will be determined by llm_chat
+            had_steps_context=bool(steps_html)
+        )
+        
+        # Get response
         response = llm_response(msg, steps_html, history)
         
-        return JsonResponse({
+        result = JsonResponse({
             'text': response
         }, status=200)
+        
+        # Add rate limit headers
+        result['X-RateLimit-Remaining'] = remaining
+        result['X-RateLimit-Limit'] = 10
+        
+        return result
+
+
+def analytics_stats(request):
+    """View usage statistics. Protected by secret token in production."""
+    # Simple token-based auth for stats endpoint
+    token = request.GET.get('token', '')
+    expected_token = os.environ.get('STATS_TOKEN', 'dev-stats-token')
+    
+    if token != expected_token:
+        return JsonResponse({'error': 'Unauthorized'}, status=401)
+    
+    hours = int(request.GET.get('hours', 24))
+    stats = get_analytics().get_stats(hours=hours)
+    
+    return JsonResponse(stats)
 
 
 def handler404(request, exception):

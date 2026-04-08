@@ -8,6 +8,7 @@ urlpatterns = [
     path('input/', views.input),
     path('reference/', views.reference_guide),
     path('card/<card_name>', views.return_result_as_card),
+    path('api/stats/', views.analytics_stats),
 ]
 handler404 = 'app.views.handler404'
 handler500 = 'app.views.handler500'
