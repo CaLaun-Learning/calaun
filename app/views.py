@@ -32,8 +32,9 @@ HOME_PAGE_EXAMPLES = [
              'integrate(exp(2x) / (1 + exp(x)), x)'),
             'integrate(1 /(x^2-x-2),x)',
             'integrate((2+3/x)**2)',
-            ('And if we don\'t know, we will let you know',
+            ('Inverse hyperbolic functions',
              'integrate(1/sqrt(x^2+1), x)'),
+            ('Hyperbolic function integrals', 'integrate(sinh(x)*cosh(x), x)'),
         ]],
         ['Limits', [
             ('Direct substitution', 'limit(x^2 + 2*x, x, 3)'),
