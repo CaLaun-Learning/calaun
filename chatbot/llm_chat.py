@@ -1,13 +1,12 @@
 """
 LLM Step Helper - An AI assistant that helps students understand calculus steps.
 
-Uses Ollama to run open-source LLMs locally. No API keys required, no data
-sent to third parties. Supports models like Llama 3, Mistral, Phi, etc.
+Uses Groq's free API to run open-source LLMs (Llama 3, Mixtral, etc.) with
+extremely fast inference. Free tier includes 30 requests/minute.
 
 Setup:
-1. Install Ollama: https://ollama.com/download
-2. Pull a model: ollama pull llama3.2
-3. Start server: ollama serve (runs on http://localhost:11434)
+1. Get free API key: https://console.groq.com/keys
+2. Set environment variable: export GROQ_API_KEY="gsk_..."
 """
 
 import os
@@ -32,24 +31,25 @@ If the student's question is NOT about calculus or the current problem, respond 
 When steps are provided, reference them specifically to help the student understand."""
 
 
-# Default Ollama settings
-DEFAULT_OLLAMA_URL = "http://localhost:11434"
-DEFAULT_MODEL = "llama3.2"
+# Default settings - Groq is free and uses open-source models
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+DEFAULT_MODEL = "llama-3.1-8b-instant"  # Fast, free, open-source
 
 
 class LLMStepHelper:
     """An LLM-based assistant that helps students understand calculus solution steps."""
     
-    def __init__(self, base_url=None, model=None):
+    def __init__(self, api_key=None, model=None):
         """
-        Initialize the LLM helper using Ollama.
+        Initialize the LLM helper using Groq (free tier).
         
         Args:
-            base_url: Ollama server URL (defaults to http://localhost:11434)
-            model: Model to use (defaults to OLLAMA_MODEL env var or llama3.2)
+            api_key: Groq API key (defaults to GROQ_API_KEY env var)
+            model: Model to use (defaults to llama-3.1-8b-instant)
         """
-        self.base_url = base_url or os.environ.get('OLLAMA_URL', DEFAULT_OLLAMA_URL)
-        self.model = model or os.environ.get('OLLAMA_MODEL', DEFAULT_MODEL)
+        self.api_key = api_key or os.environ.get('GROQ_API_KEY')
+        self.model = model or os.environ.get('GROQ_MODEL', DEFAULT_MODEL)
+        self.api_url = GROQ_API_URL
         
         # Keywords for calculus topic detection
         self.calculus_keywords = {
@@ -65,13 +65,9 @@ class LLMStepHelper:
             'theorem', 'proof', 'definition', 'notation', 'dx', 'dy',
         }
     
-    def _is_ollama_available(self):
-        """Check if Ollama server is running."""
-        try:
-            response = requests.get(f"{self.base_url}/api/tags", timeout=2)
-            return response.status_code == 200
-        except requests.exceptions.RequestException:
-            return False
+    def _is_configured(self):
+        """Check if the API key is configured."""
+        return bool(self.api_key)
     
     def _is_calculus_related(self, message, has_steps=False):
         """
@@ -158,13 +154,13 @@ class LLMStepHelper:
         """
         has_steps = bool(steps_html)
         
-        # Check if Ollama is running
-        if not self._is_ollama_available():
+        # Check if API key is configured
+        if not self._is_configured():
             return (
-                "The AI assistant is not available. Please make sure Ollama is running:\n\n"
-                "1. Install Ollama from https://ollama.com\n"
-                "2. Run: ollama pull llama3.2\n"
-                "3. Run: ollama serve"
+                "The AI assistant is not configured. To enable it:\n\n"
+                "1. Get a free API key at https://console.groq.com/keys\n"
+                "2. Set: export GROQ_API_KEY=\"your-key\"\n"
+                "3. Restart the server"
             )
         
         # Check if the question is calculus-related
@@ -201,28 +197,29 @@ class LLMStepHelper:
         
         try:
             response = requests.post(
-                f"{self.base_url}/api/chat",
+                self.api_url,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json"
+                },
                 json={
                     "model": self.model,
                     "messages": messages,
-                    "stream": False,
-                    "options": {
-                        "temperature": 0.7,
-                        "num_predict": 500,
-                    }
+                    "max_tokens": 500,
+                    "temperature": 0.7,
                 },
-                timeout=60
+                timeout=30
             )
             response.raise_for_status()
             data = response.json()
-            return data.get("message", {}).get("content", "I couldn't generate a response.")
+            return data["choices"][0]["message"]["content"]
         except requests.exceptions.Timeout:
-            return "The response is taking too long. Please try a shorter question."
+            return "The response is taking too long. Please try again."
         except requests.exceptions.RequestException as e:
-            print(f"Ollama API error: {e}")
+            print(f"Groq API error: {e}")
             return (
-                "I'm having trouble connecting to the AI model. "
-                "Please make sure Ollama is running: ollama serve"
+                "I'm having trouble connecting right now. "
+                "Please try again in a moment."
             )
 
 

@@ -5,13 +5,14 @@ This module contains two chatbot implementations:
 1. **TF-IDF Chatbot** (`math_chat.py`) - Fast, retrieval-based for common questions
 2. **LLM Step Helper** (`llm_chat.py`) - AI-powered assistant for understanding solution steps
 
-## LLM Step Helper (Ollama)
+## LLM Step Helper (Groq - Free)
 
-An AI-powered chatbot that helps students understand calculus solution steps. Uses **Ollama** to run open-source LLMs locally - completely free, no API keys, no data sent to third parties.
+An AI-powered chatbot that helps students understand calculus solution steps. Uses **Groq's free API** to run open-source LLMs (Llama 3.1) with extremely fast inference.
 
 ### Features
 
-- **100% Free & Private**: Runs locally using open-source models
+- **Free Tier**: 30 requests/minute, no credit card needed
+- **Open Source Models**: Llama 3.1, Mixtral, Gemma
 - **Step-aware**: Receives the current solution steps as context
 - **Calculus-focused**: Only answers calculus-related questions
 - **Conversation memory**: Remembers previous messages in the chat
@@ -19,35 +20,25 @@ An AI-powered chatbot that helps students understand calculus solution steps. Us
 
 ### Setup
 
-1. **Install Ollama** (free, open-source):
+1. **Get a free API key** at https://console.groq.com/keys
+
+2. **Set the environment variable**:
    ```bash
-   # macOS
-   brew install ollama
-   
-   # Or download from https://ollama.com/download
+   export GROQ_API_KEY="gsk_..."
    ```
 
-2. **Pull a model** (Llama 3.2 recommended):
-   ```bash
-   ollama pull llama3.2
-   ```
-
-3. **Start the server**:
-   ```bash
-   ollama serve
-   ```
+3. **Restart the server**
 
 Optional environment variables:
-- `OLLAMA_URL` - Server URL (default: `http://localhost:11434`)
-- `OLLAMA_MODEL` - Model to use (default: `llama3.2`)
+- `GROQ_MODEL` - Model to use (default: `llama-3.1-8b-instant`)
 
 ### Supported Models
 
-Any Ollama model works! Some good options for calculus tutoring:
-- `llama3.2` - Fast, good for most questions (default)
-- `llama3.1` - More capable, slower
-- `mistral` - Good balance of speed and quality
-- `phi3` - Lightweight, fast responses
+All free on Groq:
+- `llama-3.1-8b-instant` - Fast, good for most questions (default)
+- `llama-3.3-70b-versatile` - More capable, slightly slower  
+- `mixtral-8x7b-32768` - Great reasoning ability
+- `gemma2-9b-it` - Good balance of speed and quality
 
 ### Usage
 

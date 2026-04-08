@@ -1,4 +1,4 @@
-"""Tests for the LLM Step Helper chatbot (using Ollama)."""
+"""Tests for the LLM Step Helper chatbot (using Groq)."""
 
 import unittest
 from unittest.mock import patch, MagicMock
@@ -10,7 +10,7 @@ class TestLLMStepHelper(unittest.TestCase):
     
     def setUp(self):
         """Set up test fixtures."""
-        self.helper = LLMStepHelper()
+        self.helper = LLMStepHelper(api_key='test-key')
     
     def test_is_calculus_related_with_keywords(self):
         """Test calculus keyword detection."""
@@ -39,26 +39,29 @@ class TestLLMStepHelper(unittest.TestCase):
         self.assertTrue(helper._is_calculus_related("Why did we do that step?", has_steps=True))
         self.assertTrue(helper._is_calculus_related("I don't understand step 2", has_steps=True))
     
-    @patch('chatbot.llm_chat.LLMStepHelper._is_ollama_available')
-    def test_get_response_non_calculus(self, mock_available):
-        """Test response for non-calculus questions."""
-        mock_available.return_value = True
+    def test_get_response_not_configured(self):
+        """Test response when API key is not configured."""
+        helper = LLMStepHelper(api_key=None)
         
+        response = helper.get_response("What is a derivative?")
+        
+        self.assertIn("not configured", response.lower())
+        self.assertIn("groq", response.lower())
+    
+    def test_get_response_non_calculus(self):
+        """Test response for non-calculus questions."""
         response = self.helper.get_response("What's your favorite color?")
         
         self.assertIn("calculus", response.lower())
         self.assertIn("derivatives", response.lower())
     
     @patch('chatbot.llm_chat.requests.post')
-    @patch('chatbot.llm_chat.LLMStepHelper._is_ollama_available')
-    def test_get_response_calculus_question(self, mock_available, mock_post):
+    def test_get_response_calculus_question(self, mock_post):
         """Test response for calculus questions."""
-        mock_available.return_value = True
-        
-        # Mock Ollama response
+        # Mock Groq response
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "message": {"content": "This is a test response about calculus."}
+            "choices": [{"message": {"content": "This is a test response about calculus."}}]
         }
         mock_response.raise_for_status = MagicMock()
         mock_post.return_value = mock_response
@@ -70,14 +73,11 @@ class TestLLMStepHelper(unittest.TestCase):
         self.assertEqual(response, "This is a test response about calculus.")
     
     @patch('chatbot.llm_chat.requests.post')
-    @patch('chatbot.llm_chat.LLMStepHelper._is_ollama_available')
-    def test_get_response_with_steps(self, mock_available, mock_post):
+    def test_get_response_with_steps(self, mock_post):
         """Test response includes steps context."""
-        mock_available.return_value = True
-        
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "message": {"content": "Test response"}
+            "choices": [{"message": {"content": "Test response"}}]
         }
         mock_response.raise_for_status = MagicMock()
         mock_post.return_value = mock_response
@@ -125,14 +125,11 @@ class TestLLMStepHelper(unittest.TestCase):
         self.assertNotIn("<h3>", text)
     
     @patch('chatbot.llm_chat.requests.post')
-    @patch('chatbot.llm_chat.LLMStepHelper._is_ollama_available')
-    def test_conversation_history(self, mock_available, mock_post):
+    def test_conversation_history(self, mock_post):
         """Test that conversation history is included."""
-        mock_available.return_value = True
-        
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "message": {"content": "Test response"}
+            "choices": [{"message": {"content": "Test response"}}]
         }
         mock_response.raise_for_status = MagicMock()
         mock_post.return_value = mock_response
@@ -154,16 +151,6 @@ class TestLLMStepHelper(unittest.TestCase):
         # Should include history
         user_messages = [m for m in messages if m['role'] == 'user']
         self.assertGreaterEqual(len(user_messages), 2)
-    
-    @patch('chatbot.llm_chat.LLMStepHelper._is_ollama_available')
-    def test_ollama_not_available(self, mock_available):
-        """Test response when Ollama is not running."""
-        mock_available.return_value = False
-        
-        response = self.helper.get_response("What is a derivative?")
-        
-        self.assertIn("ollama", response.lower())
-        self.assertIn("not available", response.lower())
 
 
 class TestLLMResponseFunction(unittest.TestCase):
