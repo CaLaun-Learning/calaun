@@ -15,33 +15,51 @@ import traceback
 HOME_PAGE_EXAMPLES = [
     ('Calculus', [
         ['Derivatives', [
-            ('Learn how to use power rule and Chain rule', 'diff(cos(x)^7, x)'),
-            ('See the steps for derivatives of this function',
-             'diff(x^4 / (1 + (tan(sin(x))))^2)'),
-            ('Learn multiple ways to derive functions', 'diff(cot(y), y)'),
-            ('Logarithmic differentiation for x^x',
-             'diff(x^x, x)'),
-            ('Learn how to us the product rule on multiple functions', 'diff(x*cos(x)*sin(x)*tan(x), x)'),
-
+            # Basic rules
+            ('Power rule basics', 'diff(x^5, x)'),
+            ('Chain rule with trig', 'diff(sin(x^2), x)'),
+            ('Product rule', 'diff(x^2 * ln(x), x)'),
+            ('Quotient rule', 'diff(x/(x^2 + 1), x)'),
+            # Intermediate
+            ('Nested chain rule', 'diff(cos(x)^7, x)'),
+            ('Multiple rules combined', 'diff(x*cos(x)*sin(x), x)'),
+            ('Exponential functions', 'diff(exp(x^2), x)'),
+            ('Logarithmic differentiation', 'diff(x^x, x)'),
+            # Advanced
+            ('Inverse trig functions', 'diff(arctan(x), x)'),
+            ('Implicit style', 'diff(sqrt(1 - x^2), x)'),
         ]],
         ['Antiderivatives', [
-            ('Learn how to integrate this function', 'integrate(cot(x))'),
-            ('Learn common integrals', 'integrate(1/z, z)'),
-            ('Learn steps for these integrals',
-             'integrate(exp(2x) / (1 + exp(x)), x)'),
-            'integrate(1 /(x^2-x-2),x)',
-            'integrate((2+3/x)**2)',
-            ('Inverse hyperbolic functions',
-             'integrate(1/sqrt(x^2+1), x)'),
-            ('Hyperbolic function integrals', 'integrate(sinh(x)*cosh(x), x)'),
+            # Basic techniques
+            ('Power rule for integrals', 'integrate(x^3, x)'),
+            ('Basic trig integral', 'integrate(cos(x), x)'),
+            ('Natural log pattern', 'integrate(1/x, x)'),
+            # U-substitution
+            ('U-sub with chain rule', 'integrate(x*exp(x^2), x)'),
+            ('Trig substitution prep', 'integrate(sin(x)*cos(x), x)'),
+            # Integration techniques
+            ('Integration by parts', 'integrate(x*exp(x), x)'),
+            ('Partial fractions', 'integrate(1/(x^2 - 1), x)'),
+            ('Trig identities', 'integrate(sin(x)^2, x)'),
+            # Advanced
+            ('Inverse trig result', 'integrate(1/sqrt(1 - x^2), x)'),
+            ('Hyperbolic functions', 'integrate(sinh(x), x)'),
         ]],
         ['Limits', [
+            # Direct evaluation
             ('Direct substitution', 'limit(x^2 + 2*x, x, 3)'),
-            ('Classic indeterminate form', 'limit(sin(x)/x, x, 0)'),
+            ('Continuous function', 'limit(cos(x), x, 0)'),
+            # Indeterminate forms
+            ('Classic 0/0 form', 'limit(sin(x)/x, x, 0)'),
             ('Factor and cancel', 'limit((x^2 - 1)/(x - 1), x, 1)'),
             ('L\'Hôpital\'s Rule', 'limit((exp(x) - 1)/x, x, 0)'),
+            ('Repeated L\'Hôpital', 'limit((1 - cos(x))/x^2, x, 0)'),
+            # Limits at infinity
             ('Limit at infinity', 'limit(1/x, x, oo)'),
-            ('Polynomial at infinity', 'limit((2*x^2 + 3)/(x^2 - 1), x, oo)'),
+            ('Rational function', 'limit((2*x^2 + 3)/(x^2 - 1), x, oo)'),
+            ('Exponential dominance', 'limit(exp(x)/x^2, x, oo)'),
+            # One-sided limits
+            ('One-sided approach', 'limit(1/x, x, 0, "+")'),
         ]],
     ]),
 ]
