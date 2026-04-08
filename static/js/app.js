@@ -85,8 +85,13 @@ class ChatBot {
             let formattedText = fixBareLatex(text);
             formattedText = formatMarkdown(formattedText);
             msg.innerHTML = formattedText;
-            if (window.MathJax) {
+            
+            // Render MathJax - wait for it to be ready
+            if (window.MathJax && window.MathJax.typesetPromise) {
                 MathJax.typesetPromise([msg]).catch(err => console.log('MathJax error:', err));
+            } else if (window.MathJax && window.MathJax.Hub) {
+                // Fallback for MathJax 2
+                MathJax.Hub.Queue(['Typeset', MathJax.Hub, msg]);
             }
         } else {
             msg.textContent = text;
