@@ -74,15 +74,13 @@ class LLMStepHelper:
         # Keywords for calculus topic detection
         self.calculus_keywords = {
             'derivative', 'integral', 'limit', 'differentiate', 'integrate',
-            'calculus', 'function', 'rule', 'chain', 'power', 'product',
-            'quotient', 'substitution', 'parts', 'sin', 'cos', 'tan',
-            'log', 'ln', 'exponential', 'antiderivative', 'slope', 'tangent',
-            'rate', 'change', 'continuous', 'lhopital', "l'hopital",
-            'indeterminate', 'infinity', 'converge', 'diverge', 'step',
-            'why', 'how', 'what', 'explain', 'understand', 'confused',
-            'help', 'mean', 'formula', 'equation', 'solve', 'simplify',
-            'factor', 'expand', 'coefficient', 'constant', 'variable',
-            'theorem', 'proof', 'definition', 'notation', 'dx', 'dy',
+            'calculus', 'chain rule', 'power rule', 'product rule',
+            'quotient rule', 'substitution', 'integration by parts',
+            'antiderivative', 'slope', 'tangent',
+            'rate of change', 'continuous', 'lhopital', "l'hopital",
+            'indeterminate', 'infinity', 'converge', 'diverge',
+            'theorem', 'proof', 'dx', 'dy', 'sin(', 'cos(', 'tan(',
+            'log(', 'ln(', 'exp(',
         }
     
     def _is_configured(self):
