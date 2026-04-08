@@ -20,7 +20,7 @@ HOME_PAGE_EXAMPLES = [
             ('See the steps for derivatives of this function',
              'diff(x^4 / (1 + (tan(sin(x))))^2)'),
             ('Learn multiple ways to derive functions', 'diff(cot(y), y)'),
-            ('And if we don\'t know, we will let you know',
+            ('Logarithmic differentiation for x^x',
              'diff(x^x, x)'),
             ('Learn how to us the product rule on multiple functions', 'diff(x*cos(x)*sin(x)*tan(x), x)'),
 
