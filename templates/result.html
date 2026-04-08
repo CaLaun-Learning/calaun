@@ -23,7 +23,7 @@
 </div>
 
 <!-- Results -->
-<div class="results">
+<div class="results" id="resultsContainer">
     <div class="steps-controls">
         <button id="toggleAllSteps" class="btn btn--secondary">Show all steps</button>
     </div>
@@ -36,18 +36,23 @@
 <div id="chatModal" class="modal">
     <div class="modal__content">
         <div class="modal__header">
-            <h2 class="modal__title">Calc Bot</h2>
+            <h2 class="modal__title">Calc Bot <span class="modal__badge">AI</span></h2>
             <button class="modal__close" aria-label="Close">&times;</button>
         </div>
-        <div class="chat-log"></div>
+        <div class="chat-log">
+            <div class="chat-message chat-message--bot">
+                Hi! I'm here to help you understand these solution steps. Ask me anything about the calculus problem above!
+            </div>
+        </div>
         <div class="chat-input">
-            <input type="text" placeholder="Ask a question..." aria-label="Chat message">
+            <input type="text" placeholder="Ask about any step..." aria-label="Chat message">
             <button>Send</button>
         </div>
     </div>
 </div>
 
 <script>
-    window.CHATBOT_URL = '{% url "chatbot" %}';
+    window.CHATBOT_URL = '{% url "llm_chatbot" %}';
+    window.USE_LLM_CHATBOT = true;
 </script>
 {% endblock %}

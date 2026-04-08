@@ -5,7 +5,7 @@
 
 // Chat functionality
 class ChatBot {
-    constructor(containerSelector, apiUrl) {
+    constructor(containerSelector, apiUrl, options = {}) {
         this.container = document.querySelector(containerSelector);
         if (!this.container) return;
         
@@ -13,6 +13,11 @@ class ChatBot {
         this.chatLog = this.container.querySelector('.chat-log');
         this.input = this.container.querySelector('.chat-input input');
         this.sendBtn = this.container.querySelector('.chat-input button');
+        
+        // LLM mode options
+        this.useLLM = options.useLLM || false;
+        this.stepsSelector = options.stepsSelector || '#resultsContainer';
+        this.conversationHistory = [];
         
         this.init();
     }
@@ -27,9 +32,34 @@ class ChatBot {
     addMessage(text, isUser = false) {
         const msg = document.createElement('div');
         msg.className = `chat-message chat-message--${isUser ? 'user' : 'bot'}`;
-        msg.textContent = text;
+        
+        // For bot messages, render potential LaTeX
+        if (!isUser && window.MathJax) {
+            msg.innerHTML = text;
+            MathJax.typesetPromise([msg]).catch(err => console.log('MathJax error:', err));
+        } else {
+            msg.textContent = text;
+        }
+        
         this.chatLog?.appendChild(msg);
         this.chatLog?.scrollTo(0, this.chatLog.scrollHeight);
+        
+        // Track conversation history for LLM mode
+        if (this.useLLM) {
+            this.conversationHistory.push({
+                role: isUser ? 'user' : 'assistant',
+                content: text
+            });
+            // Keep only last 10 messages
+            if (this.conversationHistory.length > 10) {
+                this.conversationHistory = this.conversationHistory.slice(-10);
+            }
+        }
+    }
+    
+    getStepsContext() {
+        const stepsContainer = document.querySelector(this.stepsSelector);
+        return stepsContainer ? stepsContainer.innerHTML : '';
     }
     
     async send() {
@@ -39,18 +69,38 @@ class ChatBot {
         this.addMessage(text, true);
         this.input.value = '';
         
+        // Show typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'chat-message chat-message--bot chat-message--typing';
+        typingIndicator.innerHTML = '<span class="typing-dots"><span>.</span><span>.</span><span>.</span></span>';
+        this.chatLog?.appendChild(typingIndicator);
+        this.chatLog?.scrollTo(0, this.chatLog.scrollHeight);
+        
         try {
+            // Build request body
+            const body = { text };
+            
+            if (this.useLLM) {
+                body.steps = this.getStepsContext();
+                body.history = this.conversationHistory.slice(0, -1); // Exclude current message
+            }
+            
             const response = await fetch(this.apiUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text })
+                body: JSON.stringify(body)
             });
+            
+            // Remove typing indicator
+            typingIndicator.remove();
             
             if (!response.ok) throw new Error('Network error');
             
             const data = await response.json();
-            this.addMessage(data.text || 'Sorry, I didn\'t understand that.');
+            const responseText = Array.isArray(data.text) ? data.text[0] : data.text;
+            this.addMessage(responseText || 'Sorry, I didn\'t understand that.');
         } catch (err) {
+            typingIndicator.remove();
             console.error('Chat error:', err);
             this.addMessage('Sorry, something went wrong. Please try again.');
         }
@@ -326,7 +376,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatModal = new Modal('#chatModal', '[data-chat-trigger]');
     // Use URL from template or fall back to default
     const chatBotUrl = window.CHATBOT_URL || '/api/chatbot/';
-    const chatBot = new ChatBot('#chatModal', chatBotUrl);
+    const useLLM = window.USE_LLM_CHATBOT || false;
+    const chatBot = new ChatBot('#chatModal', chatBotUrl, {
+        useLLM: useLLM,
+        stepsSelector: '#resultsContainer'
+    });
     
     // Initialize collapsibles
     const collapsible = new Collapsible();
