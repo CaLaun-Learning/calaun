@@ -22,21 +22,21 @@ TRANSFORMATIONS = (
 
 
 def make_latex_readable(*args):
-    """Convert SymPy objects to readable LaTeX wrapped in script tags."""
+    """Convert SymPy objects to readable LaTeX wrapped for MathJax 3."""
     latex_parts = [obj.as_latex() if hasattr(obj, 'as_latex') else latex(obj) 
                    for obj in args]
     
-    tag = '<script type="math/tex; mode=display">'
+    latex_content = ''.join(latex_parts)
     
     if len(args) == 1:
         obj = args[0]
         if (isinstance(obj, sympy.Basic) and not obj.free_symbols and
             not obj.is_Integer and not obj.is_Float and
             obj.is_finite is not False and hasattr(obj, 'evalf')):
-            tag = (f'<script type="math/tex; mode=display" data-numeric="true" '
-                   f'data-output-repr="{repr(obj)}" data-approximation="{latex(obj.evalf(15))}">')
+            return (f'<span data-numeric="true" data-output-repr="{repr(obj)}" '
+                    f'data-approximation="{latex(obj.evalf(15))}">\\[{latex_content}\\]</span>')
     
-    return f"{tag}{''.join(latex_parts)}</script>"
+    return f'\\[{latex_content}\\]'
 
 
 class UserInput:
@@ -130,7 +130,7 @@ class UserInput:
 
         # Format input display
         if is_function:
-            latex_input = f'<script type="math/tex; mode=display">{latexify(parsed, evaluator)}</script>'
+            latex_input = f'\\[{latexify(parsed, evaluator)}\\]'
         else:
             latex_input = make_latex_readable(evaluated)
 

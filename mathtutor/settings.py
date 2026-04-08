@@ -12,7 +12,7 @@ SECRET_KEY = " "
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -93,3 +93,28 @@ STATICFILES_DIRS = [
     
     os.path.join(BASE_DIR, "static"),
 ]
+
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{asctime} {levelname} {name} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'calc_tutor': {
+            'handlers': ['console'],
+            'level': os.environ.get('LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}

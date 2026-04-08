@@ -41,12 +41,14 @@ class TestLLMStepHelper(unittest.TestCase):
     
     def test_get_response_not_configured(self):
         """Test response when API key is not configured."""
-        helper = LLMStepHelper(api_key=None)
-        
-        response = helper.get_response("What is a derivative?")
-        
-        self.assertIn("not configured", response.lower())
-        self.assertIn("groq", response.lower())
+        # Mock environment to ensure no API key is found
+        with patch.dict('os.environ', {}, clear=True):
+            helper = LLMStepHelper(api_key=None)
+            
+            response = helper.get_response("What is a derivative?")
+            
+            self.assertIn("not configured", response.lower())
+            self.assertIn("groq", response.lower())
     
     def test_get_response_non_calculus(self):
         """Test response for non-calculus questions."""

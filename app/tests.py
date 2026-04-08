@@ -8,7 +8,7 @@ class ViewTestCase(TestCase):
 
     def setUp(self):
         super().setUp()
-        self.url = reverse('main')
+        self.url = '/'  # Direct URL instead of reverse('main')
 
     def test_get_main_page(self):
         """
