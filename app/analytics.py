@@ -11,8 +11,6 @@ import time
 import logging
 from collections import defaultdict
 from datetime import datetime, timedelta
-from functools import wraps
-from django.http import JsonResponse
 
 logger = logging.getLogger('calc_tutor')
 
@@ -149,45 +147,3 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR', 'unknown')
     return ip
-
-
-def rate_limit_chatbot(max_requests=10, window_seconds=60):
-    """
-    Decorator to rate limit chatbot requests per IP.
-    
-    Args:
-        max_requests: Maximum requests allowed in the window
-        window_seconds: Time window in seconds
-    """
-    def decorator(view_func):
-        @wraps(view_func)
-        def wrapper(request, *args, **kwargs):
-            ip = get_client_ip(request)
-            analytics = get_analytics()
-            
-            is_allowed, remaining, retry_after = analytics.check_rate_limit(
-                ip, max_requests, window_seconds
-            )
-            
-            if not is_allowed:
-                logger.warning(f"Rate limit exceeded for {ip[:12]}...")
-                return JsonResponse({
-                    'text': (
-                        "You've sent too many messages. "
-                        f"Please wait {retry_after} seconds and try again. "
-                        "This limit helps ensure fair access for all students."
-                    ),
-                    'rate_limited': True,
-                    'retry_after': retry_after,
-                }, status=429)
-            
-            response = view_func(request, *args, **kwargs)
-            
-            # Add rate limit headers
-            if hasattr(response, '__setitem__'):
-                response['X-RateLimit-Remaining'] = remaining
-                response['X-RateLimit-Limit'] = max_requests
-            
-            return response
-        return wrapper
-    return decorator

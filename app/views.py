@@ -1,17 +1,14 @@
 from django.http import HttpResponse, JsonResponse, Http404
 from django.shortcuts import render
 from django import forms
-from django.views.generic.base import TemplateView
 from django.views.generic import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from chatbot.llm_chat import llm_response
 from logic.logic import UserInput
 from mathtutor import settings
-from app.analytics import get_analytics, get_client_ip, rate_limit_chatbot
+from app.analytics import get_analytics, get_client_ip
 import json
-import os
-import urllib
 import urllib.parse
 import traceback
 import logging
@@ -172,10 +169,6 @@ def reference_guide(request):
         "MEDIA_URL": settings.STATIC_URL,
         "table_active": "selected",
     })
-
-
-class ChatBotAppView(TemplateView):
-    template_name = 'app.html'
 
 
 @method_decorator(csrf_exempt, name='dispatch')

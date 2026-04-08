@@ -1,15 +1,12 @@
 """Tests for the analytics module."""
 
-import unittest
-from unittest.mock import patch, MagicMock
 from datetime import datetime, timedelta
 import time
 
 from django.test import TestCase, RequestFactory
-from django.http import JsonResponse
 
 from app.analytics import (
-    Analytics, get_analytics, get_client_ip, rate_limit_chatbot
+    Analytics, get_analytics, get_client_ip
 )
 
 
@@ -166,48 +163,3 @@ class TestGetClientIP(TestCase):
         
         ip = get_client_ip(request)
         self.assertEqual(ip, '198.51.100.1')
-
-
-class TestRateLimitDecorator(TestCase):
-    """Tests for the rate_limit_chatbot decorator."""
-    
-    def setUp(self):
-        """Set up test fixtures."""
-        self.factory = RequestFactory()
-        
-        # Reset analytics for each test
-        import app.analytics
-        app.analytics._analytics = None
-    
-    def test_decorator_allows_request(self):
-        """Test that decorator allows requests under limit."""
-        @rate_limit_chatbot(max_requests=5, window_seconds=60)
-        def dummy_view(request):
-            return JsonResponse({'text': 'ok'})
-        
-        request = self.factory.get('/')
-        request.META['REMOTE_ADDR'] = '192.168.1.100'
-        
-        response = dummy_view(request)
-        
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response['X-RateLimit-Limit'], '5')
-    
-    def test_decorator_blocks_over_limit(self):
-        """Test that decorator blocks requests over limit."""
-        @rate_limit_chatbot(max_requests=3, window_seconds=60)
-        def dummy_view(request):
-            return JsonResponse({'text': 'ok'})
-        
-        request = self.factory.get('/')
-        request.META['REMOTE_ADDR'] = '192.168.1.101'
-        
-        # Make 3 requests (within limit)
-        for _ in range(3):
-            dummy_view(request)
-        
-        # 4th request should be blocked
-        response = dummy_view(request)
-        
-        self.assertEqual(response.status_code, 429)
-        self.assertIn('rate_limited', response.content.decode())

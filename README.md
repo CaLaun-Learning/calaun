@@ -82,7 +82,7 @@ See [chatbot/README.md](chatbot/README.md) for more details.
 ## Testing
 
 ```bash
-python manage.py test        # Run all tests (74 tests)
+python manage.py test        # Run all tests (85 tests)
 python -m pytest logic/      # Run logic tests only
 python -m pytest chatbot/    # Run chatbot tests only
 ```
