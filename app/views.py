@@ -58,6 +58,8 @@ HOME_PAGE_EXAMPLES = [
             ('Limit at infinity', 'limit(1/x, x, oo)'),
             ('Rational function', 'limit((2*x^2 + 3)/(x^2 - 1), x, oo)'),
             ('Exponential dominance', 'limit(exp(x)/x^2, x, oo)'),
+            # Special limits
+            ('Definition of e', 'limit((1 + 1/x)^x, x, oo)'),
             # One-sided limits
             ('One-sided approach', 'limit(1/x, x, 0, "+")'),
         ]],
