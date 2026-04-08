@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django import forms
 from django.views.generic.base import TemplateView
 from django.views.generic import View
-from chatbot.math_chat import chatbot_response
 from chatbot.llm_chat import llm_response
 from logic.logic import UserInput
 from mathtutor import settings
@@ -132,19 +131,6 @@ def reference_guide(request):
 
 class ChatBotAppView(TemplateView):
     template_name = 'app.html'
-
-
-class ChatBotApiView(View):
-    def post(self, request, *args, **kwargs):
-        input_data = json.loads(request.body.decode('utf-8'))
-        msg = input_data['text']
-        response = chatbot_response(msg)
-
-        return JsonResponse({
-            'text': [
-                response
-            ]
-        }, status=200)
 
 
 class LLMChatBotApiView(View):
