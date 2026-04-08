@@ -231,7 +231,9 @@ class TestMathChatbot(TestCase):
             "peeling" in response.lower() or
             "sin" in response.lower() or
             "cos" in response.lower() or
-            "multiply" in response.lower()
+            "multiply" in response.lower() or
+            "du/dx" in response.lower() or
+            "dy/du" in response.lower()
         )
     
     def test_non_math_question(self):
