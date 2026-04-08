@@ -50,10 +50,10 @@ HOME_PAGE_EXAMPLES = [
             ('Direct substitution', 'limit(x^2 + 2*x, x, 3)'),
             ('Continuous function', 'limit(cos(x), x, 0)'),
             # Indeterminate forms
-            ('Classic 0/0 form', 'limit(sin(x)/x, x, 0)'),
+            ('Classic indeterminate form', 'limit(sin(x)/x, x, 0)'),
             ('Factor and cancel', 'limit((x^2 - 1)/(x - 1), x, 1)'),
-            ('L\'Hôpital\'s Rule', 'limit((exp(x) - 1)/x, x, 0)'),
-            ('Repeated L\'Hôpital', 'limit((1 - cos(x))/x^2, x, 0)'),
+            ('L\'Hopital\'s Rule', 'limit((exp(x) - 1)/x, x, 0)'),
+            ('Repeated L\'Hopital', 'limit((1 - cos(x))/x^2, x, 0)'),
             # Limits at infinity
             ('Limit at infinity', 'limit(1/x, x, oo)'),
             ('Rational function', 'limit((2*x^2 + 3)/(x^2 - 1), x, oo)'),
