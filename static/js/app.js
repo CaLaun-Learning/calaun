@@ -3,6 +3,25 @@
  * ES6+ modules, no jQuery dependency
  */
 
+// Simple markdown to HTML converter for chat messages
+function formatMarkdown(text) {
+    if (!text) return '';
+    
+    // Convert **bold** to <strong>
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    
+    // Convert *italic* to <em>
+    text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+    
+    // Convert `code` to <code>
+    text = text.replace(/`(.+?)`/g, '<code>$1</code>');
+    
+    // Convert newlines to <br> for proper line breaks
+    text = text.replace(/\n/g, '<br>');
+    
+    return text;
+}
+
 // Chat functionality
 class ChatBot {
     constructor(containerSelector, apiUrl, options = {}) {
@@ -33,10 +52,12 @@ class ChatBot {
         const msg = document.createElement('div');
         msg.className = `chat-message chat-message--${isUser ? 'user' : 'bot'}`;
         
-        // For bot messages, render potential LaTeX
-        if (!isUser && window.MathJax) {
-            msg.innerHTML = text;
-            MathJax.typesetPromise([msg]).catch(err => console.log('MathJax error:', err));
+        // For bot messages, format markdown and render LaTeX
+        if (!isUser) {
+            msg.innerHTML = formatMarkdown(text);
+            if (window.MathJax) {
+                MathJax.typesetPromise([msg]).catch(err => console.log('MathJax error:', err));
+            }
         } else {
             msg.textContent = text;
         }

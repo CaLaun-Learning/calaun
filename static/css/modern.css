@@ -690,6 +690,7 @@ span.step__math {
     border-radius: var(--radius-lg);
     max-width: 85%;
     animation: fadeIn 0.2s ease;
+    line-height: 1.6;
 }
 
 .chat-message--user {
@@ -702,6 +703,23 @@ span.step__math {
     align-self: flex-start;
     background: #f1f5f9;
     color: var(--color-text);
+}
+
+.chat-message--bot strong {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.chat-message--bot code {
+    background: #e2e8f0;
+    padding: 0.125rem 0.375rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+}
+
+.chat-message--bot em {
+    font-style: italic;
 }
 
 .chat-message--typing {
