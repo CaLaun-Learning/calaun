@@ -15,14 +15,8 @@ ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
 # Chatbot (optional but recommended)
 GROQ_API_KEY=gsk_your_groq_api_key_here
 
-# Database (optional - defaults to SQLite)
-# For PostgreSQL:
-DB_ENGINE=django.db.backends.postgresql
-DB_NAME=calc_tutor
-DB_USER=your_db_user
-DB_PASSWORD=your_db_password
-DB_HOST=localhost
-DB_PORT=5432
+# Database (PostgreSQL recommended in production)
+DATABASE_URL=postgres://your_db_user:your_db_password@your_db_host:5432/your_db_name
 ```
 
 ### 2. Generate a Secret Key

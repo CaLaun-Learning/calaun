@@ -14,6 +14,7 @@ requests>=2.31.0
 python-dotenv>=1.0.0
 
 # Database (production)
+dj-database-url>=1.0.0
 psycopg2-binary>=2.9.9
 
 # Testing
