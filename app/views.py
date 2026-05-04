@@ -13,7 +13,7 @@ import urllib.parse
 import traceback
 import logging
 
-logger = logging.getLogger('calc_tutor')
+logger = logging.getLogger('calaun')
 
 
 HOME_PAGE_EXAMPLES = [
