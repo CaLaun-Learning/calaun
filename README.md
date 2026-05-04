@@ -1,4 +1,4 @@
-# Calc Tutor
+# CaLaun
 
 A Django-based calculus tutor that shows step-by-step solutions for derivatives, integrals, and limits. Includes an AI chatbot powered by Groq's free LLM API.
 
@@ -93,7 +93,7 @@ python -m pytest chatbot/    # Run chatbot tests only
 - **Math Engine:** SymPy
 - **AI Chatbot:** Groq API (Llama 3.1)
 - **Frontend:** Vanilla ES6 JavaScript, MathJax 3, CSS custom properties
-- **Database:** SQLite (dev) / PostgreSQL (prod)
+- **Database:** SQLite (dev) / PostgreSQL (prod via DATABASE_URL)
 
 ## Project Structure
 
@@ -120,4 +120,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Sponsors
 
-If you find this project helpful, consider [sponsoring on GitHub](https://github.com/sponsors)!
+If you find this project helpful, consider [sponsoring on GitHub](https://github.com/sponsors/beauvilerobed)!

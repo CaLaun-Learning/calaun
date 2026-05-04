@@ -1,5 +1,7 @@
 # Core Django
 Django>=4.2,<5.0
+gunicorn>=21.0.0
+whitenoise>=6.6.0
 
 # Math engine
 sympy>=1.12
@@ -8,10 +10,14 @@ mpmath>=1.3.0
 # HTTP (for chatbot API)
 requests>=2.31.0
 
+# Used by logic/resultsets.py for rST formatting
+docutils>=0.20
+
 # Environment
 python-dotenv>=1.0.0
 
 # Database (production)
+dj-database-url>=1.0.0
 psycopg2-binary>=2.9.9
 
 # Testing

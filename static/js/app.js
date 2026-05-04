@@ -1,5 +1,5 @@
 /**
- * Modern JavaScript for Calc Tutor
+ * Modern JavaScript for CaLaun
  * ES6+ modules, no jQuery dependency
  */
 

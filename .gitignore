@@ -1,4 +1,8 @@
- Byte-compiled / optimized / DLL files
+PROPOSAL.md
+PROPOSAL.html
+QUESTIONS.html
+
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
@@ -140,3 +144,4 @@ cython_debug/
 # Extra
 nltk_data/
 .DS_Store
+.claude/

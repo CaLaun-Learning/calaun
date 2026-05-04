@@ -92,9 +92,12 @@ body {
     background: var(--color-primary);
     color: var(--color-text-inverse);
     text-decoration: none;
+    border: none;
     border-radius: var(--radius-md);
+    font-family: inherit;
     font-weight: 500;
     font-size: 0.875rem;
+    cursor: pointer;
     transition: all var(--transition);
 }
 
@@ -1605,12 +1608,15 @@ script[type="math/tex"] {
     height: 48px;
     background: var(--color-primary);
     color: var(--color-text-inverse);
+    border: none;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
+    font-family: inherit;
     font-size: 1.5rem;
+    cursor: pointer;
     box-shadow: var(--shadow-lg);
     opacity: 0;
     visibility: hidden;

@@ -1,15 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Calculus Reference Guide - Calc Tutor{% endblock %}
+{% block title %}Calculus Reference Guide - CaLaun{% endblock %}
 
 {% block content %}
 <!-- Header -->
 <header class="header">
-    <h1 class="header__title"><a href="/">Calc Tutor</a></h1>
+    <h1 class="header__title"><a href="/">CaLaun</a></h1>
     <nav class="header__nav">
         <a href="/" class="header__link">Home</a>
-        <a href="#" class="header__link" data-chat-trigger>Chat Bot</a>
+        <button type="button" class="header__link" data-chat-trigger>Chat Bot</button>
     </nav>
 </header>
 
@@ -440,7 +440,7 @@
 </main>
 
 <!-- Back to Top -->
-<a href="#" class="back-to-top" id="backToTop" aria-label="Back to top">↑</a>
+<button type="button" class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
 
 <!-- Chat Modal -->
 <div id="chatModal" class="modal">

@@ -12,7 +12,7 @@ import logging
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-logger = logging.getLogger('calc_tutor')
+logger = logging.getLogger('calaun')
 
 
 class Analytics:
