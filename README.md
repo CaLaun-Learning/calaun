@@ -117,3 +117,7 @@ python -m pytest chatbot/    # Run chatbot tests only
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Sponsors
+
+If you find this project helpful, consider [sponsoring on GitHub](https://github.com/sponsors/beauvilerobed)!
