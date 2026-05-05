@@ -254,8 +254,8 @@ The repo includes `railway.toml`. Connect the repo in Railway, add the same env 
 
 ```bash
 sudo apt update && sudo apt install -y python3.12 python3.12-venv nginx postgresql
-git clone https://github.com/beauvilerobed/calc-tutor-bot.git
-cd calc-tutor-bot
+git clone https://github.com/calaun-learning/calaun.git
+cd calaun
 python3.12 -m venv env && source env/bin/activate
 pip install -r requirements.txt
 
