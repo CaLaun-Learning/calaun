@@ -120,4 +120,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Sponsors
 
-If you find this project helpful, consider [sponsoring on GitHub](https://github.com/sponsors/beauvilerobed)!
+If you find this project helpful, [reach out to support CaLaun](mailto:rbeauvile@calaun.org?subject=Supporting%20CaLaun). 501(c)(3) status is pending IRS approval — once granted, tax-deductible donations will be available via this same address.
