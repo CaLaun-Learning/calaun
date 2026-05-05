@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Privacy Policy - CaLaun{% endblock %}
+
+{% block head_additional %}
+<style>
+.privacy-page {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+}
+.privacy-page .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #fff;
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+    opacity: 0.85;
+    transition: opacity 0.15s;
+}
+.privacy-page .back-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+.privacy-card {
+    background: #ffffff;
+    color: #1e293b;
+    border-radius: 12px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 10px 30px -5px rgba(0, 0, 0, 0.15);
+    line-height: 1.7;
+    font-size: 16px;
+}
+.privacy-card h1 {
+    font-size: 2rem;
+    margin: 0 0 0.25rem;
+    color: #0f172a;
+    line-height: 1.2;
+}
+.privacy-card h2 {
+    font-size: 1.25rem;
+    margin: 2rem 0 0.6rem;
+    color: #e85d40;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+.privacy-card p, .privacy-card li {
+    margin-bottom: 0.5em;
+    color: #1e293b;
+}
+.privacy-card ul {
+    margin: 0.5em 0 1em 1.5em;
+    padding-left: 0.25em;
+}
+.privacy-card li {
+    margin-bottom: 0.4em;
+}
+.privacy-card strong {
+    color: #0f172a;
+}
+.privacy-card a {
+    color: #c94d33;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+.privacy-card a:hover {
+    color: #e85d40;
+}
+.privacy-card code {
+    background: #f1f5f9;
+    color: #0f172a;
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', Monaco, Consolas, monospace;
+    font-size: 0.9em;
+}
+.privacy-card .last-updated {
+    color: #64748b;
+    font-style: italic;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+}
+.privacy-card .toc-callout {
+    background: #fff7ed;
+    border-left: 4px solid #e85d40;
+    border-radius: 6px;
+    padding: 1em 1.25em;
+    margin: 1.5em 0;
+    font-size: 0.95em;
+}
+.privacy-card .toc-callout strong {
+    color: #c94d33;
+}
+
+@media (max-width: 600px) {
+    .privacy-page { padding: 1rem; }
+    .privacy-card { padding: 1.5rem 1.25rem; }
+    .privacy-card h1 { font-size: 1.6rem; }
+    .privacy-card h2 { font-size: 1.1rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="privacy-page">
+    <a href="/" class="back-link">← Back to CaLaun</a>
+
+    <div class="privacy-card">
+        <h1>Privacy Policy</h1>
+        <p class="last-updated">Last updated: 2026-05-04</p>
+
+        <div class="toc-callout">
+            <strong>The short version.</strong> CaLaun does not collect personal information from anyone &mdash; no accounts, no email addresses, no names. The full details are below.
+        </div>
+
+        <h2>Who we are</h2>
+        <p>CaLaun is a free, open-source educational tool that provides step-by-step calculus solutions and an AI tutor for middle school, high school, and undergraduate students. The service is operated by the CaLaun project team. CaLaun is incorporated as a non-profit corporation; 501(c)(3) tax-exempt status is pending IRS approval. The application is MIT-licensed open source &mdash; auditable on GitHub.</p>
+
+        <h2>What information we collect</h2>
+        <p>CaLaun is designed to collect as little personal information as possible. We do not require accounts, sign-up, or email addresses to use the service.</p>
+        <ul>
+            <li><strong>Math expressions you submit</strong> (e.g., <code>diff(x^2, x)</code>) are processed by our solver to generate step-by-step solutions. They are not associated with any personal identifier and are not stored beyond the duration of the request.</li>
+            <li><strong>Chatbot messages</strong> you send to "Calc Bot" are forwarded to Groq, our AI inference provider, to generate a response. They are not associated with any personal identifier on our end.</li>
+            <li><strong>IP addresses</strong> are temporarily logged for the sole purpose of rate-limiting abuse (max 10 chatbot requests per minute) and to compute aggregate, anonymous usage statistics (number of problems solved, types of problems most common). IP addresses are stored in memory only and discarded when the server restarts. We do not link IPs to any other personal information.</li>
+            <li><strong>Cookies.</strong> The site uses a Django CSRF cookie for security on form submissions. We do not use any tracking, analytics, or advertising cookies.</li>
+        </ul>
+
+        <h2>What we do not collect</h2>
+        <ul>
+            <li>Names, email addresses, phone numbers, school affiliation, or grade level</li>
+            <li>Location data</li>
+            <li>Contacts, photos, or files from your device</li>
+            <li>Payment information (donations, when added, will be handled by a regulated payment processor &mdash; not by CaLaun directly)</li>
+        </ul>
+
+        <h2>Children's privacy (COPPA)</h2>
+        <p>CaLaun is intended for use by students of all ages, including children under 13. Because we collect no personal information, no accounts, and no contact details from any user, the service complies with the Children's Online Privacy Protection Act (COPPA) by design.</p>
+        <p>If we ever add features that would collect personal information from children under 13 (e.g., user accounts), we will obtain verifiable parental consent before doing so, as required by COPPA.</p>
+        <p>Parents or guardians who have questions about a child's use of CaLaun can contact us at the address below.</p>
+
+        <h2>Third parties we share data with</h2>
+        <p>We use the following infrastructure providers to operate the service. Each is bound by its own privacy policy:</p>
+        <ul>
+            <li><strong>Render</strong> &mdash; application hosting (<a href="https://render.com/policies/privacy" target="_blank" rel="noopener">privacy policy</a>)</li>
+            <li><strong>Neon</strong> &mdash; PostgreSQL database (<a href="https://neon.com/privacy-policy" target="_blank" rel="noopener">privacy policy</a>)</li>
+            <li><strong>Groq</strong> &mdash; AI inference for the chatbot (<a href="https://groq.com/privacy-policy" target="_blank" rel="noopener">privacy policy</a>)</li>
+            <li><strong>Cloudflare</strong> &mdash; CDN / TLS termination via Render (<a href="https://www.cloudflare.com/privacypolicy/" target="_blank" rel="noopener">privacy policy</a>)</li>
+        </ul>
+        <p>We do not sell, rent, or trade any user data. We do not have advertising partners.</p>
+
+        <h2>Data security</h2>
+        <p>The site is served exclusively over HTTPS. All inter-service traffic (including database connections) requires TLS. Application secrets are managed via Render's encrypted environment-variable storage. Source code is publicly auditable on <a href="https://github.com/beauvilerobed/calc-tutor-bot" target="_blank" rel="noopener">GitHub</a>.</p>
+
+        <h2>Your rights</h2>
+        <p>Because we don't link any data to your identity, there is no personal data record for us to retrieve, correct, or delete on request. If you have specific privacy concerns, contact us at the address below and we will do our best to address them.</p>
+
+        <h2>Changes to this policy</h2>
+        <p>If we materially change how we collect or use information, we will update this page and revise the "Last updated" date above. For significant changes that affect children's privacy, we will post a notice on the homepage.</p>
+
+        <h2>Contact</h2>
+        <p>Questions about this policy: <a href="mailto:rbeauvile@calaun.org">rbeauvile@calaun.org</a><br>
+        GitHub issues: <a href="https://github.com/beauvilerobed/calc-tutor-bot/issues" target="_blank" rel="noopener">project issues page</a></p>
+    </div>
+</div>
+{% endblock %}

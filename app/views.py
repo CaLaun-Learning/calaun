@@ -245,6 +245,10 @@ def stats_page(request):
     })
 
 
+def privacy_page(request):
+    return render(request, "privacy.html")
+
+
 def handler404(request, exception):
     return render(request, "404.html")
 

@@ -7,6 +7,7 @@ urlpatterns = [
     path('', views.index),
     path('input/', views.input),
     path('reference/', views.reference_guide),
+    path('privacy/', views.privacy_page),
     path('card/<card_name>', views.return_result_as_card),
     path('stats/', views.stats_page),
 ]
