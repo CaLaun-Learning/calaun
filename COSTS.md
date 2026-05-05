@@ -1,92 +1,96 @@
-# Deployment Costs
+# CaLaun Costs
 
-## Hosting Options
-| Platform | Free Tier | Paid |
-|----------|-----------|------|
-| **Railway** | ❌ | $5/mo (Hobby) |
-| **Render** | ✅ (sleeps after 15min) | $7/mo |
-| **Fly.io** | ✅ ($5 credit) | ~$2-5/mo |
+Last updated: 2026-05-04. Production reality, not theoretical pricing.
 
-## AI Chatbot (Groq)
-| Tier | Cost | Limits |
-|------|------|--------|
-| **Free** | $0 | 30 req/min, 14.4K req/day |
-| **Paid** | $0.05-0.08/1M tokens | Unlimited |
+## What it currently costs to run
 
----
+**Operational: $0/month.** Everything in production runs on free tiers.
 
-## Monthly Cost Scenarios
+| Service | What it does | Tier | Cost |
+|---------|--------------|------|------|
+| **Render** Web Service | Django app hosting | Free (sleeps 15min idle) | $0 |
+| **Neon** Postgres | Database (DATABASE_URL) | Free (0.5 GB, 100 CU-hr/mo) | $0 |
+| **Groq** API | LLM inference for chatbot | Free (~30 req/min) | $0 |
+| **Render TLS** | HTTPS for *.onrender.com + custom domain | Free (Let's Encrypt + Google Trust Services) | $0 |
+| **Cloudflare** CDN | Edge caching (via Render) | Free (passthrough) | $0 |
 
-### 🆓 All Free (~100 users/day)
-| Service | Cost |
-|---------|------|
-| Render (free) | $0 |
-| Groq (free tier) | $0 |
-| **Total** | **$0** |
-
-*Drawback: 30s cold start on Render*
+**Cold-start trade-off:** the free Render instance sleeps after 15 min of no traffic. First request after sleep takes ~30 s. To remove cold starts, upgrade to Render Starter ($7/mo).
 
 ---
 
-### ⚡ Fast Hosting + Free AI (~100 users/day)
-| Service | Cost |
-|---------|------|
-| Railway (Hobby) | $5 |
-| Groq (free tier) | $0 |
-| **Total** | **$5/mo** |
+## Annual fixed costs (already paid or recurring)
 
-*Best value - no cold starts, free AI*
-
----
-
-### 🚀 All Paid (~1,000 users/day)
-| Service | Cost |
-|---------|------|
-| Railway (Hobby) | $5 |
-| Groq (paid) | ~$1.75 |
-| **Total** | **~$7/mo** |
+| Item | Provider | Cost | Notes |
+|------|----------|------|-------|
+| `calaun.org` domain | Namecheap | ~$12/yr | Year-1 paid |
+| `rbeauvile@calaun.org` private email | Namecheap Private Email | ~$15/yr ($1.24/mo) | Real send + receive inbox |
+| **Annual recurring total** | | **~$27/yr** | |
 
 ---
 
-### 💰 High Traffic (~10,000 users/day)
-| Service | Cost |
-|---------|------|
-| Railway (Hobby) | $5 |
-| Groq (paid) | ~$17.50 |
-| **Total** | **~$23/mo** |
+## Scaling estimates
+
+| Daily users | Stack | Monthly cost |
+|-------------|-------|--------------|
+| 100 | Render free + Neon free + Groq free | **$0** |
+| 1,000 | Render Starter ($7) + Neon free + Groq free | **$7** |
+| 5,000 | Render Starter ($7) + Neon Launch ($19) + Groq free | **$26** |
+| 10,000+ | Render Starter ($7) + Neon Launch ($19) + Groq paid (~$10–20) | **$36–46** |
+
+Scaling triggers:
+- **Render Starter ($7/mo)** removes cold starts. Worth it once you have any school partnership or grant.
+- **Neon Launch ($19/mo)** at >0.5 GB storage or >100 CU-hr/mo of compute.
+- **Groq paid** at >14.4K chatbot requests/day. Token-priced; even at high volume usually <$20/mo.
 
 ---
 
-## Recommendation
-Start with **Railway ($5) + Groq Free** — upgrade Groq only if you hit rate limits.
+## Non-profit formation costs (one-time, year 1)
+
+This is the path you're starting on — incorporate as a PA non-profit, file IRS Form 1023-EZ for 501(c)(3) status.
+
+| Item | Cost | Notes |
+|------|------|-------|
+| PA Articles of Incorporation (DSCB:15-5306) | $125 | Pennsylvania Department of State |
+| PA newspaper publication notice (15 Pa.C.S. § 1307) | $50–$300 | One general-circulation paper + one legal journal in your county |
+| PA charitable solicitation registration (BCO-10) | $15–$250 | Likely $15 in year 1 (revenue-tiered) |
+| Registered agent service | $50–$150/yr | E.g., Northwest Registered Agent |
+| IRS Form 1023-EZ filing fee | $275 | Approval typically 3–6 weeks |
+| EIN | $0 | Free, online, ~10 min |
+| Bylaws / COI policy / IP assignment templates | $0 | Free templates from councilofnonprofits.org |
+| **D&O insurance** (optional year 1) | $400–$800/yr | Highly recommended |
+| **Total year 1, no insurance** | **~$515–$990** | |
+| **Total year 1, with insurance** | **~$915–$1,790** | |
 
 ---
 
-## Railway Setup
+## Recurring obligations after 501(c)(3) approval
 
-### 1. Deploy
-1. Go to [railway.app](https://railway.app)
-2. **New Project** → **Deploy from GitHub repo**
-3. Select `beauvilerobed/calc-tutor-bot` → branch `production-ready`
+| Item | Cost | Frequency |
+|------|------|-----------|
+| IRS Form 990-N (e-postcard) | $0 | Annually by May 15 — **3 missed years = automatic loss of 501(c)(3)** |
+| PA Annual Report (under PA's 2025 Annual Report Act) | ~$7 | Annually |
+| PA charitable solicitation renewal | $15–$250 | Annually |
+| Domain renewal | ~$12 | Annually |
+| Private Email renewal | ~$15 | Annually |
+| Registered agent renewal | $50–$150 | Annually |
+| D&O insurance renewal | $400–$800 | Annually |
+| **Recurring total** (with insurance) | **~$500–$1,250** | per year |
 
-### 2. Add Environment Variables
-Click your service → **Variables** → **Add**:
-```
-SECRET_KEY=<generate with: python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())">
-DEBUG=False
-ALLOWED_HOSTS=.up.railway.app
-GROQ_API_KEY=gsk_your_key_here
-```
+---
 
-### 3. Get Domain
-1. Click service → **Settings** → **Networking**
-2. Click **Generate Domain**
-3. (Optional) Click domain to customize subdomain name
+## Donations & grants — operating capital expectations
 
-### 4. Update ALLOWED_HOSTS
-After customizing domain, update variable:
-```
-ALLOWED_HOSTS=yourname.up.railway.app
-```
+After 501(c)(3) approval:
+- Tax-deductible donations via Stripe non-profit pricing (2.2% + $0.30/transaction)
+- Grant targets — see TODO.html § Phase 6 for the priority list and deadlines
+- Realistic year-2 funding goal: $5K–$25K from a mix of small individual donors + 1–3 small grants (state DOE, MAA Tensor-SUMMA, local family foundations)
 
-**Done!** App live in ~2-3 minutes.
+---
+
+## Recommended path
+
+1. **Now (free)**: keep operational stack as-is. $0/mo runs the live site.
+2. **Once 501(c)(3) approves**: upgrade Render to Starter ($7/mo) for no cold starts — schools and funders see a snappy site.
+3. **As traffic grows**: add Neon Launch ($19/mo) only when you actually hit storage or compute limits. Don't pre-pay.
+
+Total realistic year-1 budget: **~$1,000–$2,000** (formation + ~6 months of paid Render Starter).
