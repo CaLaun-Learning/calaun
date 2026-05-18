@@ -140,7 +140,8 @@ body {
 }
 
 .search-form input[type="text"]::placeholder {
-    color: var(--color-text-light);
+    color: #cbd5e1;
+    opacity: 1;
 }
 
 .search-form button,
@@ -1279,17 +1280,17 @@ script[type="math/tex"] {
 }
 
 .feature p {
-    color: var(--color-text-light);
+    color: #cbd5e1;
     font-size: 0.95rem;
     line-height: 1.6;
 }
 
 .feature code {
-    background: var(--color-bg-light);
+    background: #334155;
     padding: 0.2rem 0.4rem;
     border-radius: var(--radius-sm);
     font-size: 0.85rem;
-    color: var(--color-primary);
+    color: #fda58c;
 }
 
 /* More Examples with Tabs */
