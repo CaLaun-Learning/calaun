@@ -21,7 +21,7 @@ The results page shows step-by-step solutions with an AI chatbot sidebar:
 
 ## Requirements
 
-- Python 3.9+ (tested with Python 3.12)
+- Python 3.10+ (required by Django 5.2; tested with Python 3.12)
 - pip
 - (Optional) [Ollama](https://ollama.com) running locally for the AI chatbot
 
@@ -94,7 +94,7 @@ python -m pytest chatbot/    # Run chatbot tests only
 
 ## Tech Stack
 
-- **Backend:** Django 4.2
+- **Backend:** Django 5.2 LTS
 - **Math Engine:** SymPy
 - **AI Chatbot:** Ollama + Llama 3.2 3B (self-hosted, OpenAI-compatible API; NDJSON streaming response)
 - **Frontend:** Vanilla ES6 JavaScript, MathJax 3, CSS custom properties
